@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#060612">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%233b82f6'/><stop offset='1' stop-color='%2322d3ee'/></linearGradient></defs><rect x='2' y='2' width='96' height='96' rx='26' fill='%230c1424'/><path d='M50 18 C53 41,55 45,82 50 C55 55,53 59,50 82 C47 59,45 55,18 50 C45 45,47 41,50 18 Z' fill='url(%23g)'/><circle cx='73' cy='29' r='5' fill='%2322d3ee'/></svg>">
+  <title>Privacy Policy — Rezpona</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#060612;--acc:#00CEFF;--acc2:#5B6FFF;--text:#EEF2FF;--muted:#8A99B2;--muted2:#6B7B92;--bd:rgba(255,255,255,0.075);--card:rgba(255,255,255,0.025)}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;line-height:1.7;overflow-x:hidden}
+a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
+.bg-orb{position:fixed;border-radius:50%;z-index:0;pointer-events:none}
+.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(0,206,255,.06),transparent 70%);top:-180px;left:-180px}
+.orb2{width:660px;height:660px;background:radial-gradient(circle,rgba(91,111,255,.06),transparent 70%);top:60%;right:-220px}
+.page{position:relative;z-index:1}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;padding:1rem 1.5rem;background:rgba(6,6,18,.82);backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%);border-bottom:1px solid var(--bd)}
+.nav-i{max-width:880px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.logo{display:flex;align-items:center;gap:.55rem;color:var(--text);text-decoration:none}
+.logo:hover{text-decoration:none}
+.logo-ic{width:32px;height:32px;flex-shrink:0;display:block;filter:drop-shadow(0 2px 10px rgba(0,206,255,.3))}
+.logo-t{font-size:1.2rem;font-weight:700;letter-spacing:-.02em}
+.logo-t span{background:linear-gradient(135deg,var(--acc),var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.back{font-size:.85rem;color:var(--muted);display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1.1rem;border:1px solid var(--bd);border-radius:100px;transition:border-color .25s,color .25s}
+.back:hover{border-color:rgba(0,206,255,.3);color:var(--text);text-decoration:none}
+
+/* CONTENT */
+.wrap{max-width:760px;margin:0 auto;padding:4rem 1.5rem 5rem}
+.eyebrow{font-size:.72rem;font-weight:600;color:var(--acc);letter-spacing:.12em;text-transform:uppercase;margin-bottom:1rem}
+h1{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(2.2rem,5vw,3rem);line-height:1.1;letter-spacing:-.02em;margin-bottom:.9rem}
+.updated{font-size:.85rem;color:var(--muted2);margin-bottom:2.5rem;padding-bottom:2rem;border-bottom:1px solid var(--bd)}
+.intro{font-size:1.02rem;color:var(--muted);font-weight:300;margin-bottom:2.5rem}
+h2{font-family:'Fraunces',serif;font-weight:400;font-size:1.35rem;letter-spacing:-.01em;margin:2.6rem 0 .9rem;color:var(--text)}
+h2 .n{color:var(--acc);font-size:.95rem;font-weight:600;font-family:'Outfit',sans-serif;margin-right:.5rem}
+h3{font-size:1rem;font-weight:600;margin:1.5rem 0 .5rem}
+p{color:var(--muted);font-weight:300;margin-bottom:1rem;font-size:.96rem}
+ul{list-style:none;margin:0 0 1.2rem;padding:0}
+li{color:var(--muted);font-weight:300;font-size:.96rem;padding-left:1.5rem;position:relative;margin-bottom:.6rem}
+li::before{content:'';position:absolute;left:.3rem;top:.65em;width:5px;height:5px;border-radius:50%;background:var(--acc);opacity:.7}
+strong{color:var(--text);font-weight:500}
+.callout{background:var(--card);border:1px solid var(--bd);border-left:2px solid var(--acc);border-radius:12px;padding:1.1rem 1.3rem;margin:1.5rem 0;font-size:.92rem;color:var(--muted)}
+.toc{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:1.4rem 1.6rem;margin-bottom:2.5rem}
+.toc-t{font-size:.78rem;font-weight:600;color:var(--muted2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.9rem}
+.toc ol{list-style:none;margin:0;padding:0;columns:2;column-gap:2rem}
+.toc li{padding-left:0;font-size:.9rem;margin-bottom:.5rem;break-inside:avoid}
+.toc li::before{display:none}
+.toc a{color:var(--muted)}.toc a:hover{color:var(--acc)}
+
+/* FOOTER */
+footer{border-top:1px solid var(--bd);padding:2.5rem 1.5rem}
+.foot-i{max-width:880px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1.2rem}
+.foot-logo{font-size:1.05rem;font-weight:700}
+.foot-logo span{background:linear-gradient(135deg,var(--acc),var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.foot-links{display:flex;gap:1.6rem;list-style:none;flex-wrap:wrap}
+.foot-links a{color:var(--muted);font-size:.82rem}.foot-links a:hover{color:var(--text)}
+.foot-copy{font-size:.78rem;color:var(--muted2)}
+::selection{background:rgba(0,206,255,.22);color:#fff}
+@media(max-width:600px){.toc ol{columns:1}.foot-i{flex-direction:column;text-align:center}}
+  </style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="page">
+
+<nav>
+  <div class="nav-i">
+    <a href="/" class="logo">
+      <svg class="logo-ic" viewBox="0 0 100 100">
+        <rect x="2" y="2" width="96" height="96" rx="26" fill="#0c1424" stroke="rgba(120,170,255,.18)" stroke-width="1"/>
+        <path d="M50 18 C53 41,55 45,82 50 C55 55,53 59,50 82 C47 59,45 55,18 50 C45 45,47 41,50 18 Z" fill="#22d3ee"/>
+        <circle cx="73" cy="29" r="4.6" fill="#22d3ee"/>
+      </svg>
+      <span class="logo-t">Rez<span>pona</span></span>
+    </a>
+    <a href="/" class="back">&larr; Back to home</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="eyebrow">Legal</div>
+  <h1>Privacy Policy</h1>
+  <div class="updated">Last updated: June 5, 2026</div>
+
+  <p class="intro">This Privacy Policy explains how Rezpona ("Rezpona", "we", "us", or "our") collects, uses, and protects your information when you use our review management platform and website (collectively, the "Service"). We are committed to handling your data responsibly and in compliance with the General Data Protection Regulation (GDPR) and other applicable data protection laws.</p>
+
+  <div class="toc">
+    <div class="toc-t">On this page</div>
+    <ol>
+      <li><a href="#who">1. Who we are</a></li>
+      <li><a href="#collect">2. Information we collect</a></li>
+      <li><a href="#use">3. How we use your data</a></li>
+      <li><a href="#google">4. Google user data</a></li>
+      <li><a href="#legal">5. Legal bases</a></li>
+      <li><a href="#share">6. Sharing &amp; processors</a></li>
+      <li><a href="#retention">7. Data retention</a></li>
+      <li><a href="#security">8. Security</a></li>
+      <li><a href="#rights">9. Your rights</a></li>
+      <li><a href="#cookies">10. Cookies</a></li>
+      <li><a href="#transfers">11. Transfers</a></li>
+      <li><a href="#changes">12. Changes</a></li>
+      <li><a href="#contact">13. Contact</a></li>
+    </ol>
+  </div>
+
+  <h2 id="who"><span class="n">01</span>Who we are</h2>
+  <p>Rezpona provides software that helps restaurants, hotels, cafés, and other hospitality businesses analyze and respond to their online reviews. For the purposes of GDPR, Rezpona acts as a <strong>data controller</strong> for account and website data, and as a <strong>data processor</strong> when handling review data on behalf of our business customers.</p>
+  <p>The Service is operated by <strong>Rezpona</strong>. You can contact us about any privacy matter at:</p>
+  <ul>
+    <li>Email: <a href="mailto:rezpona@gmail.com">rezpona@gmail.com</a></li>
+    <li>Alternative email: <a href="mailto:rezpona@outlook.com">rezpona@outlook.com</a></li>
+  </ul>
+
+  <h2 id="collect"><span class="n">02</span>Information we collect</h2>
+  <h3>Account information</h3>
+  <p>When you create an account, we collect your name, email address, business name, business type, and login credentials.</p>
+  <h3>Google Business Profile data</h3>
+  <p>If you connect your Google Business Profile, we access your business reviews, ratings, and related metadata so we can analyze them and help you draft replies. This is done through Google's official, authorized API using OAuth — we never see or store your Google password.</p>
+  <h3>Payment information</h3>
+  <p>Subscription payments are processed by our payment provider (Stripe). We do not store your full card details on our servers; we only retain limited billing metadata such as your plan, billing status, and the last four digits of your card.</p>
+  <h3>Usage &amp; technical data</h3>
+  <p>We collect information about how you use the Service, such as feature usage, log data, device and browser type, and IP address, to operate, secure, and improve the platform.</p>
+
+  <h2 id="use"><span class="n">03</span>How we use your data</h2>
+  <ul>
+    <li>To provide, maintain, and operate the Service.</li>
+    <li>To analyze your reviews and generate suggested reply drafts.</li>
+    <li>To process payments and manage your subscription.</li>
+    <li>To send you service-related communications (e.g., review alerts, account notices).</li>
+    <li>To provide customer support and respond to your requests.</li>
+    <li>To detect, prevent, and address technical issues, fraud, or abuse.</li>
+    <li>To comply with our legal obligations.</li>
+  </ul>
+  <p>We do <strong>not</strong> sell your personal data, and we do not use your review content to train publicly available AI models.</p>
+
+  <h2 id="google"><span class="n">04</span>Google user data</h2>
+  <p>Rezpona's use and transfer of information received from Google APIs adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener">Google API Services User Data Policy</a>, including the Limited Use requirements.</p>
+  <div class="callout">We only access your Google Business Profile review data to provide the review-management features you have requested. We do not use this data for advertising, do not sell it, and do not share it with third parties except the sub-processors strictly necessary to deliver the Service. You can revoke Rezpona's access at any time from your Google Account settings.</div>
+
+  <h2 id="legal"><span class="n">05</span>Legal bases for processing</h2>
+  <p>Under the GDPR, we rely on the following legal bases:</p>
+  <ul>
+    <li><strong>Contract</strong> — to provide the Service you have signed up for.</li>
+    <li><strong>Legitimate interests</strong> — to secure, improve, and support the Service.</li>
+    <li><strong>Consent</strong> — where required, for example when you connect your Google account or opt in to marketing.</li>
+    <li><strong>Legal obligation</strong> — to comply with applicable laws (e.g., tax and accounting).</li>
+  </ul>
+
+  <h2 id="share"><span class="n">06</span>Sharing &amp; sub-processors</h2>
+  <p>We share data only with trusted service providers who help us run the Service, under agreements that require them to protect your data:</p>
+  <ul>
+    <li><strong>Cloud hosting &amp; infrastructure</strong> — to store and serve data securely.</li>
+    <li><strong>Payment processing</strong> — Stripe, to handle subscriptions.</li>
+    <li><strong>AI processing</strong> — to analyze reviews and generate reply drafts. Review text may be sent to our AI provider solely to produce your draft; it is not used to train their public models.</li>
+    <li><strong>Google</strong> — to read reviews and publish your approved replies via the official API.</li>
+    <li><strong>Communication tools</strong> — to send you alerts and account emails.</li>
+  </ul>
+  <p>We may also disclose data if required by law or to protect our rights, users, or the public.</p>
+
+  <h2 id="retention"><span class="n">07</span>Data retention</h2>
+  <p>We retain your data for as long as your account is active or as needed to provide the Service. After you close your account, we delete or anonymize your personal data within a reasonable period, except where we are required to retain it for legal, tax, or security reasons.</p>
+
+  <h2 id="security"><span class="n">08</span>Security</h2>
+  <p>We use industry-standard measures to protect your data, including encryption in transit and at rest, access controls, and OAuth-based authentication for third-party connections. No method of transmission or storage is completely secure, but we work continuously to safeguard your information.</p>
+
+  <h2 id="rights"><span class="n">09</span>Your rights</h2>
+  <p>Depending on your location, you may have the right to:</p>
+  <ul>
+    <li>Access the personal data we hold about you.</li>
+    <li>Request correction of inaccurate data.</li>
+    <li>Request deletion of your data ("right to be forgotten").</li>
+    <li>Object to or restrict certain processing.</li>
+    <li>Request a portable copy of your data.</li>
+    <li>Withdraw consent at any time.</li>
+    <li>Lodge a complaint with your local data protection authority.</li>
+  </ul>
+  <p>To exercise any of these rights, contact us at <a href="mailto:rezpona@gmail.com">rezpona@gmail.com</a>.</p>
+
+  <h2 id="cookies"><span class="n">10</span>Cookies</h2>
+  <p>We use essential cookies to keep you signed in and to operate the Service, and limited analytics cookies to understand usage and improve the product. You can control cookies through your browser settings; disabling essential cookies may affect functionality.</p>
+
+  <h2 id="transfers"><span class="n">11</span>International data transfers</h2>
+  <p>Your data may be processed in countries outside your own, including outside the European Economic Area. Where this happens, we rely on appropriate safeguards such as Standard Contractual Clauses to ensure your data remains protected.</p>
+
+  <h2 id="changes"><span class="n">12</span>Changes to this policy</h2>
+  <p>We may update this Privacy Policy from time to time. We will post the updated version here and revise the "Last updated" date. For material changes, we will provide additional notice where appropriate.</p>
+
+  <h2 id="contact"><span class="n">13</span>Contact us</h2>
+  <p>If you have any questions about this Privacy Policy or how we handle your data, please contact us:</p>
+  <ul>
+    <li>Email: <a href="mailto:rezpona@gmail.com">rezpona@gmail.com</a></li>
+    <li>Alternative email: <a href="mailto:rezpona@outlook.com">rezpona@outlook.com</a></li>
+  </ul>
+  <p>We aim to respond to all privacy requests within 30 days.</p>
+</div>
+
+<footer>
+  <div class="foot-i">
+    <div class="foot-logo">Rez<span>pona</span></div>
+    <ul class="foot-links">
+      <li><a href="privacy.html">Privacy Policy</a></li>
+      <li><a href="terms.html">Terms of Service</a></li>
+      <li><a href="/#features">Features</a></li>
+      <li><a href="/#pricing">Pricing</a></li>
+    </ul>
+    <div class="foot-copy">&copy; 2026 Rezpona. All rights reserved.</div>
+  </div>
+</footer>
+</div>
+</body>
+</html>

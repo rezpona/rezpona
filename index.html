@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#060612">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%233b82f6'/><stop offset='1' stop-color='%2322d3ee'/></linearGradient></defs><rect x='2' y='2' width='96' height='96' rx='26' fill='%230c1424'/><path d='M50 18 C53 41,55 45,82 50 C55 55,53 59,50 82 C47 59,45 55,18 50 C45 45,47 41,50 18 Z' fill='url(%23g)'/><circle cx='73' cy='29' r='5' fill='%2322d3ee'/></svg>">
+  <title>Rezpona — Review Management for Restaurants, Hotels &amp; Cafés</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,400;0,9..144,500;1,9..144,200;1,9..144,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#060612;--bg2:#0a0a1a;--acc:#00CEFF;--acc2:#5B6FFF;
+  --text:#EEF2FF;--muted:#6B7B92;--muted2:#8A99B2;
+  --bd:rgba(255,255,255,0.075);--bd2:rgba(255,255,255,0.12);
+  --card:rgba(255,255,255,0.025);
+  --vh:100vh;
+}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;line-height:1.6;overflow-x:hidden;width:100%;position:relative;-webkit-font-smoothing:antialiased}
+img{max-width:100%}
+button,textarea,input{font-family:inherit}
+
+/* ── BG LAYERS ── */
+#bgc{position:fixed;inset:0;z-index:0;pointer-events:none;display:block}
+.grain{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.04;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.bg-orb{position:fixed;border-radius:50%;z-index:0;pointer-events:none;opacity:1}
+.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(0,206,255,.07) 0%,rgba(0,206,255,.03) 40%,transparent 70%);top:-150px;left:-180px}
+.orb2{width:660px;height:660px;background:radial-gradient(circle,rgba(91,111,255,.07) 0%,rgba(91,111,255,.03) 40%,transparent 70%);top:55%;right:-200px}
+
+.page{position:relative;z-index:1}
+.container{max-width:1140px;margin:0 auto;padding:0 1.5rem}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:120;padding:1.05rem 1.5rem;transition:background .4s,border-color .4s,padding .4s}
+nav.s{background:rgba(6,6,18,.82);backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%);border-bottom:1px solid var(--bd);padding-top:.85rem;padding-bottom:.85rem}
+.nav-i{max-width:1140px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:2rem}
+.logo{display:flex;align-items:center;gap:.55rem;text-decoration:none;color:var(--text)}
+.logo-m{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.82rem;color:#060612;flex-shrink:0;box-shadow:0 2px 12px rgba(0,206,255,.35)}
+.logo-ic{width:34px;height:34px;flex-shrink:0;display:block;filter:drop-shadow(0 2px 10px rgba(0,206,255,.3))}
+.logo-t{font-size:1.25rem;font-weight:700;letter-spacing:-.02em}
+.logo-t span{background:linear-gradient(135deg,var(--acc),var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-links{display:flex;gap:1.8rem;list-style:none}
+.nav-links a{text-decoration:none;color:var(--muted2);font-size:.88rem;transition:color .2s;position:relative}
+.nav-links a::after{content:'';position:absolute;left:0;bottom:-4px;width:0;height:1px;background:var(--acc);transition:width .25s}
+.nav-links a:hover{color:var(--text)}
+.nav-links a:hover::after{width:100%}
+.nav-r{display:flex;align-items:center;gap:1rem}
+.btn-cta{padding:.55rem 1.35rem;border-radius:100px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#060612;font-weight:600;font-size:.84rem;text-decoration:none;display:inline-block;transition:transform .2s,box-shadow .2s;white-space:nowrap;box-shadow:0 3px 16px rgba(0,206,255,.28)}
+.btn-cta:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,206,255,.42)}
+
+/* Hamburger */
+.hamburger{display:none;width:42px;height:42px;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;background:none;border:none;-webkit-tap-highlight-color:transparent;z-index:130;border-radius:10px}
+.hamburger span{width:22px;height:2px;background:var(--text);border-radius:2px;display:block;transition:transform .32s cubic-bezier(.6,.05,.3,1),opacity .25s}
+.hamburger.active span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.active span:nth-child(2){opacity:0}
+.hamburger.active span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+/* ── MOBILE MENU ── */
+.mob-menu{position:fixed;inset:0;z-index:115;background:rgba(6,6,18,.98);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4rem;opacity:0;visibility:hidden;transition:opacity .3s ease,visibility .3s ease}
+.mob-menu.open{opacity:1;visibility:visible}
+.mob-menu a:not(.btn-cta){font-size:1.6rem;font-weight:300;color:var(--text);text-decoration:none;transition:color .2s,transform .2s;padding:.7rem 1rem;opacity:0;transform:translateY(12px)}
+.mob-menu.open a:not(.btn-cta){opacity:1;transform:none}
+.mob-menu.open a:nth-child(1){transition:.3s .06s}
+.mob-menu.open a:nth-child(2){transition:.3s .12s}
+.mob-menu.open a:nth-child(3){transition:.3s .18s}
+.mob-menu.open a:nth-child(4){transition:.3s .24s}
+.mob-menu.open a:nth-child(5){transition:.3s .30s}
+.mob-menu a:not(.btn-cta):active{color:var(--acc)}
+.mob-menu .btn-cta{margin-top:1.2rem;font-size:1rem;padding:.8rem 2rem;opacity:0;transform:translateY(12px)}
+.mob-menu.open .btn-cta{opacity:1;transform:none;transition:.3s .36s}
+
+/* ── HERO ── */
+.hero{min-height:100vh;min-height:100svh;display:flex;align-items:center;padding:7.5rem 1.5rem 4rem}
+.hero-i{max-width:1140px;margin:0 auto;width:100%;display:grid;grid-template-columns:1.05fr .95fr;gap:4rem;align-items:center}
+.htag{display:inline-flex;align-items:center;gap:.45rem;padding:.32rem .95rem;border-radius:100px;border:1px solid rgba(0,206,255,.2);background:rgba(0,206,255,.06);font-size:.72rem;color:var(--acc);font-weight:500;letter-spacing:.07em;text-transform:uppercase;margin-bottom:1.4rem}
+.htag::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--acc);box-shadow:0 0 7px var(--acc);animation:px 2.2s ease-in-out infinite}
+@keyframes px{0%,100%{opacity:1}50%{opacity:.25}}
+.hero h1{font-family:'Fraunces',serif;font-size:clamp(2.6rem,5.4vw,4.7rem);font-weight:200;line-height:1.06;letter-spacing:-.03em;margin-bottom:1.4rem}
+.hero h1 em{font-style:italic;background:linear-gradient(135deg,var(--acc),var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-p{font-size:1.04rem;color:var(--muted2);max-width:440px;margin-bottom:2.2rem;font-weight:300;line-height:1.78}
+.hero-btns{display:flex;gap:.9rem;flex-wrap:wrap;margin-bottom:2.1rem}
+.btn-p{padding:.85rem 1.95rem;border-radius:100px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#060612;font-weight:600;font-size:.94rem;border:none;cursor:pointer;transition:transform .25s,box-shadow .25s;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;box-shadow:0 4px 28px rgba(0,206,255,.3);-webkit-tap-highlight-color:transparent}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 10px 40px rgba(0,206,255,.46)}
+.btn-g{padding:.85rem 1.95rem;border-radius:100px;background:rgba(255,255,255,.02);color:var(--text);font-weight:400;font-size:.94rem;border:1px solid var(--bd);cursor:pointer;transition:border-color .25s,background .25s;text-decoration:none;display:inline-flex;align-items:center;gap:.45rem;-webkit-tap-highlight-color:transparent}
+.btn-g:hover{border-color:var(--bd2);background:rgba(255,255,255,.045)}
+.trust-row{display:flex;align-items:center;gap:1.3rem;flex-wrap:wrap}
+.trust-i{font-size:.79rem;color:var(--muted2);display:flex;align-items:center;gap:.35rem}
+.trust-i::before{content:'✓';color:var(--acc);font-weight:700}
+
+/* ── PHONE 3D ── */
+.phone-scene{perspective:1200px;display:flex;justify-content:center;align-items:center;height:580px;position:relative}
+.phone-scene::before{content:'';position:absolute;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,rgba(0,206,255,.12),transparent 65%);filter:blur(20px)}
+.phone-float{animation:bob 6.5s ease-in-out infinite;will-change:transform}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
+.phone-tilt{transform:rotateY(-9deg) rotateX(4deg);transition:transform .25s ease;will-change:transform;position:relative}
+.phone-frame{width:272px;height:552px;background:linear-gradient(160deg,#1b1b30 0%,#0b0b1d 100%);border-radius:46px;border:1.5px solid rgba(255,255,255,.12);overflow:hidden;position:relative;box-shadow:0 0 0 1px rgba(0,0,0,.5),0 60px 110px rgba(0,0,0,.72),inset 0 1px 0 rgba(255,255,255,.1),0 0 70px rgba(0,206,255,.1)}
+.pnotch{position:absolute;top:13px;left:50%;transform:translateX(-50%);width:92px;height:25px;background:#060612;border-radius:18px;z-index:5}
+.pscreen{padding:50px 15px 16px;height:100%;background:linear-gradient(180deg,#080814,#06060f);display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.ps-hdr{display:flex;justify-content:space-between;align-items:center}
+.ps-ttl{font-size:.66rem;font-weight:600}
+.ps-live{font-size:.55rem;color:var(--acc);font-weight:600;display:flex;align-items:center;gap:3px}
+.ps-live::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--acc);animation:px 2s infinite}
+.ps-card{background:linear-gradient(135deg,rgba(0,206,255,.1),rgba(91,111,255,.1));border:1px solid rgba(0,206,255,.14);border-radius:13px;padding:11px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ps-num{font-family:'Fraunces',serif;font-size:1.95rem;font-weight:400;line-height:1}
+.ps-stars{font-size:.55rem;color:#FFB800;letter-spacing:1px;margin-top:2px}
+.ps-delta{font-size:.49rem;color:#00FF94;margin-top:2px}
+.ps-chart{display:flex;align-items:flex-end;gap:3px;height:36px}
+.ps-bar{width:7px;border-radius:3px;background:linear-gradient(to top,var(--acc2),var(--acc));opacity:.78}
+.ps-rvs{display:flex;flex-direction:column;gap:6px}
+.ps-rv{background:rgba(255,255,255,.028);border:1px solid rgba(255,255,255,.05);border-radius:10px;padding:7px 9px;display:flex;gap:6px;align-items:flex-start}
+.rvd{width:5px;height:5px;border-radius:50%;margin-top:3px;flex-shrink:0}
+.rvd.g{background:#00FF94;box-shadow:0 0 5px #00FF94}
+.rvd.y{background:#FFB800;box-shadow:0 0 5px #FFB800}
+.rvd.r{background:#FF4466;box-shadow:0 0 5px #FF4466}
+.rv-t{font-size:.52rem;color:var(--muted2);line-height:1.4}
+.rv-m{font-size:.47rem;color:rgba(107,123,146,.55);margin-top:2px}
+.ps-aib{padding:8px;border-radius:10px;background:linear-gradient(135deg,rgba(0,206,255,.18),rgba(91,111,255,.18));border:1px solid rgba(0,206,255,.26);color:#dff8ff;font-size:.6rem;font-weight:600;cursor:pointer;text-align:center;flex-shrink:0;animation:iglow 3s ease-in-out infinite}
+@keyframes iglow{0%,100%{box-shadow:0 0 8px rgba(0,206,255,.12)}50%{box-shadow:0 0 20px rgba(0,206,255,.34)}}
+.ps-typ{background:rgba(0,206,255,.045);border:1px solid rgba(0,206,255,.1);border-radius:10px;padding:8px;flex-shrink:0}
+.ps-typ-l{font-size:.49rem;color:var(--acc);font-weight:600;margin-bottom:3px}
+.ps-typ-t{font-size:.52rem;color:var(--muted2);line-height:1.5}
+.tcursor{display:inline-block;width:1.5px;height:.62em;background:var(--acc);margin-left:1px;animation:bl 1s step-end infinite;vertical-align:middle}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:0}}
+
+/* ── HERO ENTRY — pure CSS, no JS class needed ── */
+@keyframes fu{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+@keyframes fi{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+.htag{animation:fu .7s ease both .1s}
+.hero h1{animation:fu .8s ease both .24s}
+.hero-p{animation:fu .8s ease both .4s}
+.hero-btns{animation:fu .8s ease both .54s}
+.trust-row{animation:fu .8s ease both .68s}
+.phone-scene{animation:fi 1.1s ease both .3s}
+
+
+/* ── TRUST BAR ── */
+.tbar{padding:3rem 1.5rem}
+.tbar-i{max-width:1140px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:3rem;flex-wrap:wrap}
+.tstat{text-align:center}
+.tstat-n{font-family:'Fraunces',serif;font-size:2.3rem;font-weight:400;background:linear-gradient(135deg,var(--text),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.tstat-l{font-size:.78rem;color:var(--muted2);font-weight:300;margin-top:.3rem}
+.tsep{width:1px;height:46px;background:var(--bd);flex-shrink:0}
+
+/* ── SECTION ── */
+section{padding:6.5rem 1.5rem;position:relative}
+.sh{margin-bottom:3.6rem}
+.sh.c{text-align:center}
+.sh.c .ssub{margin:0 auto}
+.seye{font-size:.72rem;font-weight:600;color:var(--acc);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.9rem}
+.stitle{font-family:'Fraunces',serif;font-size:clamp(1.95rem,3.6vw,2.95rem);font-weight:300;line-height:1.15;letter-spacing:-.02em;margin-bottom:.9rem}
+.stitle em{font-style:italic;background:linear-gradient(135deg,var(--acc),var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.ssub{font-size:.97rem;color:var(--muted2);font-weight:300;line-height:1.75;max-width:560px}
+
+/* ── FEATURES ── */
+.feat-wrap{background:linear-gradient(180deg,transparent,rgba(91,111,255,.018) 50%,transparent)}
+.fgrid{max-width:1140px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--bd);border:1px solid var(--bd);border-radius:24px;overflow:hidden}
+.fc{background:var(--bg);padding:2.4rem 2.2rem;position:relative;overflow:hidden;transition:background .3s}
+.fc::after{content:'';position:absolute;inset:0;background:radial-gradient(420px circle at var(--mx,50%) var(--my,0%),rgba(0,206,255,.05),transparent 60%);opacity:0;transition:opacity .35s}
+.fc:hover::after{opacity:1}
+.fc:hover{background:rgba(0,206,255,.016)}
+.ficon{width:48px;height:48px;border-radius:13px;background:linear-gradient(135deg,rgba(0,206,255,.14),rgba(91,111,255,.14));border:1px solid rgba(0,206,255,.2);display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1.4rem}
+.ftitle{font-size:1rem;font-weight:600;margin-bottom:.55rem}
+.fdesc{font-size:.85rem;color:var(--muted2);line-height:1.68;font-weight:300}
+
+/* ── HOW ── */
+.how-grid{max-width:1140px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
+.steps{margin-top:2.6rem;display:flex;flex-direction:column}
+.step{display:flex;gap:1.3rem;padding-bottom:2.1rem;position:relative}
+.step:not(:last-child)::after{content:'';position:absolute;left:18px;top:40px;bottom:0;width:1px;background:linear-gradient(to bottom,rgba(0,206,255,.25),transparent)}
+.step-n{width:38px;height:38px;border-radius:50%;border:1px solid rgba(0,206,255,.3);display:flex;align-items:center;justify-content:center;font-size:.74rem;font-weight:600;color:var(--acc);flex-shrink:0;background:rgba(0,206,255,.06)}
+.step-t{font-size:1rem;font-weight:600;margin-bottom:.35rem}
+.step-d{font-size:.85rem;color:var(--muted2);line-height:1.66;font-weight:300}
+.demo-wrap{background:rgba(255,255,255,.022);border:1px solid var(--bd);border-radius:22px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.35)}
+.demo-bar{padding:.85rem 1.3rem;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:.45rem}
+.ddots{display:flex;gap:5px}
+.ddots span{width:9px;height:9px;border-radius:50%}
+.ddots span:nth-child(1){background:#FF5F56}.ddots span:nth-child(2){background:#FFBD2E}.ddots span:nth-child(3){background:#27C93F}
+.demo-ttl{font-size:.73rem;color:var(--muted);margin-left:.35rem}
+.demo-body{padding:1.4rem}
+.demo-rv{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.065);border-radius:12px;padding:.95rem;margin-bottom:.85rem}
+.demo-rh{display:flex;justify-content:space-between;align-items:center;margin-bottom:.45rem}
+.demo-rn{font-size:.82rem;font-weight:600}
+.demo-rs{font-size:.7rem;color:#FFB800}
+.demo-rt{font-size:.82rem;color:var(--muted2);line-height:1.55}
+.demo-chips{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;margin-bottom:.85rem}
+.ch-l{font-size:.72rem;color:var(--muted)}
+.chip{padding:2px 10px;border-radius:100px;font-size:.66rem;font-weight:600}
+.ch-g{background:rgba(0,255,148,.1);color:#00FF94;border:1px solid rgba(0,255,148,.2)}
+.ch-b{background:rgba(91,111,255,.1);color:#8A9FFF;border:1px solid rgba(91,111,255,.2)}
+.demo-reply{background:linear-gradient(135deg,rgba(0,206,255,.07),rgba(91,111,255,.07));border:1px solid rgba(0,206,255,.16);border-radius:12px;padding:.95rem}
+.demo-reply-l{font-size:.68rem;color:var(--acc);font-weight:600;margin-bottom:.45rem;display:flex;align-items:center;gap:.35rem}
+.demo-reply-t{font-size:.8rem;color:var(--muted2);line-height:1.62}
+
+/* ── INTERACTIVE DEMO ── */
+.idemo-wrap{background:linear-gradient(180deg,transparent,rgba(0,206,255,.014) 50%,transparent)}
+.idemo-grid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:1.6rem;align-items:stretch}
+.idemo-col{display:flex;flex-direction:column;gap:1rem}
+.idemo-panel{background:rgba(255,255,255,.022);border:1px solid var(--bd);border-radius:22px;padding:1.5rem;display:flex;flex-direction:column;gap:1rem;height:100%}
+.panel-h{font-size:.8rem;font-weight:600;color:var(--muted2);display:flex;align-items:center;gap:.5rem}
+.panel-h .num{width:22px;height:22px;border-radius:7px;background:rgba(0,206,255,.12);border:1px solid rgba(0,206,255,.22);display:flex;align-items:center;justify-content:center;font-size:.68rem;color:var(--acc);font-weight:700}
+.venue-toggle{display:flex;background:rgba(255,255,255,.03);border:1px solid var(--bd);border-radius:100px;padding:3px;gap:2px}
+.vt-btn{flex:1;padding:.5rem .5rem;border-radius:100px;border:none;background:transparent;color:var(--muted2);font-size:.82rem;font-weight:500;cursor:pointer;transition:all .22s;-webkit-tap-highlight-color:transparent}
+.vt-btn.active{background:linear-gradient(135deg,rgba(0,206,255,.2),rgba(91,111,255,.2));color:#fff;box-shadow:0 2px 10px rgba(0,0,0,.3)}
+.review-input{width:100%;min-height:140px;flex:1;background:rgba(255,255,255,.028);border:1px solid var(--bd);border-radius:14px;padding:1rem 1.1rem;color:var(--text);font-size:.92rem;font-weight:300;line-height:1.65;resize:vertical;transition:border-color .25s;outline:none}
+.review-input::placeholder{color:var(--muted)}
+.review-input:focus{border-color:rgba(0,206,255,.4);background:rgba(0,206,255,.02)}
+.samples-row{display:flex;flex-direction:column;gap:.55rem}
+.samples-label{font-size:.74rem;color:var(--muted)}
+.samples-pills{display:flex;gap:.5rem;flex-wrap:wrap}
+.sample-pill{padding:.4rem .85rem;border-radius:100px;border:1px solid var(--bd);background:transparent;color:var(--muted2);font-size:.76rem;cursor:pointer;transition:all .22s;-webkit-tap-highlight-color:transparent;white-space:nowrap}
+.sample-pill:hover{border-color:rgba(0,206,255,.32);color:var(--text);background:rgba(0,206,255,.06)}
+.btn-draft{padding:.92rem 1.5rem;border-radius:100px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#060612;font-weight:600;font-size:.95rem;border:none;cursor:pointer;transition:transform .25s,box-shadow .25s,opacity .2s;box-shadow:0 4px 28px rgba(0,206,255,.3);display:flex;align-items:center;justify-content:center;gap:.5rem;-webkit-tap-highlight-color:transparent;min-height:50px}
+.btn-draft:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 40px rgba(0,206,255,.44)}
+.btn-draft:disabled{opacity:.6;cursor:default;transform:none}
+.reply-panel{min-height:100%;display:flex;flex-direction:column}
+.reply-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem}
+.reply-label{font-size:.8rem;font-weight:600;color:var(--muted2);display:flex;align-items:center;gap:.45rem}
+.reply-label .dot{width:7px;height:7px;border-radius:50%;background:var(--muted);transition:background .3s}
+.reply-panel.has-reply .reply-label .dot{background:var(--acc);box-shadow:0 0 7px var(--acc);animation:px 2s infinite}
+.copy-btn{padding:.32rem .9rem;border-radius:100px;border:1px solid var(--bd);background:transparent;color:var(--muted2);font-size:.74rem;cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent}
+.copy-btn:hover{border-color:rgba(0,206,255,.32);color:var(--acc)}
+.copy-btn.copied{border-color:rgba(0,255,148,.35);color:#00FF94}
+.reply-box{flex:1;background:rgba(255,255,255,.022);border:1px solid var(--bd);border-radius:14px;padding:1.2rem;display:flex;flex-direction:column;justify-content:center;min-height:180px;transition:border-color .3s,background .3s}
+.reply-panel.has-reply .reply-box{border-color:rgba(0,206,255,.22);background:linear-gradient(135deg,rgba(0,206,255,.04),rgba(91,111,255,.03));justify-content:flex-start}
+.reply-ph{text-align:center;color:var(--muted)}
+.reply-ph-ic{font-size:1.9rem;margin-bottom:.7rem;opacity:.4}
+.reply-ph-t{font-size:.86rem;font-weight:300;line-height:1.6}
+.reply-text{font-size:.92rem;color:var(--text);line-height:1.74;font-weight:300;width:100%;white-space:pre-wrap}
+.loading-dots{display:flex;gap:.4rem;justify-content:center;width:100%}
+.loading-dots span{width:8px;height:8px;border-radius:50%;background:var(--acc);animation:ldot .9s ease-in-out infinite}
+.loading-dots span:nth-child(2){animation-delay:.15s}.loading-dots span:nth-child(3){animation-delay:.3s}
+@keyframes ldot{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+.sent-row{display:flex;gap:.45rem;align-items:center;flex-wrap:wrap;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--bd)}
+.sent-label{font-size:.72rem;color:var(--muted)}
+.sent-pill{padding:2px 10px;border-radius:100px;font-size:.66rem;font-weight:600}
+.sp-pos{background:rgba(0,255,148,.1);color:#00FF94;border:1px solid rgba(0,255,148,.2)}
+.sp-neg{background:rgba(255,68,102,.1);color:#FF7090;border:1px solid rgba(255,68,102,.2)}
+.sp-mix{background:rgba(255,184,0,.1);color:#FFB800;border:1px solid rgba(255,184,0,.2)}
+
+/* ── TESTIMONIALS ── */
+.test-grid{max-width:1140px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem}
+.tcard{background:rgba(255,255,255,.022);border:1px solid var(--bd);border-radius:20px;padding:2rem;transition:transform .3s,border-color .3s,background .3s}
+.tcard:hover{transform:translateY(-4px);border-color:var(--bd2);background:rgba(255,255,255,.03)}
+.tstars{color:#FFB800;font-size:.78rem;letter-spacing:2px;margin-bottom:1rem}
+.tquote{font-size:.94rem;color:var(--muted2);line-height:1.74;font-weight:300;font-style:italic;margin-bottom:1.5rem}
+.tauthor{display:flex;align-items:center;gap:.8rem}
+.tav{width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,rgba(0,206,255,.16),rgba(91,111,255,.16));border:1px solid rgba(0,206,255,.22);display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0}
+.tname{font-size:.87rem;font-weight:600}
+.trole{font-size:.76rem;color:var(--muted)}
+
+/* ── PRICING ── */
+.pricing-wrap{background:linear-gradient(180deg,transparent,rgba(0,206,255,.012) 50%,transparent)}
+.pgrid{max-width:1060px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:1.3rem;padding:0 1.5rem}
+.pc{background:rgba(255,255,255,.022);border:1px solid var(--bd);border-radius:22px;padding:2.3rem;position:relative;transition:transform .3s,border-color .3s,box-shadow .3s}
+.pc:hover{transform:translateY(-5px);border-color:var(--bd2)}
+.pc.pop{border-color:rgba(0,206,255,.3);background:linear-gradient(135deg,rgba(0,206,255,.055),rgba(91,111,255,.055))}
+.pc.pop:hover{box-shadow:0 26px 64px rgba(0,206,255,.16)}
+.pop-b{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--acc),var(--acc2));color:#060612;font-size:.66rem;font-weight:700;padding:4px 15px;border-radius:100px;white-space:nowrap;letter-spacing:.05em;text-transform:uppercase;box-shadow:0 4px 16px rgba(0,206,255,.4)}
+.pname{font-size:.8rem;font-weight:600;color:var(--muted2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:1.3rem}
+.pprice{display:flex;align-items:flex-end;gap:.3rem;margin-bottom:.4rem}
+.pcurr{font-size:1.15rem;font-weight:500;color:var(--muted2);margin-bottom:.25rem}
+.pnum{font-family:'Fraunces',serif;font-size:2.9rem;font-weight:400;line-height:1}
+.pper{font-size:.88rem;color:var(--muted);margin-bottom:.25rem}
+.pdesc{font-size:.81rem;color:var(--muted2);margin-bottom:1.8rem;line-height:1.55}
+.pdiv{height:1px;background:var(--bd);margin-bottom:1.4rem}
+.pfeats{list-style:none;display:flex;flex-direction:column;gap:.75rem;margin-bottom:1.9rem}
+.pfeats li{font-size:.83rem;color:var(--muted2);display:flex;align-items:flex-start;gap:.55rem;font-weight:300}
+.pfeats li::before{content:'✓';color:var(--acc);font-weight:700;font-size:.78rem;flex-shrink:0;margin-top:.05rem}
+.pbtn{width:100%;padding:.85rem;border-radius:100px;font-weight:500;font-size:.88rem;cursor:pointer;transition:all .25s;border:none;-webkit-tap-highlight-color:transparent}
+.pb-o{background:transparent;border:1px solid var(--bd)!important;color:var(--text)}
+.pb-o:hover{border-color:var(--bd2)!important;background:rgba(255,255,255,.03)}
+.pb-f{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#060612;font-weight:600;box-shadow:0 4px 20px rgba(0,206,255,.3)}
+.pb-f:hover{box-shadow:0 8px 30px rgba(0,206,255,.46);transform:translateY(-1px)}
+
+/* ── FAQ ── */
+.faq-wrap{background:linear-gradient(180deg,transparent,rgba(91,111,255,.018) 50%,transparent)}
+.flist{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:.75rem}
+.fi{border:1px solid var(--bd);border-radius:15px;overflow:hidden;transition:border-color .25s,background .25s}
+.fi.open{border-color:rgba(0,206,255,.24);background:rgba(0,206,255,.02)}
+.fq{width:100%;padding:1.2rem 1.4rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;background:transparent;border:none;color:var(--text);font-size:.96rem;font-weight:500;cursor:pointer;text-align:left;transition:background .2s;-webkit-tap-highlight-color:transparent}
+.fq:hover{background:rgba(255,255,255,.02)}
+.fchev{width:24px;height:24px;border-radius:50%;border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:.8rem;color:var(--muted);flex-shrink:0;transition:transform .32s,border-color .25s,color .25s}
+.fi.open .fchev{transform:rotate(180deg);border-color:rgba(0,206,255,.35);color:var(--acc)}
+.fbody{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+.fi.open .fbody{grid-template-rows:1fr}
+.fbody-in{overflow:hidden}
+.fans{padding:0 1.4rem 1.25rem;font-size:.89rem;color:var(--muted2);line-height:1.72;font-weight:300}
+
+/* ── CTA ── */
+.cta-s{text-align:center;padding:8rem 1.5rem;position:relative;overflow:hidden}
+.cta-glow{position:absolute;width:820px;height:420px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,206,255,.05),transparent 68%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
+.cta-s .stitle{font-size:clamp(2.2rem,4.5vw,3.6rem);max-width:720px;margin:.7rem auto 1.4rem}
+.cta-s .ssub{margin:0 auto 2.7rem;text-align:center;max-width:460px}
+.cta-btns{display:flex;gap:.9rem;justify-content:center;flex-wrap:wrap}
+.cta-note{margin-top:1.1rem;font-size:.78rem;color:var(--muted)}
+
+/* ── FOOTER ── */
+footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
+.foot-i{max-width:1140px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1.5rem}
+.foot-logo{font-size:1.15rem;font-weight:700;display:flex;align-items:center;gap:.5rem}
+.foot-logo span{background:linear-gradient(135deg,var(--acc),var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.foot-links{display:flex;gap:1.8rem;list-style:none;flex-wrap:wrap}
+.foot-links a{text-decoration:none;color:var(--muted2);font-size:.82rem;transition:color .2s}
+.foot-links a:hover{color:var(--text)}
+.foot-copy{font-size:.78rem;color:var(--muted)}
+
+/* ── REVEAL ── */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .65s ease,transform .65s ease}
+.reveal.visible{opacity:1;transform:none}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
+/* Safety: if JS fails/slow, content stays readable after 2s */
+@keyframes reveal-fallback{to{opacity:1;transform:none}}
+@media(max-width:768px){.reveal{animation:reveal-fallback .01s ease forwards 2s}}
+
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+::selection{background:rgba(0,206,255,.22);color:#fff}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.001s!important;transition-duration:.05s!important}
+  .phone-float{animation:none}
+}
+
+/* ════════ RESPONSIVE ════════ */
+@media(max-width:1040px){
+  .fgrid{grid-template-columns:repeat(2,1fr)}
+  .pgrid,.test-grid{grid-template-columns:1fr;max-width:460px}
+  .how-grid{grid-template-columns:1fr;gap:3rem}
+  .idemo-grid{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  nav{padding:.9rem 1.2rem}
+  .nav-links{display:none}
+  .hamburger{display:flex}
+  .hero{padding:6.5rem 1.2rem 3.5rem;min-height:auto}
+  .hero-i{grid-template-columns:1fr;gap:2.2rem;text-align:center}
+  .hero-p{margin:0 auto 2rem}
+  .hero-btns{justify-content:center}
+  .trust-row{justify-content:center;gap:.7rem 1.1rem}
+  .trust-i{font-size:.74rem}
+  .phone-scene{height:430px;order:-1}
+  .phone-scene::before{width:280px;height:280px}
+  .phone-frame{width:218px;height:444px;border-radius:38px}
+  .tbar-i{gap:1.6rem 2rem}
+  .tsep{display:none}
+  .tstat-n{font-size:2rem}
+  .fgrid{grid-template-columns:1fr}
+  .test-grid{grid-template-columns:1fr;max-width:420px}
+  .foot-i{flex-direction:column;align-items:center;text-align:center}
+  .foot-links{justify-content:center}
+  section{padding:5rem 1.2rem}
+  .sh{margin-bottom:2.8rem}
+}
+@media(max-width:480px){
+  .hero h1{font-size:2.4rem}
+  .phone-frame{width:200px;height:406px;border-radius:34px}
+  .phone-scene{height:400px}
+  .hero-btns{flex-direction:column;align-items:stretch}
+  .btn-p,.btn-g{width:100%;justify-content:center}
+  .idemo-panel{padding:1.2rem}
+  .pc{padding:2rem 1.7rem}
+  .sample-pill{font-size:.73rem;padding:.36rem .75rem}
+}
+  </style>
+</head>
+<body>
+<canvas id="bgc"></canvas>
+<!-- Rezpona logo mark (reusable SVG symbol) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="rzbc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#22d3ee"/></linearGradient>
+  <filter id="rzglow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="3.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <symbol id="rztile" viewBox="0 0 100 100">
+    <rect x="2" y="2" width="96" height="96" rx="26" fill="#0c1424" stroke="rgba(120,170,255,.18)" stroke-width="1"/>
+    <g filter="url(#rzglow)">
+      <path d="M50 18 C53 41,55 45,82 50 C55 55,53 59,50 82 C47 59,45 55,18 50 C45 45,47 41,50 18 Z" fill="url(#rzbc)"/>
+      <circle cx="73" cy="29" r="4.6" fill="#22d3ee"/>
+      <line x1="60" y1="40" x2="70" y2="32" stroke="#22d3ee" stroke-width="1.6" stroke-linecap="round" opacity=".7"/>
+    </g>
+  </symbol>
+</defs></svg>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="grain"></div>
+
+<!-- MOBILE MENU -->
+<div class="mob-menu" id="mobMenu">
+  <a href="#features" data-mc>Features</a>
+  <a href="#how" data-mc>How it works</a>
+  <a href="#demo" data-mc>Try it free</a>
+  <a href="#pricing" data-mc>Pricing</a>
+  <a href="#faq" data-mc>FAQ</a>
+  <a href="#pricing" class="btn-cta" data-mc>Start free →</a>
+</div>
+
+<div class="page">
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-i">
+    <a href="#" class="logo"><svg class="logo-ic"><use href="#rztile"/></svg><div class="logo-t">Rez<span>pona</span></div></a>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#demo">Try it free</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <div class="nav-r">
+      <a href="#pricing" class="btn-cta">Start free →</a>
+      <button class="hamburger" id="hamb" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-i">
+    <div>
+      <div class="htag">Restaurants &middot; Hotels &middot; Cafés</div>
+      <h1>Every review.<br><em>A perfect reply.</em></h1>
+      <p class="hero-p">Rezpona reads every guest review and crafts a thoughtful, on-brand reply in seconds — so you can focus on running your venue, not typing responses.</p>
+      <div class="hero-btns">
+        <a href="#demo" class="btn-p">Try it free &rarr;</a>
+        <a href="#how" class="btn-g">&#9654; See how it works</a>
+      </div>
+      <div class="trust-row">
+        <span class="trust-i">No credit card</span>
+        <span class="trust-i">Setup in 2 minutes</span>
+        <span class="trust-i">Cancel anytime</span>
+      </div>
+    </div>
+    <div class="phone-scene">
+      <div class="phone-float"><div class="phone-tilt" id="phoneTilt">
+        <div class="phone-frame">
+          <div class="pnotch"></div>
+          <div class="pscreen">
+            <div class="ps-hdr"><div class="ps-ttl">Rezpona Dashboard</div><div class="ps-live">LIVE</div></div>
+            <div class="ps-card">
+              <div><div class="ps-num">4.8</div><div class="ps-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="ps-delta">&#9650; +0.3 this month</div></div>
+              <div class="ps-chart">
+                <div class="ps-bar" style="height:22%"></div><div class="ps-bar" style="height:38%"></div><div class="ps-bar" style="height:52%"></div><div class="ps-bar" style="height:42%"></div><div class="ps-bar" style="height:74%"></div><div class="ps-bar" style="height:90%"></div><div class="ps-bar" style="height:100%"></div>
+              </div>
+            </div>
+            <div class="ps-rvs">
+              <div class="ps-rv"><div class="rvd g"></div><div><div class="rv-t">"Food was absolutely amazing! Will return soon..."</div><div class="rv-m">Maria K. &middot; 2 min ago</div></div></div>
+              <div class="ps-rv"><div class="rvd y"></div><div><div class="rv-t">"Good food but the wait for a table was long."</div><div class="rv-m">Peter M. &middot; 20 min ago</div></div></div>
+              <div class="ps-rv"><div class="rvd r"></div><div><div class="rv-t">"Disappointing compared to our last visit."</div><div class="rv-m">Anna J. &middot; 1h ago</div></div></div>
+            </div>
+            <div class="ps-aib">&#9997; Draft a Reply</div>
+            <div class="ps-typ"><div class="ps-typ-l">Crafting your reply...</div><div class="ps-typ-t" id="phoneTxt">Hi Maria, thank you for the wonderful visit!<span class="tcursor"></span></div></div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- TRUST BAR -->
+<div class="tbar">
+  <div class="tbar-i">
+    <div class="tstat reveal"><div class="tstat-n" data-target="500" data-suffix="+">0</div><div class="tstat-l">Venues worldwide</div></div>
+    <div class="tsep reveal d1"></div>
+    <div class="tstat reveal d1"><div class="tstat-n" data-target="50000" data-suffix="+">0</div><div class="tstat-l">Reviews managed</div></div>
+    <div class="tsep reveal d2"></div>
+    <div class="tstat reveal d2"><div class="tstat-n" data-target="40" data-suffix="+">0</div><div class="tstat-l">Languages supported</div></div>
+    <div class="tsep reveal d3"></div>
+    <div class="tstat reveal d3"><div class="tstat-n" data-target="30" data-suffix="s">0</div><div class="tstat-l">Avg. reply time</div></div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="feat-wrap" id="features">
+  <div class="container sh c reveal">
+    <div class="seye">Features</div>
+    <h2 class="stitle">Everything you need,<br><em>nothing you don't</em></h2>
+    <p class="ssub">A complete platform for managing your online reputation — from analysis to publishing.</p>
+  </div>
+  <div class="fgrid container" id="fgrid">
+    <div class="fc reveal"><div class="ficon">&#9997;</div><div class="ftitle">Instant Reply Drafts</div><div class="fdesc">Professional, personalized replies for every review in seconds — written to match your venue's tone and the specific details of each guest's visit.</div></div>
+    <div class="fc reveal d1"><div class="ficon">&#128202;</div><div class="ftitle">Sentiment &amp; Topic Analysis</div><div class="fdesc">Understand what guests truly think. Automatic classification by sentiment, topics, and recurring issues that need your attention.</div></div>
+    <div class="fc reveal d2"><div class="ficon">&#127758;</div><div class="ftitle">40+ Languages</div><div class="fdesc">Rezpona detects the review's language automatically and responds in the same one — no manual translation needed, ever.</div></div>
+    <div class="fc reveal"><div class="ficon">&#128276;</div><div class="ftitle">Real-time Alerts</div><div class="fdesc">Get notified the moment a new review lands — via email, SMS, or Slack. Never miss important guest feedback again.</div></div>
+    <div class="fc reveal d1"><div class="ficon">&#128200;</div><div class="ftitle">Monthly Performance Reports</div><div class="fdesc">Track rating trends, spot your wins and weak spots, and measure how your reputation evolves over time with clear, actionable reports.</div></div>
+    <div class="fc reveal d2"><div class="ficon">&#128279;</div><div class="ftitle">One-Click Publishing</div><div class="fdesc">Review the draft, make any edits, and publish straight to Google My Business with a single click — or turn on Autopilot.</div></div>
+  </div>
+</section>
+
+<!-- HOW -->
+<section id="how">
+  <div class="how-grid container">
+    <div>
+      <div class="reveal"><div class="seye">How it works</div><h2 class="stitle">Three steps to<br><em>a stellar reputation</em></h2></div>
+      <div class="steps">
+        <div class="step reveal"><div class="step-n">01</div><div><div class="step-t">Connect your Google profile</div><div class="step-d">Authorize access to your Google My Business account in under 2 minutes. No technical knowledge required — just click and authenticate.</div></div></div>
+        <div class="step reveal d1"><div class="step-n">02</div><div><div class="step-t">Rezpona reads &amp; drafts a reply</div><div class="step-d">New reviews are picked up automatically. Rezpona reads the sentiment, spots the key topics, and writes a tailored reply within seconds.</div></div></div>
+        <div class="step reveal d2"><div class="step-n">03</div><div><div class="step-t">Approve and publish</div><div class="step-d">Review the draft, edit if needed, and publish directly to Google — all in one click. Or enable Autopilot and let Rezpona handle it.</div></div></div>
+      </div>
+    </div>
+    <div class="demo-wrap reveal d1">
+      <div class="demo-bar"><div class="ddots"><span></span><span></span><span></span></div><div class="demo-ttl">Rezpona &mdash; Live Preview</div></div>
+      <div class="demo-body">
+        <div class="demo-rv"><div class="demo-rh"><div class="demo-rn">Stefan N.</div><div class="demo-rs">&#9733;&#9733;&#9733;&#9733;&#9734;</div></div><div class="demo-rt">"The ambiance is lovely and the staff are friendly, but the food arrived a bit colder than expected. We'd still come back."</div></div>
+        <div class="demo-chips"><span class="ch-l">Sentiment:</span><span class="chip ch-g">Positive 78%</span><span class="ch-l">Topics:</span><span class="chip ch-b">Food &bull; Service</span></div>
+        <div class="demo-reply"><div class="demo-reply-l">&#9997; Suggested reply</div><div class="demo-reply-t" id="demoTxt">Thanks so much for this, Stefan — really glad the atmosphere and the team made an impression on you. You're right about the food temperature, and I've already flagged it with the kitchen so your next visit lands just right. We'll be looking forward to it!<span class="tcursor"></span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INTERACTIVE DEMO -->
+<section class="idemo-wrap" id="demo">
+  <div class="container">
+    <div class="sh c reveal">
+      <div class="seye">Try it yourself</div>
+      <h2 class="stitle">Paste any review.<br><em>Get a reply instantly.</em></h2>
+      <p class="ssub">Type or paste a real guest review and watch Rezpona write a reply tailored to exactly what they said — ready to publish.</p>
+    </div>
+    <div class="idemo-grid">
+      <div class="idemo-col">
+        <div class="idemo-panel">
+          <div class="panel-h"><span class="num">1</span>The review</div>
+          <div class="venue-toggle" id="venueToggle">
+            <button class="vt-btn active" data-venue="restaurant">Restaurant</button>
+            <button class="vt-btn" data-venue="hotel">Hotel</button>
+            <button class="vt-btn" data-venue="cafe">Café</button>
+          </div>
+          <textarea class="review-input" id="reviewInput" placeholder="e.g. The risotto was perfect and our waiter was so kind, but we waited 40 minutes for a table even with a booking..." maxlength="900"></textarea>
+          <div class="samples-row">
+            <div class="samples-label">Or try a sample:</div>
+            <div class="samples-pills">
+              <button class="sample-pill" data-i="0">★★★★★ Glowing</button>
+              <button class="sample-pill" data-i="1">★★★ Mixed</button>
+              <button class="sample-pill" data-i="2">★★ Let-down</button>
+            </div>
+          </div>
+          <button class="btn-draft" id="draftBtn"><span id="draftBtnText">Draft my reply &rarr;</span></button>
+        </div>
+      </div>
+      <div class="idemo-col">
+        <div class="idemo-panel reply-panel" id="replyPanel">
+          <div class="reply-head">
+            <div class="reply-label"><span class="dot"></span><span id="replyLabel">Your reply</span></div>
+            <button class="copy-btn" id="copyBtn" style="display:none">Copy</button>
+          </div>
+          <div class="reply-box" id="replyBox">
+            <div class="reply-ph"><div class="reply-ph-ic">&#9997;</div><div class="reply-ph-t">Your tailored reply<br>will appear here.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <div class="container sh c reveal">
+    <div class="seye">Loved by owners</div>
+    <h2 class="stitle">Hospitality teams<br><em>who trust Rezpona</em></h2>
+  </div>
+  <div class="test-grid">
+    <div class="tcard reveal">
+      <div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <div class="tquote">"It saved us over 10 hours a week we used to spend writing replies. Our average rating climbed from 4.2 to 4.7 in just three months."</div>
+      <div class="tauthor"><div class="tav">&#127860;</div><div><div class="tname">Restaurant Owner</div><div class="trole">Fine dining · Belgrade</div></div></div>
+    </div>
+    <div class="tcard reveal d1">
+      <div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <div class="tquote">"With 150 rooms, keeping up with reviews was impossible. Now we get an alert, approve the reply, and we're done. Guests notice the speed."</div>
+      <div class="tauthor"><div class="tav">&#127976;</div><div><div class="tname">General Manager</div><div class="trole">Boutique hotel · Zagreb</div></div></div>
+    </div>
+    <div class="tcard reveal d2">
+      <div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <div class="tquote">"Three cafés, one dashboard. The replies sound more professional than anything we'd write ourselves. Honestly a no-brainer for HoReCa."</div>
+      <div class="tauthor"><div class="tav">&#9749;</div><div><div class="tname">Café Owner</div><div class="trole">Specialty coffee · Sarajevo</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing-wrap" id="pricing">
+  <div class="container sh c reveal">
+    <div class="seye">Pricing</div>
+    <h2 class="stitle">Simple, transparent<br><em>pricing</em></h2>
+    <p class="ssub">14-day free trial. No credit card required. Cancel anytime.</p>
+  </div>
+  <div class="pgrid">
+    <div class="pc reveal">
+      <div class="pname">Starter</div>
+      <div class="pprice"><span class="pcurr">&euro;</span><span class="pnum">19</span><span class="pper">/month</span></div>
+      <div class="pdesc">For a single venue getting started.</div>
+      <div class="pdiv"></div>
+      <ul class="pfeats"><li>Up to 30 reviews per month</li><li>Replies in 30+ languages</li><li>One-click publishing</li><li>Google My Business integration</li><li>Email notifications</li></ul>
+      <button class="pbtn pb-o" style="border:1px solid var(--bd)">Start free trial</button>
+    </div>
+    <div class="pc pop reveal d1">
+      <div class="pop-b">Most popular</div>
+      <div class="pname">Pro</div>
+      <div class="pprice"><span class="pcurr">&euro;</span><span class="pnum">39</span><span class="pper">/month</span></div>
+      <div class="pdesc">For growing restaurants &amp; hotels.</div>
+      <div class="pdiv"></div>
+      <ul class="pfeats"><li>Unlimited reviews</li><li>Monthly performance reports</li><li>Priority support</li><li>Sentiment &amp; topic analytics</li><li>Autopilot mode</li><li>SMS &amp; Slack notifications</li></ul>
+      <button class="pbtn pb-f">Start free trial &rarr;</button>
+    </div>
+    <div class="pc reveal d2">
+      <div class="pname">Agency</div>
+      <div class="pprice"><span class="pcurr">&euro;</span><span class="pnum">99</span><span class="pper">/month</span></div>
+      <div class="pdesc">For multi-location groups.</div>
+      <div class="pdiv"></div>
+      <ul class="pfeats"><li>Multiple locations</li><li>Team access &amp; roles</li><li>Unlimited reviews</li><li>Dedicated success manager</li><li>White-label option</li><li>API access</li></ul>
+      <button class="pbtn pb-o" style="border:1px solid var(--bd)">Contact us</button>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-wrap" id="faq">
+  <div class="container">
+    <div class="sh c reveal"><div class="seye">FAQ</div><h2 class="stitle">Common questions</h2><p class="ssub">Everything you need to know before getting started.</p></div>
+    <div class="flist">
+      <div class="fi reveal"><button class="fq" data-faq>Does Rezpona support all languages?<span class="fchev">&#8964;</span></button><div class="fbody"><div class="fbody-in"><div class="fans">Yes. Rezpona automatically detects the language of each incoming review and replies in the same language. We currently support 40+ languages — all major European languages, plus Arabic, Japanese, Mandarin and more.</div></div></div></div>
+      <div class="fi reveal d1"><button class="fq" data-faq>How secure is the Google integration?<span class="fchev">&#8964;</span></button><div class="fbody"><div class="fbody-in"><div class="fans">Rezpona connects to Google My Business via the official OAuth 2.0 flow — we never see or store your Google password. All data is encrypted in transit and at rest, and you can revoke access at any time from your Google account.</div></div></div></div>
+      <div class="fi reveal d2"><button class="fq" data-faq>Can I edit the replies before publishing?<span class="fchev">&#8964;</span></button><div class="fbody"><div class="fbody-in"><div class="fans">Absolutely. Every reply is a draft — edit it, rewrite it, or regenerate it before publishing. Nothing goes live without your approval unless you've explicitly enabled Autopilot mode, which you can toggle on or off anytime.</div></div></div></div>
+      <div class="fi reveal d1"><button class="fq" data-faq>Is it suitable for multiple restaurant locations?<span class="fchev">&#8964;</span></button><div class="fbody"><div class="fbody-in"><div class="fans">Yes — our Agency plan is built exactly for this. Manage unlimited locations from one dashboard, assign team members to specific venues, and get consolidated analytics across your whole portfolio.</div></div></div></div>
+      <div class="fi reveal d2"><button class="fq" data-faq>Do I need technical skills to use it?<span class="fchev">&#8964;</span></button><div class="fbody"><div class="fbody-in"><div class="fans">Not at all. Rezpona is built for busy hospitality professionals, not developers. Setup takes under 2 minutes — just connect your Google My Business profile and you're ready to go.</div></div></div></div>
+      <div class="fi reveal d3"><button class="fq" data-faq>Can I cancel my subscription anytime?<span class="fchev">&#8964;</span></button><div class="fbody"><div class="fbody-in"><div class="fans">Yes, cancel anytime — no questions asked, no cancellation fees. Your account stays active until the end of your billing period, and you get a full 14-day free trial before any charge.</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-s">
+  <div class="cta-glow"></div>
+  <div class="reveal"><div class="seye">Get started</div></div>
+  <h2 class="stitle reveal">Turn your reviews into<br><em>your best asset.</em></h2>
+  <p class="ssub reveal">Join 500+ HoReCa businesses already managing their reputation with Rezpona.</p>
+  <div class="cta-btns reveal"><a href="#demo" class="btn-p">Try it free &rarr;</a><a href="#" class="btn-g">Book a demo</a></div>
+  <div class="cta-note reveal">No credit card &nbsp;&middot;&nbsp; 2-minute setup &nbsp;&middot;&nbsp; Cancel anytime</div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-i">
+    <a href="#" class="logo" style="text-decoration:none"><svg class="logo-ic"><use href="#rztile"/></svg><div class="logo-t">Rez<span>pona</span></div></a>
+    <ul class="foot-links"><li><a href="privacy.html">Privacy Policy</a></li><li><a href="terms.html">Terms of Service</a></li><li><a href="#">Contact</a></li><li><a href="#">Blog</a></li></ul>
+    <div class="foot-copy">&copy; 2025 Rezpona. All rights reserved.</div>
+  </div>
+</footer>
+</div>
+
+<script>
+/* ════════ THREE.JS — OPTIMIZED + PAUSE-AWARE ════════ */
+(function(){
+  const canvas=document.getElementById('bgc');
+  let gl;try{gl=canvas.getContext('webgl')||canvas.getContext('experimental-webgl')}catch(e){}
+  if(!gl){canvas.style.display='none';return;} // graceful fallback
+  const mob=window.innerWidth<768;
+  const COUNT=mob?44:120, DIST=mob?9:12;
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:false,alpha:true,powerPreference:'low-power'});
+  renderer.setPixelRatio(mob?1:Math.min(window.devicePixelRatio,1.5));
+  renderer.setSize(window.innerWidth,window.innerHeight);
+  renderer.setClearColor(0,0);
+  const scene=new THREE.Scene();
+  const cam=new THREE.PerspectiveCamera(70,window.innerWidth/window.innerHeight,.1,1000);cam.position.z=28;
+  const pts=[],vel=[],pos=new Float32Array(COUNT*3);
+  for(let i=0;i<COUNT;i++){
+    const x=(Math.random()-.5)*68,y=(Math.random()-.5)*46,z=(Math.random()-.5)*26;
+    pts.push({x,y,z});vel.push({x:(Math.random()-.5)*.015,y:(Math.random()-.5)*.013,z:(Math.random()-.5)*.008});
+    pos[i*3]=x;pos[i*3+1]=y;pos[i*3+2]=z;
+  }
+  const ptG=new THREE.BufferGeometry();ptG.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  scene.add(new THREE.Points(ptG,new THREE.PointsMaterial({color:0x00CEFF,size:.13,transparent:true,opacity:.5,sizeAttenuation:true})));
+  const MAX=COUNT*(COUNT-1)/2,lp=new Float32Array(MAX*6);
+  const lG=new THREE.BufferGeometry();lG.setAttribute('position',new THREE.BufferAttribute(lp,3));lG.setDrawRange(0,0);
+  scene.add(new THREE.LineSegments(lG,new THREE.LineBasicMaterial({color:0x4D6AFF,transparent:true,opacity:.06})));
+  let mx=0,my=0,fine=window.matchMedia('(pointer:fine)').matches;
+  if(fine)document.addEventListener('mousemove',e=>{mx=(e.clientX/window.innerWidth-.5)*.24;my=(e.clientY/window.innerHeight-.5)*.16},{passive:true});
+  const D2=DIST*DIST;
+  let running=true;
+  document.addEventListener('visibilitychange',()=>{running=!document.hidden;if(running)loop()});
+  function loop(){
+    if(!running)return;
+    requestAnimationFrame(loop);
+    let s=0;
+    for(let i=0;i<COUNT;i++){
+      const p=pts[i],v=vel[i];
+      p.x+=v.x;p.y+=v.y;p.z+=v.z;
+      if(p.x>34||p.x<-34)v.x*=-1;if(p.y>23||p.y<-23)v.y*=-1;if(p.z>13||p.z<-13)v.z*=-1;
+      pos[i*3]=p.x;pos[i*3+1]=p.y;pos[i*3+2]=p.z;
+      for(let j=i+1;j<COUNT;j++){
+        const q=pts[j],dx=p.x-q.x,dy=p.y-q.y,dz=p.z-q.z;
+        if(dx*dx+dy*dy+dz*dz<D2){
+          const o=s*6;lp[o]=p.x;lp[o+1]=p.y;lp[o+2]=p.z;lp[o+3]=q.x;lp[o+4]=q.y;lp[o+5]=q.z;s++;
+        }
+      }
+    }
+    ptG.attributes.position.needsUpdate=true;lG.attributes.position.needsUpdate=true;lG.setDrawRange(0,s*2);
+    cam.position.x+=(mx*3-cam.position.x)*.02;cam.position.y+=(-my*2.2-cam.position.y)*.02;cam.lookAt(scene.position);
+    scene.rotation.y+=.00016;renderer.render(scene,cam);
+  }
+  loop();
+  let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{cam.aspect=window.innerWidth/window.innerHeight;cam.updateProjectionMatrix();renderer.setSize(window.innerWidth,window.innerHeight)},150)},{passive:true});
+})();
+
+/* ════════ PHONE TILT (desktop only) ════════ */
+(function(){
+  const el=document.getElementById('phoneTilt');
+  if(!el||!window.matchMedia('(pointer:fine)').matches)return;
+  let p=false;
+  document.addEventListener('mousemove',e=>{
+    if(p)return;p=true;
+    requestAnimationFrame(()=>{
+      const ry=-9+(e.clientX/window.innerWidth-.5)*16, rx=4-(e.clientY/window.innerHeight-.5)*10;
+      el.style.transform=`rotateY(${ry.toFixed(1)}deg) rotateX(${rx.toFixed(1)}deg)`;p=false;
+    });
+  },{passive:true});
+})();
+
+/* hero entry is now pure CSS — no JS needed */
+
+/* ════════ NAV ════════ */
+const nav=document.getElementById('nav');
+let lastY=0,ticking=false;
+window.addEventListener('scroll',()=>{
+  if(ticking)return;ticking=true;
+  requestAnimationFrame(()=>{nav.classList.toggle('s',scrollY>40);ticking=false});
+},{passive:true});
+
+/* ════════ MOBILE MENU ════════ */
+const hamb=document.getElementById('hamb'),mob=document.getElementById('mobMenu');
+function toggleMenu(open){
+  const o=open!==undefined?open:!mob.classList.contains('open');
+  mob.classList.toggle('open',o);hamb.classList.toggle('active',o);
+  document.body.style.overflow=o?'hidden':'';
+}
+hamb.addEventListener('click',()=>toggleMenu());
+document.querySelectorAll('[data-mc]').forEach(a=>a.addEventListener('click',()=>toggleMenu(false)));
+
+/* ════════ FEATURE CARD GLOW (desktop) ════════ */
+if(window.matchMedia('(pointer:fine)').matches){
+  document.querySelectorAll('.fc').forEach(c=>{
+    c.addEventListener('mousemove',e=>{
+      const r=c.getBoundingClientRect();
+      c.style.setProperty('--mx',((e.clientX-r.left)/r.width*100)+'%');
+      c.style.setProperty('--my',((e.clientY-r.top)/r.height*100)+'%');
+    },{passive:true});
+  });
+}
+
+/* ════════ REVEAL ════════ */
+const ro=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('visible');ro.unobserve(x.target)}})},{threshold:.1,rootMargin:'0px 0px -30px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
+
+/* ════════ COUNTERS ════════ */
+const co=new IntersectionObserver(e=>{e.forEach(x=>{
+  if(!x.isIntersecting)return;
+  const el=x.target,end=+el.dataset.target,suf=el.dataset.suffix||'';let c=0;
+  const t=()=>{c=Math.min(c+end/72,end);el.textContent=(end>=10000?Math.floor(c).toLocaleString():Math.floor(c))+suf;if(c<end)requestAnimationFrame(t)};
+  requestAnimationFrame(t);co.unobserve(el);
+})},{threshold:.6});
+document.querySelectorAll('[data-target]').forEach(el=>co.observe(el));
+
+/* ════════ FAQ ════════ */
+document.querySelectorAll('[data-faq]').forEach(btn=>btn.addEventListener('click',()=>{
+  const it=btn.closest('.fi'),was=it.classList.contains('open');
+  document.querySelectorAll('.fi.open').forEach(el=>el.classList.remove('open'));
+  if(!was)it.classList.add('open');
+}));
+
+/* ════════ PHONE TYPING LOOP ════════ */
+(function(){
+  const el=document.getElementById('phoneTxt');if(!el)return;
+  const msgs=["Hi Maria, thank you for the wonderful visit — it genuinely made our day to read this!","Hi Peter, thanks for the honest note. You're right about the wait, and we're working hard to fix it.","Hi Anna, we're sorry this one fell short. We'd love the chance to make it right — please reach out."];
+  let mi=0,ci=0;
+  (function type(){if(ci<msgs[mi].length){el.innerHTML=msgs[mi].slice(0,++ci)+'<span class="tcursor"></span>';setTimeout(type,34)}else setTimeout(()=>{mi=(mi+1)%msgs.length;ci=0;type()},2600)})();
+})();
+
+/* ════════ HOW PREVIEW TYPING ════════ */
+(function(){
+  const el=document.getElementById('demoTxt');if(!el)return;
+  const full="Thanks so much for this, Stefan — really glad the atmosphere and the team made an impression on you. You're right about the food temperature, and I've already flagged it with the kitchen so your next visit lands just right. We'll be looking forward to it!";
+  let done=false;
+  new IntersectionObserver(e=>{if(e[0].isIntersecting&&!done){done=true;let i=0;el.innerHTML='<span class="tcursor"></span>';(function t(){if(i<full.length){el.innerHTML=full.slice(0,++i)+'<span class="tcursor"></span>';setTimeout(t,18)}})()}} ,{threshold:.5}).observe(el);
+})();
+
+/* ════════════════════════════════════════════════
+   INTERACTIVE REPLY GENERATOR
+   Parses the review, extracts the SPECIFIC things
+   the guest mentioned, and weaves them into a warm,
+   human-sounding reply that reads like a real owner.
+════════════════════════════════════════════════ */
+(function(){
+  const input=document.getElementById('reviewInput');
+  const btn=document.getElementById('draftBtn'),btnTxt=document.getElementById('draftBtnText');
+  const panel=document.getElementById('replyPanel'),box=document.getElementById('replyBox'),label=document.getElementById('replyLabel');
+  const copyBtn=document.getElementById('copyBtn');
+  let venue='restaurant',lastReply='';
+
+  // Sample reviews tailored to each venue type — [Glowing, Mixed, Let-down]
+  const SAMPLES={
+    restaurant:[
+      "Absolutely loved it. The truffle pasta was the best I've had in years and our server Marco was incredibly attentive. The atmosphere was warm and cozy. We'll 100% be back!",
+      "The food was genuinely great and the staff were friendly, but we waited nearly 40 minutes for our table despite having a reservation. For the price I expected smoother service.",
+      "Really disappointing visit. Our table wasn't ready even though we booked, the steak came out cold, and nobody seemed to care. Won't be coming back."
+    ],
+    hotel:[
+      "What a stay! The room was spotless, the bed was incredibly comfortable, and the view over the harbour was breathtaking. The front desk team couldn't have been more welcoming. We'll definitely return.",
+      "Lovely room and a great location, but check-in took almost half an hour and breakfast was cold by the time we got there. For the price, I expected a smoother stay.",
+      "Disappointing stay. Our room wasn't ready at check-in despite booking weeks ahead, the bathroom wasn't properly cleaned, and reception seemed indifferent. Won't be staying again."
+    ],
+    cafe:[
+      "My new favourite spot! The flat white was perfectly made and the barista was so friendly. Cozy atmosphere, lovely music, and great pastries. I'll be coming back every morning!",
+      "The coffee was lovely and the space is gorgeous, but there was a long queue and only one person working the counter. Waited ages for a simple latte.",
+      "Not great. The coffee was lukewarm and bitter, the table was sticky, and the staff seemed too busy to care. Expected much more. Won't be returning."
+    ]
+  };
+  const pills=[...document.querySelectorAll('.sample-pill')];
+  function updateSamples(){pills.forEach(p=>p.dataset.text=SAMPLES[venue][+p.dataset.i]);}
+  updateSamples();
+
+  document.querySelectorAll('.vt-btn').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('.vt-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');venue=b.dataset.venue;updateSamples();
+  }));
+  pills.forEach(p=>p.addEventListener('click',()=>{input.value=p.dataset.text;input.focus();}));
+
+  /* ---------- MULTILINGUAL SENTIMENT LEXICONS ---------- */
+  const POSL={
+    en:['great','amazing','incredible','excellent','love','loved','fantastic','wonderful','perfect','best','delicious','outstanding','brilliant','superb','enjoyed','beautiful','lovely','nice','good','pleased','happy','recommend','awesome','exceptional','impressed','gem','favourite','favorite','tasty','attentive','friendly','warm','cozy','cosy','spotless','memorable','stunning','delightful'],
+    sr:['odlič','odlic','izvrs','sjajn','savrš','savrs','ukus','ljubaz','prijat','divn','predivn','fenomenal','vrhuns','najbolj','vred','vrijed','zadovolj','preporu','svidel','svidjel','sviđa','svidja','top','super','fantastič','fantastic','prelep','prelijep','čist','cist','volim','volimo','obožava','genijal','perfekt','bravo','pohval','užival','uzival','wow','sjaj','čaroban','caroban','vrhunsk','besprekorn','besprijekorn','brz','dobr','zakon','presrećn','presretn'],
+    de:['gut','lecker','freundlich','toll','schön','schon','super','perfekt','empfehl','sauber','schnell','wunderbar','hervorrag','gemütlich','gemutlich','klasse','ausgezeichnet','beste','liebevoll','angenehm','köstlich','kostlich','zufrieden','genial','spitze','fantastisch','großartig','grossartig','aufmerksam','herzlich','wow','traumhaft'],
+    it:['ottim','buon','squisit','gentil','consigl','fantastic','delizios','perfett','accogli','pulit','veloce','meravigli','eccellent','bellissim','adorat','splendid','cordial','piaciut','favolos','strepitos','impeccabil','wow'],
+    es:['excelent','buen','rico','delicios','amable','recomien','recomend','perfect','acogedor','limpi','rápid','rapid','maravillos','encant','estupend','genial','increíbl','increibl','gustó','gusta','fantástic','fantastic','espectacular','impecable','wow'],
+    fr:['excellent','bon','bonne','délici','delici','aimable','recommand','parfait','chaleureux','propre','rapide','merveilleux','superbe','génial','genial','adoré','adore','accueillant','agréable','agreable','ravis','impeccable','fantastique','sublime','wow']
+  };
+  const NEGL={
+    en:['bad','terrible','awful','worst','horrible','disappointing','disappointed','slow','cold','rude','dirty','poor','mediocre','lacking','unfortunately','problem','issue','never','waste','unacceptable','wrong','missing','overpriced','bland','tasteless','ignored','rushed','noisy','cramped','dry','overcooked','careless','forgot','forgotten','complaint','avoid'],
+    sr:['loš','los','grozn','užasn','uzasn','razočar','razocar','spor','hladn','bezobraz','prljav','problem','nikad','skup','bljutav','presporo','predugo','neuredn','nažalost','nazalost','greška','greska','ignorisa','katastrof','očajn','ocajn','čekal','cekal','prevar','užas','uzas','ne preporu','razocarava','smrad','bezveze'],
+    de:['schlecht','furchtbar','schrecklich','enttäuscht','enttauscht','langsam','kalt','unfreundlich','schmutzig','dreckig','gewartet','problem','teuer','fade','leider','vergessen','ignoriert','katastrophe','laut','unhöflich','unhoflich'],
+    it:['male','terribile','pessimo','deluso','delusa','lento','freddo','scortese','sporco','aspettato','problema','caro','insipido','purtroppo','dimenticato','ignorato','rumoroso','pessima','peccato'],
+    es:['malo','mala','terrible','pésimo','pesimo','decepcionado','decepcionada','lento','frío','frio','grosero','sucio','esperamos','problema','caro','soso','lamentablemente','olvidaron','ignoraron','ruidoso','sucia'],
+    fr:['mauvais','terrible','horrible','déçu','decu','déçue','lent','froid','impoli','sale','attendu','problème','probleme','cher','fade','malheureusement','oublié','oublie','ignoré','ignore','bruyant']
+  };
+  const AND={en:'and',sr:'i',de:'und',it:'e',es:'y',fr:'et'};
+  function joinLang(arr,l){if(!arr.length)return'';if(arr.length===1)return arr[0];return arr.slice(0,-1).join(', ')+' '+(AND[l]||'and')+' '+arr[arr.length-1];}
+  function fill(s,m){return s.replace(/\{(\w+)\}/g,(_,k)=>m[k]!=null?m[k]:'');}
+  const pick=a=>a[Math.floor(Math.random()*a.length)];
+
+  /* Universal sentiment cues — work in ANY language (emoji, ratings, international words) */
+  const UNIV_POS=['super','perfect','perfekt','wow','😍','🥰','😋','🤩','🙌','👍','❤','♥','💯','🔥','😊','⭐','5/5','10/10','5 star','five star','100%','vip'];
+  const UNIV_NEG=['👎','😡','🤬','🤮','💩','😞','😠','😤','0/5','1/5','2/5','horrible','terrible','worst','avoid','scam','disgusting'];
+  /* Negation words (exact token match, boundary-safe across scripts) — flip a positive into a complaint */
+  const NEG_SET=new Set(['ne','nije','nisu','nismo','nisam','nikako','nimalo','niti','nemam','nemamo',
+    'not','no','never','without','cannot','cant',
+    'nicht','kein','keine','nie','niemals','ohne',
+    'non','mai','senza','nessun','nessuna',
+    'nao','não','nunca','sem',
+    'niet','geen','nooit','zonder',
+    'nie','bez','żaden','żadnej',
+    'nu','fără','fara',
+    'nem','nincs',
+    'nuk','aspak',
+    'inte','ingen','ikke','ei','ingenting',
+    'не','нет','ні','нема','без','няма','не',
+    'δεν','όχι','καθόλου',
+    'değil','yok','hayır','hiç']);
+
+  /* Serbian dialect: templates are written in EKAVICA (default).
+     If the review is ijekavica, convert the reply word-by-word. */
+  const IJE_MAP=[
+    ['lepim','lijepim'],['rečima','riječima'],['ulepšala','uljepšala'],
+    ['Preneću','Prenijeću'],['cenimo','cijenimo'],['cene','cijene'],
+    ['primedbu','primjedbu'],['prosleđujemo','prosljeđujemo'],['prosledili','proslijedili'],
+    ['voleli','voljeli'],['Voleli','Voljeli'],['odmerenoj','odmjerenoj'],['podelili','podijelili'],
+    ['vreme','vrijeme'],['zabeležili','zabilježili'],['Lepo','Lijepo'],['lepo','lijepo'],
+    ['ceo','cijeli'],['celu','cijelu'],
+    ['sledećoj','sljedećoj'],['sledećeg','sljedećeg'],['sledeću','sljedeću'],['sledeća','sljedeća'],['sledeći','sljedeći'],['sledeće','sljedeće'],
+    ['poseti','posjeti'],['posete','posjete'],['poseta','posjeta'],['posetu','posjetu'],
+    ['videti','vidjeti'],['verujem','vjerujem'],['besprekoran','besprijekoran']
+  ];
+  function ijekavize(s){IJE_MAP.forEach(([a,b])=>{s=s.replace(new RegExp('\\b'+a+'\\b','g'),b);});return s;}
+  // Distinctive ijekavica markers in the review text
+  const IJEK_MARK=['vrijeme','lijep','mlijek','dijete','ovdje','poslije','prije','cijen','svijet','dvije','čovjek','volio','htio','vidio','želio','bijel','vrijed','mjesec','mjesto','riječ','uvijek','nedjelj','sljedeć','posjet','vidjet','htjel','razumij'];
+
+  // Detect the review language: writing system first, then stopwords
+  function detectLang(text){
+    const s=text;
+    // Non-Latin scripts are unambiguous
+    if(/[가-힣]/.test(s))return 'ko';                 // Hangul
+    if(/[぀-ヿ]/.test(s))return 'ja';                 // Hiragana/Katakana
+    if(/[一-鿿]/.test(s)&&!/[぀-ヿ]/.test(s))return 'zh';
+    if(/[฀-๿]/.test(s))return 'th';                 // Thai
+    if(/[ऀ-ॿ]/.test(s))return 'hi';                 // Devanagari
+    if(/[؀-ۿ]/.test(s))return 'ar';                 // Arabic
+    if(/[֐-׿]/.test(s))return 'he';                 // Hebrew
+    if(/[Ͱ-Ͽ]/.test(s))return 'el';                 // Greek
+    const t=' '+s.toLowerCase().replace(/[^\p{L}\s]/gu,' ').replace(/\s+/g,' ')+' ';
+    // Cyrillic family — disambiguate by stopwords
+    if(/[Ѐ-ӿ]/.test(s)){
+      const CYR={
+        uk:['та','що','дуже','дякую','але','ми','було','чудово','дякуємо','обслуговування'],
+        bg:['много','благодаря','но','беше','страхотно','храна','обслужване','за','се','много'],
+        mk:['многу','фала','ама','беше','храна','услуга','одлично','многу','ние'],
+        sr:['хвала','али','било','особље','соба','врло','одлично','смо','ово','наш'],
+        ru:['очень','спасибо','но','было','отлично','еда','обслуживание','мы','очень','нам']
+      };
+      let b='ru',sc=0;for(const l in CYR){let c=0;CYR[l].forEach(w=>{if(t.includes(' '+w+' '))c++});if(c>sc){sc=c;b=l;}}return b;
+    }
+    // Latin-script stopword scoring
+    const SET={
+      sr:['hvala','jako','veoma','osoblje','konobar','vrlo','ali','bilo','baš','ćemo','ponovo','opet','hrana','kafa','čekali','sjajno','i','su','sam','mnogo','sve','ovde','bio','bila','preporučujem','ukusno','nismo','jeste'],
+      hr:['hvala','jako','osoblje','vrlo','ali','baš','sjajno','ukusno','preporučujem','ovdje','jako'],
+      sl:['zelo','ampak','osebje','priporočam','prijazno','sem','najlepša','lahko','prosim','in','so','sta','bomo','všeč'],
+      de:['und','das','war','sehr','nicht','freundlich','zimmer','essen','personal','wir','aber','danke','wieder','sind','ist','für'],
+      nl:['heel','het','was','niet','vriendelijk','kamer','eten','personeel','maar','dank','erg','lekker','wij','zeer','goede'],
+      fr:['très','personnel','nourriture','chambre','merci','mais','était','service','serveur','accueil','repas','nous','une','est','avec','pour'],
+      it:['molto','personale','cibo','camera','grazie','però','abbiamo','siamo','tavolo','gentile','tornare','cena','che','non','una','sono'],
+      es:['muy','personal','comida','gracias','pero','estaba','volveremos','servicio','camarero','cena','desayuno','una','fue','está','nos'],
+      pt:['muito','pessoal','comida','quarto','obrigado','mas','foi','serviço','garçom','jantar','uma','está','nós','ótimo'],
+      ro:['foarte','personalul','mâncarea','camera','mulțumesc','dar','a fost','serviciul','recomand','excelent','noi','este'],
+      pl:['bardzo','obsługa','pokój','jedzenie','ale','dziękuję','było','świetnie','polecam','smaczne','nie','jest'],
+      cs:['velmi','obsluha','pokoj','jídlo','ale','děkuji','bylo','skvělé','doporučuji','nebylo','je','jsme'],
+      sk:['veľmi','obsluha','izba','jedlo','ale','ďakujem','bolo','skvelé','odporúčam','nebolo','je','sme'],
+      hu:['nagyon','személyzet','szoba','étel','köszönöm','de','volt','kiszolgálás','ajánlom','nagyszerű','nem','egy'],
+      tr:['çok','personel','oda','yemek','teşekkür','ama','güzel','harika','servis','tavsiye','değil','bir'],
+      sq:['shumë','stafi','dhoma','ushqimi','faleminderit','por','ishte','shërbimi','rekomandoj','shkëlqyer','nuk'],
+      sv:['mycket','personalen','rummet','maten','tack','men','var','utmärkt','rekommenderar','trevlig','inte','och'],
+      no:['veldig','personalet','rommet','maten','takk','men','var','utmerket','anbefaler','hyggelig','ikke','og'],
+      da:['meget','personalet','værelset','maden','tak','men','var','fremragende','anbefaler','hyggelig','ikke','og'],
+      fi:['erittäin','henkilökunta','huone','ruoka','kiitos','mutta','oli','erinomainen','suosittelen','mukava','ei'],
+      et:['väga','personal','tuba','toit','aitäh','aga','oli','suurepärane','soovitan','meeldiv','ei'],
+      lv:['ļoti','personāls','istaba','ēdiens','paldies','bet','bija','lieliski','iesaku','jauki','nav'],
+      lt:['labai','personalas','kambarys','maistas','ačiū','bet','buvo','puikiai','rekomenduoju','malonus','ne'],
+      id:['sangat','staf','kamar','makanan','terima kasih','tapi','tetapi','enak','pelayanan','bagus','tidak'],
+      vi:['rất','nhân viên','phòng','món ăn','cảm ơn','nhưng','tuyệt','dịch vụ','ngon','không','rất'],
+      en:['the','and','was','very','great','food','room','staff','service','but','thank','we','really','friendly']
+    };
+    const sc={};for(const l in SET){let c=0;SET[l].forEach(w=>{if(t.includes(' '+w+' '))c++});sc[l]=c;}
+    let best='en',score=sc.en||0;
+    for(const l in SET){if(l==='en')continue;if(sc[l]>score){score=sc[l];best=l;}} // English wins ties
+    if(/[ćđ]/.test(t)&&(best==='en'||best==='sl'))best='sr'; // ć/đ are Serbian/Croatian, not Slovenian
+    if(/[ąęłńśźż]/.test(t))best='pl';
+    if(/[ăâîșț]/.test(t)&&best!=='tr')best='ro';
+    if(/[őű]/.test(t))best='hu';
+    if(/[ğış]/.test(t)&&/[çö]/.test(t))best='tr';
+    return best;
+  }
+
+  /* Compact sentiment lexicons for the extra languages (used by scoreClause) */
+  const EXTP={
+    sl:['odlično','super','prijazno','čisto','priporočam','izvrstno','lepo','hitro','odličen'],
+    nl:['geweldig','heerlijk','vriendelijk','uitstekend','perfect','aanrader','lekker','mooi','prima'],
+    pt:['ótimo','excelente','delicioso','simpático','perfeito','recomendo','maravilhoso','adorei','bom'],
+    ro:['excelent','delicios','amabil','perfect','recomand','minunat','frumos','bun','rapid'],
+    pl:['świetnie','pyszne','miło','polecam','doskonałe','wspaniałe','super','dobre','szybko'],
+    cs:['skvělé','výborné','příjemné','doporučuji','perfektní','vynikající','super','dobré','rychle'],
+    sk:['skvelé','výborné','príjemné','odporúčam','perfektné','vynikajúce','super','dobré','rýchlo'],
+    hu:['kiváló','finom','kedves','ajánlom','tökéletes','nagyszerű','szuper','jó','gyors'],
+    tr:['harika','lezzetli','güzel','mükemmel','tavsiye','nefis','hızlı','temiz','çok iyi'],
+    sq:['shkëlqyer','shijshme','mrekullueshëm','rekomandoj','perfekt','bukur','shpejt','pastër','mirë'],
+    sv:['utmärkt','gott','trevlig','perfekt','rekommenderar','fantastiskt','fint','bra','snabbt'],
+    no:['utmerket','godt','hyggelig','perfekt','anbefaler','fantastisk','fint','bra','raskt'],
+    da:['fremragende','lækkert','hyggelig','perfekt','anbefaler','fantastisk','fint','godt','hurtigt'],
+    fi:['erinomainen','herkullinen','ystävällinen','täydellinen','suosittelen','upea','hieno','hyvä','nopea'],
+    et:['suurepärane','maitsev','sõbralik','täiuslik','soovitan','imeline','kena','hea','kiire'],
+    lv:['lielisks','garšīgs','laipns','perfekts','iesaku','brīnišķīgs','jauks','labs','ātrs'],
+    lt:['puikus','skanus','malonus','tobulas','rekomenduoju','nuostabus','gražus','geras','greitas'],
+    id:['enak','ramah','sempurna','rekomendasi','luar biasa','bagus','cepat','bersih','mantap'],
+    vi:['tuyệt','ngon','thân thiện','hoàn hảo','giới thiệu','tuyệt vời','đẹp','tốt','nhanh'],
+    el:['εξαιρετικό','νόστιμο','ευγενικό','τέλειο','προτείνω','υπέροχο','ωραίο','καλό','γρήγορο'],
+    ru:['отлично','вкусно','приветливо','идеально','рекомендую','превосходно','прекрасно','хорошо','быстро'],
+    uk:['чудово','смачно','привітно','ідеально','рекомендую','прекрасно','гарно','добре','швидко'],
+    bg:['отлично','вкусно','любезно','перфектно','препоръчвам','страхотно','хубаво','добре','бързо'],
+    mk:['одлично','вкусно','љубезно','совршено','препорачувам','прекрасно','убаво','добро','брзо'],
+    ar:['رائع','لذيذ','ودود','ممتاز','أنصح','جميل','نظيف','سريع','مذهل'],
+    he:['מצוין','טעים','אדיב','מושלם','ממליץ','נפלא','יפה','טוב','מהיר'],
+    zh:['很棒','美味','友好','完美','推荐','优秀','漂亮','满意','喜欢'],
+    ja:['素晴らしい','美味しい','おいしい','親切','完璧','おすすめ','最高','綺麗','良い'],
+    ko:['훌륭','맛있','친절','완벽','추천','최고','깨끗','좋','만족'],
+    th:['ยอดเยี่ยม','อร่อย','เป็นมิตร','สมบูรณ์แบบ','แนะนำ','ดีมาก','สวย','ดี','ประทับใจ'],
+    hi:['बढ़िया','स्वादिष्ट','मिलनसार','बेहतरीन','शानदार','सुंदर','अच्छा','तेज़','पसंद']
+  };
+  const EXTN={
+    sl:['slabo','grozno','počasi','umazano','nevljudno','žal','hladno','razočaran'],
+    nl:['slecht','vreselijk','traag','vies','onbeleefd','helaas','koud','teleurgesteld'],
+    pt:['ruim','péssimo','terrível','lento','sujo','grosseiro','infelizmente','frio','decepcionado'],
+    ro:['prost','groaznic','încet','murdar','nepoliticos','din păcate','rece','dezamăgit','rău'],
+    pl:['słabo','okropnie','wolno','brudno','niegrzecznie','niestety','zimne','rozczarowany','źle'],
+    cs:['špatné','hrozné','pomalu','špinavé','neslušné','bohužel','studené','zklamán','nebylo'],
+    sk:['zlé','hrozné','pomaly','špinavé','neslušné','bohužiaľ','studené','sklamaný','nebolo'],
+    hu:['rossz','szörnyű','lassú','piszkos','udvariatlan','sajnos','hideg','csalódott'],
+    tr:['kötü','berbat','yavaş','kirli','kaba','maalesef','soğuk','hayal kırıklığı'],
+    sq:['keq','tmerrshëm','ngadalë','pisët','vrazhdë','fatkeqësisht','ftohtë','zhgënjyer'],
+    sv:['dåligt','hemskt','långsamt','smutsigt','oartigt','tyvärr','kallt','besviken'],
+    no:['dårlig','forferdelig','sakte','skittent','uhøflig','dessverre','kaldt','skuffet'],
+    da:['dårligt','forfærdeligt','langsomt','beskidt','uhøfligt','desværre','koldt','skuffet'],
+    fi:['huono','kamala','hidas','likainen','epäkohtelias','valitettavasti','kylmä','pettynyt'],
+    et:['halb','kohutav','aeglane','räpane','ebaviisakas','kahjuks','külm','pettunud'],
+    lv:['slikts','briesmīgs','lēns','netīrs','rupjš','diemžēl','auksts','vīlies'],
+    lt:['blogas','siaubingas','lėtas','nešvarus','nemandagus','deja','šaltas','nusivylęs'],
+    id:['buruk','parah','lambat','kotor','kasar','sayangnya','dingin','kecewa'],
+    vi:['tệ','kinh khủng','chậm','bẩn','thô lỗ','tiếc','lạnh','thất vọng'],
+    el:['κακό','απαίσιο','αργό','βρώμικο','αγενές','δυστυχώς','κρύο','απογοητευμένος'],
+    ru:['плохо','ужасно','медленно','грязно','грубо','сожалению','холодно','разочарован'],
+    uk:['погано','жахливо','повільно','брудно','грубо','жаль','холодно','розчарований'],
+    bg:['лошо','ужасно','бавно','мръсно','грубо','съжаление','студено','разочарован'],
+    mk:['лошо','ужасно','бавно','валкано','грубо','жал','ладно','разочаран'],
+    ar:['سيئ','فظيع','بطيء','متسخ','وقح','للأسف','بارد','خيبة'],
+    he:['גרוע','נורא','איטי','מלוכלך','גס','לצערנו','קר','מאוכזב'],
+    zh:['差','糟糕','慢','脏','粗鲁','可惜','失望','冷淡'],
+    ja:['悪い','ひどい','遅い','汚い','失礼','残念','冷たい','がっかり'],
+    ko:['나쁘','끔찍','느리','더럽','무례','아쉽','차갑','실망'],
+    th:['แย่','น่ากลัว','ช้า','สกปรก','หยาบคาย','เสียดาย','ผิดหวัง'],
+    hi:['ख़राब','भयानक','धीमा','गंदा','असभ्य','दुर्भाग्य','ठंडा','निराश']
+  };
+
+  // multilingual keyword -> language-neutral item id
+  const ITEMS=[
+    [['pasta','spaghetti','tagliatelle','carbonara','risotto','pastu','nudeln','pâtes','pates'],'pasta'],
+    [['pizza','pizzu'],'pizza'],
+    [['steak','biftek','bistecca','filete','bistec','ribeye'],'steak'],
+    [['dessert','cake','tiramisu','desert','kolač','kolac','torta','nachtisch','kuchen','dolce','postre','gâteau','gateau'],'dessert'],
+    [['coffee','espresso','cappuccino','latte','flat white','kafa','kafu','kava','kaffee','caffè','caffe','café','cafe'],'coffee'],
+    [['wine','vino','wein','vin','prosecco'],'wine'],
+    [['breakfast','doručak','dorucak','frühstück','fruhstuck','colazione','desayuno','petit-déjeuner','petit dejeuner'],'breakfast'],
+    [['room','suite','bed','soba','sobu','krevet','zimmer','bett','camera','letto','habitación','habitacion','chambre'],'room'],
+    [['view','pogled','aussicht','vista','vistas','vue'],'view'],
+    [['pool','bazen','piscina','piscine'],'pool'],
+    [['spa','wellness'],'spa'],
+    [['atmosphere','ambiance','ambience','vibe','atmosfera','ambijent','atmosphäre','atmosphare','stimmung','ambiente','atmosphère'],'atmosphere'],
+    [['staff','waiter','waitress','server','team','host','barista','osoblje','konobar','konobarica','personal','bedienung','kellner','cameriere','personale','camarero','serveur','personnel','équipe','equipe','equipo'],'team'],
+    [['service','usluga','uslugu','dienst','servizio','servicio'],'service'],
+    [['wait','waited','waiting','queue','čekanje','cekanje','čekali','cekali','warten','gewartet','schlange','attesa','aspettato','espera','attente','attendu'],'wait'],
+    [['reservation','booking','booked','table','sto','stol','rezervacija','tisch','reservierung','tavolo','prenotazione','mesa','reserva','réservation','check-in','checkin','reception','recepcija'],'table'],
+    [['clean','dirty','spotless','čisto','cisto','prljavo','prljav','sauber','schmutzig','dreckig','pulito','sporco','limpio','sucio','propre','sale','čistoća','cistoca','sauberkeit'],'cleanliness'],
+    [['location','lokacija','lokaciju','lage','posizione','ubicación','ubicacion','emplacement'],'location'],
+    [['price','value','prices','cijena','cena','vrijednost','preis','prezzo','prix','precio'],'value'],
+    [['food','meal','dish','dishes','flavour','flavor','taste','hrana','hranu','jelo','jela','ukus','obrok','essen','gericht','cibo','piatto','comida','plato','nourriture','plat','repas','cuisine'],'food']
+  ];
+  const TOPIC={food:'Food',pasta:'Food',pizza:'Food',steak:'Food',dessert:'Food',breakfast:'Food',coffee:'Drinks',wine:'Drinks',team:'Service',service:'Service',table:'Wait time',wait:'Wait time',room:'Room',view:'Atmosphere',pool:'Room',spa:'Room',atmosphere:'Atmosphere',cleanliness:'Cleanliness',location:'Location',value:'Value'};
+
+  function findItems(text){
+    const t=' '+text.toLowerCase()+' ',found=[],seen=new Set();
+    for(const[keys,id]of ITEMS){
+      if(seen.has(id))continue;
+      for(const k of keys){if(t.includes(k)){found.push(id);seen.add(id);break;}}
+    }
+    return found;
+  }
+  function scoreClause(c,lang){
+    const t=c.toLowerCase();let p=0,n=0;
+    // Detect negation in this clause (exact token match avoids false hits like "nezaboravno")
+    const toks=t.split(/[^\p{L}'’]+/u).filter(Boolean);
+    const negated=toks.some(w=>NEG_SET.has(w))||/n['’]t\b/.test(t);
+    (POSL[lang]||EXTP[lang]||POSL.en).forEach(w=>{if(t.includes(w)){negated?n++:p++;}}); // negated praise = complaint
+    (NEGL[lang]||EXTN[lang]||NEGL.en).forEach(w=>{if(t.includes(w)){if(!negated)n++;}}); // "not bad" -> stays neutral
+    UNIV_POS.forEach(w=>{if(t.includes(w)){negated?n++:p++;}});
+    UNIV_NEG.forEach(w=>{if(t.includes(w))n++;});
+    if(!negated){
+      if(/\b(40|30|45|50|60)\s*(min|minut)/.test(t)||/long wait|too long|ages|forever|presporo|predugo|zu lange|troppo|demasiado|trop long/.test(t))n++;
+      if(/\bcold\b|hladn|kalt|freddo|frío|frio|froid/.test(t))n++;
+    }
+    return{p,n};
+  }
+  function analyze(text){
+    const lang=detectLang(text);
+    const clauses=text.split(/\s+(?:but|however|although|though|except|ali|aber|ma|però|pero|mais)\s+|;|\.\s+/iu);
+    let p=0,n=0;const praise=[],issues=[];
+    clauses.forEach(c=>{
+      const{p:cp,n:cn}=scoreClause(c,lang);p+=cp;n+=cn;
+      const items=findItems(c);
+      if(cn>cp)items.forEach(i=>{if(!issues.includes(i))issues.push(i)});
+      else if(cp>0)items.forEach(i=>{if(!praise.includes(i))praise.push(i)});
+    });
+    // negative if more negatives; positive if more positives (or none at all); mixed only when both sides present equally
+    let sentiment = n>p ? 'negative' : p>n ? 'positive' : (p>0 ? 'mixed' : 'positive');
+    if(/\b(but|however|although)\b|\b(ali|aber|ma|pero|mais)\b|però/i.test(text)&&sentiment==='positive'&&n>0)sentiment='mixed';
+    const all=findItems(text);
+    if(sentiment==='positive'&&!praise.length)all.forEach(i=>praise.push(i));
+    if(sentiment==='negative'&&!issues.length)all.forEach(i=>issues.push(i));
+    if(sentiment==='mixed'){if(!praise.length&&all.length)praise.push(all[0]);if(!issues.length&&all.length>1)issues.push(all[all.length-1]);}
+    const tl=text.toLowerCase();
+    const wont=/won'?t (be )?(back|return|coming)|never (again|come back|return)|nećemo|necemo|nikad (više|vise)|ne vraćamo|ne vracamo|nicht wieder|nie wieder|non torner|mai più|mai piu|no volver|nunca m|jamais|ne reviendr/.test(tl);
+    const willReturn=!wont&&/be back|come back|return|again|next time|revisit|vraćamo|vracamo|vratit|vrati[ćc]emo|ponovo|opet|wieder|nochmal|nächstes|torner|di nuovo|ancora|volver|de nuevo|otra vez|reviendr|à nouveau|encore/.test(tl);
+    const topics=[];
+    [...praise,...issues].forEach(id=>{const tp=TOPIC[id];if(tp&&!topics.includes(tp))topics.push(tp);});
+    if(!topics.length)topics.push('General');
+    const dialect=IJEK_MARK.some(w=>tl.includes(w))?'ije':'ek'; // Serbian: ekavica default, ijekavica if markers found
+    return{sentiment,praise:praise.slice(0,2),issues:issues.slice(0,2),willReturn,topics,lang,dialect};
+  }
+
+  /* ---------- LOCALIZED ITEM PHRASES (per language) ---------- */
+  const LOC={
+    en:{food:'the food',pasta:'the pasta',pizza:'the pizza',steak:'the steak',dessert:'the dessert',coffee:'the coffee',wine:'the wine',breakfast:'breakfast',room:'the room',view:'the view',pool:'the pool',spa:'the spa',atmosphere:'the atmosphere',team:'our team',service:'the service',wait:'the wait',table:'your table',cleanliness:'the cleanliness',location:'the location',value:'the value'},
+    sr:{food:'hranu',pasta:'pastu',pizza:'pizzu',steak:'biftek',dessert:'desert',coffee:'kafu',wine:'vino',breakfast:'doručak',room:'sobu',view:'pogled',pool:'bazen',spa:'spa',atmosphere:'ambijent',team:'naše osoblje',service:'uslugu',wait:'čekanje',table:'vaš sto',cleanliness:'čistoću',location:'lokaciju',value:'odnos cene i kvaliteta'},
+    de:{food:'das Essen',pasta:'die Pasta',pizza:'die Pizza',steak:'das Steak',dessert:'der Nachtisch',coffee:'der Kaffee',wine:'der Wein',breakfast:'das Frühstück',room:'das Zimmer',view:'die Aussicht',pool:'der Pool',spa:'der Spa-Bereich',atmosphere:'die Atmosphäre',team:'unser Team',service:'der Service',wait:'die Wartezeit',table:'Ihr Tisch',cleanliness:'die Sauberkeit',location:'die Lage',value:'das Preis-Leistungs-Verhältnis'},
+    it:{food:'il cibo',pasta:'la pasta',pizza:'la pizza',steak:'la bistecca',dessert:'il dolce',coffee:'il caffè',wine:'il vino',breakfast:'la colazione',room:'la camera',view:'la vista',pool:'la piscina',spa:'la spa',atmosphere:"l'atmosfera",team:'il nostro team',service:'il servizio',wait:"l'attesa",table:'il vostro tavolo',cleanliness:'la pulizia',location:'la posizione',value:'il rapporto qualità-prezzo'},
+    es:{food:'la comida',pasta:'la pasta',pizza:'la pizza',steak:'el filete',dessert:'el postre',coffee:'el café',wine:'el vino',breakfast:'el desayuno',room:'la habitación',view:'las vistas',pool:'la piscina',spa:'el spa',atmosphere:'el ambiente',team:'nuestro equipo',service:'el servicio',wait:'la espera',table:'su mesa',cleanliness:'la limpieza',location:'la ubicación',value:'la relación calidad-precio'},
+    fr:{food:'la cuisine',pasta:'les pâtes',pizza:'la pizza',steak:'le steak',dessert:'le dessert',coffee:'le café',wine:'le vin',breakfast:'le petit-déjeuner',room:'la chambre',view:'la vue',pool:'la piscine',spa:'le spa',atmosphere:"l'ambiance",team:'notre équipe',service:'le service',wait:"l'attente",table:'votre table',cleanliness:'la propreté',location:"l'emplacement",value:'le rapport qualité-prix'}
+  };
+
+  /* ---------- VENUE VOCABULARY (per language) ---------- */
+  const V={
+    en:{
+      restaurant:{team:'the kitchen and the floor team',posBack:["We can't wait to welcome you back to the table.","Looking forward to cooking for you again very soon."],posSoft:["We'd love to have you dine with us again soon.","Hope to set a table for you again before long."],mixBack:["Come back and let us cook for you again. I'm sure we'll get it spot on next time.","We'd really love a second chance to show you what we can do."],negFix:["next time you dine with us","on your next visit"],sign:["\n\nWarmly,\nThe Team","\n\nKind regards,\nThe Kitchen & Floor Team"]},
+      hotel:{team:'the front desk and the housekeeping team',posBack:["We can't wait to welcome you back for another stay.","It would be a real pleasure to host you again."],posSoft:["We hope to welcome you back for another stay soon.","We'd love the chance to host you again before long."],mixBack:["I hope you'll give us another stay. I'm confident the next one will be a smooth one.","We'd welcome the chance to host you again and get every detail right."],negFix:["on your next stay","the next time you're with us"],sign:["\n\nWarm regards,\nReception & Management","\n\nKind regards,\nGuest Relations"]},
+      cafe:{team:'the whole crew',posBack:["We can't wait to make your next coffee.","Pop in again soon. Your usual will be ready."],posSoft:["We'd love to see you again over a coffee soon.","Hope to have you back in for a cup before long."],mixBack:["Swing by again soon. I think the next visit will win you over.","We'd love a second chance to get your visit just right."],negFix:["next time you're in","on your next visit"],sign:["\n\nWarmly,\nThe Team","\n\nSee you soon,\nThe Café Team"]}
+    },
+    sr:{
+      restaurant:{team:'kuhinju i osoblje u sali',posBack:["Jedva čekamo da vas ponovo ugostimo za našim stolom.","Radujemo se vašoj sledećoj poseti."],posSoft:["Bilo bi nam zadovoljstvo da vas ponovo ugostimo.","Nadamo se da ćemo vas uskoro opet videti."],mixBack:["Vratite nam se, sledeći put ćemo sve dovesti do savršenstva.","Voleli bismo priliku da vam pokažemo ono najbolje od nas."],negFix:["prilikom vaše sledeće posete","sledeći put kada nam dođete"],sign:["\n\nSrdačno,\nVaš tim","\n\nS poštovanjem,\nUprava"]},
+      hotel:{team:'recepciju i osoblje',posBack:["Jedva čekamo da vas ponovo ugostimo.","Bila bi nam čast da vas opet primimo."],posSoft:["Nadamo se da ćete nam se uskoro vratiti.","Voleli bismo da vas ponovo ugostimo."],mixBack:["Nadamo se da ćete nam pružiti još jednu priliku, sledeći boravak će biti besprekoran.","Rado bismo vas ponovo ugostili i ispravili svaki detalj."],negFix:["prilikom vašeg sledećeg boravka","sledeći put kada budete kod nas"],sign:["\n\nS poštovanjem,\nRecepcija i uprava","\n\nSrdačno,\nVaš hotelski tim"]},
+      cafe:{team:'celu ekipu',posBack:["Jedva čekamo da vam spremimo sledeću kafu.","Svratite nam ponovo, vaša omiljena kafa vas čeka."],posSoft:["Voleli bismo da vas uskoro opet vidimo uz kafu.","Nadamo se da ćete nam se uskoro vratiti."],mixBack:["Svratite ponovo, verujem da će vas sledeća poseta osvojiti.","Rado bismo dobili još jednu priliku da sve bude kako treba."],negFix:["prilikom vaše sledeće posete","sledeći put kada svratite"],sign:["\n\nSrdačno,\nVaš tim","\n\nVidimo se uskoro,\nEkipa kafića"]}
+    },
+    de:{
+      restaurant:{team:'die Küche und das Serviceteam',posBack:["Wir freuen uns darauf, Sie wieder bei uns begrüßen zu dürfen.","Wir können es kaum erwarten, wieder für Sie zu kochen."],posSoft:["Wir würden uns freuen, Sie bald wieder bewirten zu dürfen.","Hoffentlich dürfen wir Sie bald wieder begrüßen."],mixBack:["Kommen Sie gern wieder, beim nächsten Mal machen wir es perfekt.","Wir würden Ihnen gern zeigen, was wir wirklich können."],negFix:["bei Ihrem nächsten Besuch","wenn Sie uns wieder besuchen"],sign:["\n\nHerzliche Grüße,\nIhr Team","\n\nMit freundlichen Grüßen,\nDie Geschäftsleitung"]},
+      hotel:{team:'die Rezeption und das Housekeeping-Team',posBack:["Wir freuen uns darauf, Sie zu einem weiteren Aufenthalt begrüßen zu dürfen.","Es wäre uns eine Freude, Sie wieder bei uns zu haben."],posSoft:["Wir hoffen, Sie bald wieder bei uns begrüßen zu dürfen.","Gern dürfen wir Sie wieder als Gast empfangen."],mixBack:["Ich hoffe, Sie geben uns einen weiteren Aufenthalt, beim nächsten Mal wird alles reibungslos sein.","Gern empfangen wir Sie erneut und achten auf jedes Detail."],negFix:["bei Ihrem nächsten Aufenthalt","wenn Sie das nächste Mal bei uns sind"],sign:["\n\nMit freundlichen Grüßen,\nRezeption & Geschäftsleitung","\n\nHerzliche Grüße,\nIhr Hotelteam"]},
+      cafe:{team:'das ganze Team',posBack:["Wir freuen uns schon auf Ihren nächsten Kaffee.","Schauen Sie bald wieder vorbei, Ihr Lieblingskaffee wartet."],posSoft:["Wir würden uns freuen, Sie bald wieder auf einen Kaffee zu sehen.","Hoffentlich dürfen wir Sie bald wieder begrüßen."],mixBack:["Schauen Sie bald wieder vorbei, der nächste Besuch wird Sie überzeugen.","Gern bekommen wir eine zweite Chance, alles richtig zu machen."],negFix:["bei Ihrem nächsten Besuch","wenn Sie wieder vorbeischauen"],sign:["\n\nHerzliche Grüße,\nIhr Team","\n\nBis bald,\nIhr Café-Team"]}
+    },
+    it:{
+      restaurant:{team:'la cucina e la sala',posBack:["Non vediamo l'ora di accogliervi di nuovo al nostro tavolo.","Saremo felici di cucinare ancora per voi molto presto."],posSoft:["Ci farebbe piacere avervi di nuovo come ospiti.","Speriamo di rivedervi presto."],mixBack:["Tornate a trovarci, la prossima volta sarà perfetta.","Ci piacerebbe avere una seconda occasione per mostrarvi il meglio di noi."],negFix:["alla vostra prossima visita","la prossima volta che verrete"],sign:["\n\nCordialmente,\nIl Team","\n\nCon i migliori saluti,\nLa Direzione"]},
+      hotel:{team:'la reception e il team',posBack:["Non vediamo l'ora di accogliervi per un nuovo soggiorno.","Sarebbe un vero piacere ospitarvi di nuovo."],posSoft:["Speriamo di rivedervi presto per un nuovo soggiorno.","Ci farebbe piacere ospitarvi ancora."],mixBack:["Spero ci darete un'altra occasione, il prossimo soggiorno sarà impeccabile.","Saremo lieti di ospitarvi di nuovo e curare ogni dettaglio."],negFix:["al vostro prossimo soggiorno","la prossima volta che sarete da noi"],sign:["\n\nCordiali saluti,\nReception e Direzione","\n\nA presto,\nIl Team dell'hotel"]},
+      cafe:{team:'tutto il team',posBack:["Non vediamo l'ora di prepararvi il prossimo caffè.","Passate a trovarci, il vostro caffè preferito vi aspetta."],posSoft:["Ci farebbe piacere rivedervi presto per un caffè.","Speriamo di rivedervi presto."],mixBack:["Tornate a trovarci, la prossima visita vi conquisterà.","Ci piacerebbe una seconda occasione per fare le cose per bene."],negFix:["alla vostra prossima visita","la prossima volta che passerete"],sign:["\n\nCordialmente,\nIl Team","\n\nA presto,\nIl Team del caffè"]}
+    },
+    es:{
+      restaurant:{team:'la cocina y el equipo de sala',posBack:["Estaremos encantados de recibiros de nuevo en nuestra mesa.","No vemos la hora de volver a cocinar para vosotros muy pronto."],posSoft:["Nos encantaría volver a teneros como clientes.","Esperamos veros pronto de nuevo."],mixBack:["Volved a visitarnos, la próxima vez será perfecta.","Nos encantaría una segunda oportunidad para mostraros lo mejor de nosotros."],negFix:["en vuestra próxima visita","la próxima vez que vengáis"],sign:["\n\nUn cordial saludo,\nEl Equipo","\n\nAtentamente,\nLa Dirección"]},
+      hotel:{team:'la recepción y el equipo',posBack:["Estaremos encantados de recibiros para una nueva estancia.","Sería un verdadero placer alojaros de nuevo."],posSoft:["Esperamos volver a recibiros pronto.","Nos encantaría alojaros de nuevo."],mixBack:["Espero que nos deis otra oportunidad, la próxima estancia será impecable.","Estaremos encantados de alojaros de nuevo y cuidar cada detalle."],negFix:["en vuestra próxima estancia","la próxima vez que estéis con nosotros"],sign:["\n\nUn cordial saludo,\nRecepción y Dirección","\n\nHasta pronto,\nEl equipo del hotel"]},
+      cafe:{team:'todo el equipo',posBack:["No vemos la hora de prepararos vuestro próximo café.","Pasaos pronto, vuestro café de siempre os espera."],posSoft:["Nos encantaría volver a veros pronto con un café.","Esperamos veros pronto de nuevo."],mixBack:["Pasaos otra vez, estoy seguro de que la próxima visita os conquistará.","Nos encantaría una segunda oportunidad para hacerlo bien."],negFix:["en vuestra próxima visita","la próxima vez que paséis"],sign:["\n\nUn cordial saludo,\nEl Equipo","\n\nHasta pronto,\nEl equipo de la cafetería"]}
+    },
+    fr:{
+      restaurant:{team:"la cuisine et l'équipe de salle",posBack:["Nous serions ravis de vous accueillir de nouveau à notre table.","Nous avons hâte de cuisiner à nouveau pour vous très bientôt."],posSoft:["Ce serait un plaisir de vous recevoir à nouveau.","Nous espérons vous revoir bientôt."],mixBack:["Revenez nous voir, la prochaine fois sera parfaite.","Nous aimerions une seconde occasion de vous montrer le meilleur de nous-mêmes."],negFix:["lors de votre prochaine visite","la prochaine fois que vous viendrez"],sign:["\n\nCordialement,\nL'équipe","\n\nBien à vous,\nLa Direction"]},
+      hotel:{team:"la réception et l'équipe",posBack:["Nous serions ravis de vous accueillir pour un nouveau séjour.","Ce serait un réel plaisir de vous recevoir à nouveau."],posSoft:["Nous espérons vous revoir bientôt pour un nouveau séjour.","Nous aimerions vous accueillir de nouveau."],mixBack:["J'espère que vous nous donnerez un autre séjour, le prochain sera impeccable.","Nous serions heureux de vous accueillir à nouveau et de soigner chaque détail."],negFix:["lors de votre prochain séjour","la prochaine fois que vous serez chez nous"],sign:["\n\nCordialement,\nRéception et Direction","\n\nÀ bientôt,\nL'équipe de l'hôtel"]},
+      cafe:{team:"toute l'équipe",posBack:["Nous avons hâte de vous préparer votre prochain café.","Repassez bientôt, votre café préféré vous attend."],posSoft:["Nous serions ravis de vous revoir bientôt autour d'un café.","Nous espérons vous revoir bientôt."],mixBack:["Repassez nous voir, je suis sûr que la prochaine visite vous conquerra.","Nous aimerions une seconde chance de bien faire les choses."],negFix:["lors de votre prochaine visite","la prochaine fois que vous passerez"],sign:["\n\nCordialement,\nL'équipe","\n\nÀ bientôt,\nL'équipe du café"]}
+    }
+  };
+
+  /* ---------- REPLY TEMPLATES (per language) ---------- */
+  const L={
+    en:{
+      open_pos:["Wow, thank you so much for this! ","This genuinely made our day. Thank you! ","What a lovely thing to read. Thank you! "],
+      pos_items:["I'm so glad {items} hit the mark. I'll be sure to pass that on to {team}.","It really means a lot to hear that {items} stood out, and {team} will be thrilled.","Hearing that {items} made such an impression is exactly what we hope for."],
+      pos_none:["It means a great deal to know your experience with us was such a good one."],
+      open_neg:["I'm so sorry your visit fell short, and thank you for telling us. ","I'm really sorry to read this, and I appreciate your honesty. ","This isn't the experience we want for any of our guests, and I'm sorry. "],
+      neg_items:["What you describe about {items} simply isn't our standard.","Honestly, {items} should never have let you down like that.","Getting {items} wrong is on us, and I won't make excuses."],
+      neg_none:["What you describe simply isn't the standard we hold ourselves to."],
+      fix:["I'd genuinely like to put this right {fix}. Please reach out to us directly and I'll look into it personally.","If you'll give us another chance, I'd love to make this right {fix}."],
+      open_mix:["Thank you for such a fair and thoughtful review. ","I really appreciate the honest write-up. ","Thanks for taking the time to share the full picture. "],
+      mix_praise:["I'm really pleased {items} landed well.","Glad to hear {items} worked for you."],
+      mix_issue:["You're absolutely right about {items}, and it's something we're actively working on.","That said, {items} clearly needs attention, and we're on it."],
+      mix_none:["Your notes on what could be better have gone straight to {team}."]
+    },
+    sr:{
+      open_pos:["Mnogo vam hvala na ovako lepim rečima! ","Vaša recenzija nam je ulepšala dan. Hvala vam! ","Mnogo nam je drago zbog vašeg utiska. Hvala! "],
+      pos_items:["Posebno nam je drago što ste pohvalili {items}. Preneću to {team}.","Hvala što ste izdvojili {items}. To nam mnogo znači."],
+      pos_none:["Mnogo nam znači što je vaše iskustvo kod nas bilo ovako dobro."],
+      open_neg:["Mnogo nam je žao što vaše iskustvo nije bilo na nivou, i hvala vam na iskrenosti. ","Iskreno nam je žao zbog ovakvog iskustva i cenimo vašu otvorenost. ","Ovo nije iskustvo koje želimo za naše goste, i izvinjavamo se. "],
+      neg_items:["Vašu primedbu na {items} shvatamo veoma ozbiljno i odmah je prosleđujemo timu.","Žao nam je zbog svega što ste naveli; to nije standard koji želimo."],
+      neg_none:["Ono što opisujete nije standard koji želimo da pružamo."],
+      fix:["Veoma bismo voleli da to ispravimo {fix}. Javite nam se direktno i lično ću se pobrinuti za to.","Ako nam pružite još jednu priliku, rado ćemo sve ispraviti {fix}."],
+      open_mix:["Hvala vam na ovako iskrenoj i odmerenoj recenziji. ","Cenimo što ste podelili i dobro i ono što može bolje. ","Hvala što ste odvojili vreme da napišete ceo utisak. "],
+      mix_praise:["Posebno nam je drago što ste pohvalili {items}.","Lepo je čuti da ste izdvojili {items}."],
+      mix_issue:["Vašu primedbu na {items} smo zabeležili i već radimo na tome.","Vašu napomenu na {items} ozbiljno shvatamo i poboljšavamo to."],
+      mix_none:["Vaše napomene smo prosledili timu kako bismo bili još bolji."]
+    },
+    de:{
+      open_pos:["Wow, vielen Dank für diese Worte! ","Das hat uns wirklich den Tag versüßt. Vielen Dank! ","Was für eine schöne Rückmeldung. Vielen Dank! "],
+      pos_items:["Es freut uns sehr, dass {items} so gut bei Ihnen angekommen ist. Wir geben das gern an {team} weiter.","Schön zu hören, dass {items} überzeugt hat."],
+      pos_none:["Es bedeutet uns viel zu wissen, dass Ihr Erlebnis bei uns so schön war."],
+      open_neg:["Es tut uns sehr leid, dass Ihr Erlebnis nicht überzeugt hat, und danke, dass Sie es uns sagen. ","Es tut uns aufrichtig leid, das zu lesen, und wir schätzen Ihre Offenheit. ","Das ist nicht das Erlebnis, das wir unseren Gästen bieten möchten, und das tut uns leid. "],
+      neg_items:["Dass {items} Sie enttäuscht hat, ist nicht in Ordnung.","Was Sie schildern, entspricht bei {items} nicht unserem Anspruch."],
+      neg_none:["Was Sie beschreiben, entspricht nicht dem Standard, den wir an uns selbst stellen."],
+      fix:["Das möchten wir unbedingt wiedergutmachen, {fix}. Melden Sie sich gern direkt bei uns, ich kümmere mich persönlich darum.","Wenn Sie uns noch eine Chance geben, machen wir es {fix} wieder gut."],
+      open_mix:["Vielen Dank für diese faire und durchdachte Bewertung. ","Wir schätzen Ihre ehrliche Rückmeldung sehr. ","Danke, dass Sie sich die Zeit für ein vollständiges Bild genommen haben. "],
+      mix_praise:["Es freut uns, dass {items} überzeugt hat.","Schön, dass {items} für Sie gepasst hat."],
+      mix_issue:["Sie haben völlig recht, was {items} angeht, und wir arbeiten bereits daran.","Dass {items} mehr Aufmerksamkeit braucht, ist uns bewusst, und wir kümmern uns darum."],
+      mix_none:["Ihre Hinweise haben wir direkt an {team} weitergegeben."]
+    },
+    it:{
+      open_pos:["Wow, grazie mille per queste parole! ","Ci avete rallegrato la giornata. Grazie! ","Che bella recensione. Grazie! "],
+      pos_items:["Siamo davvero felici che {items} vi sia piaciuto tanto. Lo riferirò a {team}.","È un piacere sapere che {items} vi ha colpito."],
+      pos_none:["Significa molto sapere che la vostra esperienza da noi è stata così piacevole."],
+      open_neg:["Ci dispiace molto che la vostra esperienza non sia stata all'altezza, e grazie per avercelo detto. ","Ci dispiace sinceramente leggere questo e apprezziamo la vostra franchezza. ","Non è l'esperienza che vogliamo per i nostri clienti, e ce ne scusiamo. "],
+      neg_items:["Quello che descrivete su {items} non è il nostro standard.","Che {items} vi abbia deluso non è accettabile."],
+      neg_none:["Quello che descrivete non è il livello che pretendiamo da noi stessi."],
+      fix:["Vorremmo davvero rimediare {fix}. Contattateci direttamente e me ne occuperò personalmente.","Se ci darete un'altra occasione, saremo felici di sistemare le cose {fix}."],
+      open_mix:["Grazie per una recensione così equilibrata e ponderata. ","Apprezziamo molto la vostra sincerità. ","Grazie per aver dedicato del tempo a raccontare tutto. "],
+      mix_praise:["Siamo felici che {items} vi sia piaciuto.","Bene che {items} abbia funzionato per voi."],
+      mix_issue:["Avete perfettamente ragione riguardo a {items}, e ci stiamo già lavorando.","{items} merita più attenzione, e ce ne stiamo occupando."],
+      mix_none:["Le vostre osservazioni sono arrivate direttamente a {team}."]
+    },
+    es:{
+      open_pos:["¡Vaya, muchísimas gracias por estas palabras! ","Nos habéis alegrado el día. ¡Gracias! ","Qué reseña tan bonita. ¡Gracias! "],
+      pos_items:["Nos alegra muchísimo que {items} os gustara tanto. Se lo haré saber a {team}.","Es estupendo saber que {items} destacó para vosotros."],
+      pos_none:["Significa mucho saber que vuestra experiencia con nosotros fue tan buena."],
+      open_neg:["Sentimos mucho que vuestra experiencia no estuviera a la altura, y gracias por decírnoslo. ","Lamentamos de verdad leer esto y agradecemos vuestra sinceridad. ","Esta no es la experiencia que queremos para nuestros clientes, y lo sentimos. "],
+      neg_items:["Lo que comentáis sobre {items} no es nuestro estándar.","Que {items} os decepcionara no está bien."],
+      neg_none:["Lo que describís no es el nivel que nos exigimos."],
+      fix:["Nos gustaría mucho compensarlo {fix}. Escribidnos directamente y me ocuparé personalmente.","Si nos dais otra oportunidad, nos encantaría corregirlo {fix}."],
+      open_mix:["Gracias por una reseña tan justa y reflexiva. ","Agradecemos mucho vuestra sinceridad. ","Gracias por tomaros el tiempo de contarlo todo. "],
+      mix_praise:["Nos alegra mucho que {items} os gustara.","Qué bien que {items} funcionara para vosotros."],
+      mix_issue:["Tenéis toda la razón sobre {items}, y ya estamos trabajando en ello.","{items} necesita más atención, y nos estamos ocupando."],
+      mix_none:["Vuestras observaciones han llegado directamente a {team}."]
+    },
+    fr:{
+      open_pos:["Waouh, merci beaucoup pour ces mots ! ","Vous avez illuminé notre journée. Merci ! ","Quel bel avis. Merci ! "],
+      pos_items:["Nous sommes ravis que {items} vous ait autant plu. Je le transmettrai à {team}.","C'est un plaisir de savoir que {items} vous a marqué."],
+      pos_none:["Cela compte beaucoup de savoir que votre expérience chez nous a été si agréable."],
+      open_neg:["Nous sommes vraiment désolés que votre expérience n'ait pas été à la hauteur, et merci de nous l'avoir signalé. ","Nous sommes sincèrement désolés de lire ceci et apprécions votre franchise. ","Ce n'est pas l'expérience que nous souhaitons à nos clients, et nous en sommes désolés. "],
+      neg_items:["Ce que vous décrivez à propos de {items} n'est pas notre standard.","Que {items} vous ait déçu n'est pas acceptable."],
+      neg_none:["Ce que vous décrivez n'est pas le niveau que nous nous imposons."],
+      fix:["Nous aimerions vraiment y remédier {fix}. Contactez-nous directement et je m'en occuperai personnellement.","Si vous nous accordez une autre chance, nous serions heureux d'arranger cela {fix}."],
+      open_mix:["Merci pour cet avis juste et réfléchi. ","Nous apprécions beaucoup votre franchise. ","Merci d'avoir pris le temps de tout partager. "],
+      mix_praise:["Nous sommes ravis que {items} vous ait plu.","Heureux que {items} vous ait convenu."],
+      mix_issue:["Vous avez tout à fait raison concernant {items}, et nous y travaillons déjà.","{items} mérite plus d'attention, et nous nous en occupons."],
+      mix_none:["Vos remarques ont été transmises directement à {team}."]
+    }
+  };
+
+  /* ---------- GENERIC REPLIES (extra languages, grammar-safe) ----------
+     Self-contained, sentiment-aware messages. No noun injection, so they
+     stay grammatically correct in every language. {pos,neg,mix} */
+  const GEN={
+    sl:{pos:["Najlepša hvala za tako lepe besede! Veseli nas, da ste uživali, in komaj čakamo, da vas spet pozdravimo.","Hvala za čudovito oceno. Veseli nas, da je bilo vse po vaših željah, in se že veselimo vašega naslednjega obiska."],neg:["Iskreno nam je žal, da izkušnja ni bila na ravni. Hvala za vašo odkritost; radi bi to popravili, zato nas prosim kontaktirajte neposredno.","Zelo nam je žal za to, kar opisujete. To ni naš standard in se vam opravičujemo. Dajte nam še eno priložnost, da popravimo vtis."],mix:["Hvala za pošteno oceno. Veseli nas, da je marsikaj uspelo, vaše pripombe pa smo že posredovali ekipi. Upamo, da nas spet obiščete.","Cenimo vaše iskreno mnenje. Na omenjene pomanjkljivosti že delamo in se veselimo, da vas naslednjič navdušimo."]},
+    nl:{pos:["Heel erg bedankt voor deze mooie woorden! We zijn blij dat u genoten heeft en kijken ernaar uit u snel weer te verwelkomen.","Wat een fijne review, dank u wel. We zijn verheugd dat alles naar wens was en zien u graag weer terug."],neg:["Het spijt ons oprecht dat uw ervaring niet aan de verwachtingen voldeed. Bedankt voor uw eerlijkheid; neem gerust direct contact met ons op zodat we het kunnen rechtzetten.","Onze excuses voor wat u beschrijft. Dit is niet onze standaard. Geef ons graag nog een kans om het goed te maken."],mix:["Bedankt voor uw eerlijke review. Fijn dat veel goed beviel; uw opmerkingen hebben we doorgegeven aan het team. Tot ziens.","We waarderen uw feedback. We werken aan de genoemde punten en hopen u de volgende keer volledig te overtuigen."]},
+    pt:{pos:["Muito obrigado por estas palavras! Ficamos felizes que tenha gostado e mal podemos esperar para recebê-lo novamente.","Que avaliação maravilhosa, obrigado. Alegra-nos saber que tudo correu bem e já aguardamos a sua próxima visita."],neg:["Lamentamos sinceramente que a sua experiência não tenha estado à altura. Obrigado pela honestidade; contacte-nos diretamente para que possamos corrigir.","Pedimos desculpa pelo que descreve. Não é o nosso padrão. Dê-nos outra oportunidade para compensar."],mix:["Obrigado pela avaliação justa. Ainda bem que muito correu bem; as suas observações já foram passadas à equipa. Até breve.","Agradecemos a sua sinceridade. Estamos a trabalhar nos pontos referidos e esperamos encantá-lo na próxima visita."]},
+    ro:{pos:["Vă mulțumim mult pentru aceste cuvinte frumoase! Ne bucurăm că v-a plăcut și abia așteptăm să vă revedem.","Ce recenzie minunată, mulțumim. Ne bucură că totul a fost pe placul dumneavoastră și așteptăm următoarea vizită."],neg:["Ne pare sincer rău că experiența nu a fost la înălțime. Vă mulțumim pentru sinceritate; vă rugăm să ne contactați direct ca să îndreptăm lucrurile.","Ne cerem scuze pentru cele descrise. Nu este standardul nostru. Acordați-ne încă o șansă să reparăm."],mix:["Mulțumim pentru recenzia echilibrată. Ne bucură că multe au fost bune; observațiile au ajuns deja la echipă. Pe curând.","Apreciem sinceritatea. Lucrăm la aspectele menționate și sperăm să vă cucerim data viitoare."]},
+    pl:{pos:["Bardzo dziękujemy za te miłe słowa! Cieszymy się, że było udane, i nie możemy się doczekać kolejnej wizyty.","Cudowna opinia, dziękujemy. Miło nam, że wszystko było po Państwa myśli i już czekamy na ponowne spotkanie."],neg:["Szczerze przepraszamy, że wizyta nie spełniła oczekiwań. Dziękujemy za szczerość; prosimy o bezpośredni kontakt, abyśmy mogli to naprawić.","Przepraszamy za to, co Państwo opisują. To nie nasz standard. Prosimy o kolejną szansę, by to wynagrodzić."],mix:["Dziękujemy za wyważoną opinię. Cieszymy się, że wiele się udało; uwagi przekazaliśmy zespołowi. Do zobaczenia.","Doceniamy szczerość. Pracujemy nad wskazanymi kwestiami i mamy nadzieję zachwycić przy następnej wizycie."]},
+    cs:{pos:["Moc děkujeme za tato milá slova! Těší nás, že jste si návštěvu užili, a nemůžeme se dočkat, až vás opět přivítáme.","Krásná recenze, děkujeme. Jsme rádi, že vše bylo podle vašich představ, a těšíme se na vaši příští návštěvu."],neg:["Upřímně nás mrzí, že zážitek nebyl na úrovni. Děkujeme za upřímnost; ozvěte se nám prosím přímo, ať to napravíme.","Omlouváme se za to, co popisujete. Není to náš standard. Dejte nám prosím další šanci to vynahradit."],mix:["Děkujeme za vyvážené hodnocení. Jsme rádi, že se mnohé povedlo; vaše připomínky jsme předali týmu. Na shledanou.","Vážíme si vaší upřímnosti. Na zmíněných bodech pracujeme a doufáme, že vás příště nadchneme."]},
+    sk:{pos:["Veľmi pekne ďakujeme za tieto milé slová! Teší nás, že ste si návštevu užili, a nevieme sa dočkať, kedy vás opäť privítame.","Krásna recenzia, ďakujeme. Sme radi, že všetko bolo podľa vašich predstáv, a tešíme sa na vašu ďalšiu návštevu."],neg:["Úprimne nás mrzí, že zážitok nebol na úrovni. Ďakujeme za úprimnosť; ozvite sa nám prosím priamo, aby sme to napravili.","Ospravedlňujeme sa za to, čo opisujete. Nie je to náš štandard. Dajte nám prosím ďalšiu šancu to vynahradiť."],mix:["Ďakujeme za vyvážené hodnotenie. Sme radi, že sa veľa podarilo; vaše pripomienky sme odovzdali tímu. Dovidenia.","Vážime si vašu úprimnosť. Na spomenutých bodoch pracujeme a dúfame, že vás nabudúce nadchneme."]},
+    hu:{pos:["Nagyon köszönjük ezeket a kedves szavakat! Örülünk, hogy jól érezte magát, és alig várjuk, hogy újra vendégül láthassuk.","Csodálatos értékelés, köszönjük. Örömmel halljuk, hogy minden az elképzelései szerint alakult, és várjuk a következő látogatását."],neg:["Őszintén sajnáljuk, hogy az élmény nem volt megfelelő. Köszönjük az őszinteségét; kérjük, keressen minket közvetlenül, hogy helyrehozhassuk.","Elnézést kérünk a leírtakért. Ez nem a mi színvonalunk. Kérjük, adjon még egy esélyt, hogy jóvátegyük."],mix:["Köszönjük a kiegyensúlyozott értékelést. Örülünk, hogy sok minden jól sikerült; észrevételeit továbbítottuk a csapatnak. Viszontlátásra.","Értékeljük az őszinteségét. Az említett pontokon dolgozunk, és reméljük, legközelebb teljesen elnyerjük a tetszését."]},
+    tr:{pos:["Bu güzel sözler için çok teşekkür ederiz! Keyif almanıza sevindik ve sizi tekrar ağırlamak için sabırsızlanıyoruz.","Harika bir değerlendirme, teşekkürler. Her şeyin gönlünüzce olmasına sevindik ve bir sonraki ziyaretinizi bekliyoruz."],neg:["Deneyiminizin beklentinizi karşılamamasına gerçekten üzüldük. Dürüstlüğünüz için teşekkürler; düzeltebilmemiz için lütfen bizimle doğrudan iletişime geçin.","Anlattıklarınız için özür dileriz. Bu bizim standardımız değil. Telafi etmemiz için lütfen bize bir şans daha verin."],mix:["Dengeli değerlendirmeniz için teşekkürler. Çoğu şeyin iyi gitmesine sevindik; notlarınızı ekibe ilettik. Görüşmek üzere.","Samimiyetiniz için minnettarız. Belirttiğiniz konular üzerinde çalışıyoruz ve bir dahaki sefere sizi tam anlamıyla memnun etmeyi umuyoruz."]},
+    sq:{pos:["Faleminderit shumë për këto fjalë të bukura! Jemi të lumtur që e shijuat dhe mezi presim t'ju mirëpresim sërish.","Çfarë vlerësimi i mrekullueshëm, faleminderit. Gëzohemi që gjithçka ishte sipas dëshirës dhe presim vizitën tuaj të radhës."],neg:["Na vjen vërtet keq që përvoja nuk ishte në nivel. Faleminderit për sinqeritetin; ju lutemi na kontaktoni drejtpërdrejt që ta ndreqim.","Kërkojmë ndjesë për atë që përshkruani. Ky nuk është standardi ynë. Na jepni një mundësi tjetër për ta përmirësuar."],mix:["Faleminderit për vlerësimin e drejtë. Gëzohemi që shumëçka shkoi mirë; vërejtjet ua përcollëm ekipit. Shihemi së shpejti.","E vlerësojmë sinqeritetin tuaj. Po punojmë për pikat e përmendura dhe shpresojmë t'ju mahnitim herën tjetër."]},
+    sv:{pos:["Tack så mycket för dessa fina ord! Vi är glada att ni trivdes och ser fram emot att välkomna er igen.","Vilken underbar recension, tack. Vi är glada att allt var som ni önskade och ser fram emot ert nästa besök."],neg:["Vi är uppriktigt ledsna att upplevelsen inte höll måttet. Tack för er ärlighet; kontakta oss gärna direkt så att vi kan rätta till det.","Vi ber om ursäkt för det ni beskriver. Det är inte vår standard. Ge oss gärna en till chans att gottgöra."],mix:["Tack för en balanserad recension. Vi är glada att mycket fungerade; era synpunkter har vidarebefordrats till teamet. Vi ses.","Vi uppskattar er ärlighet. Vi arbetar med de nämnda punkterna och hoppas kunna imponera nästa gång."]},
+    no:{pos:["Tusen takk for disse fine ordene! Vi er glade for at dere trivdes og gleder oss til å ønske dere velkommen igjen.","For en flott anmeldelse, takk. Vi er glade for at alt var som dere ønsket og ser frem til neste besøk."],neg:["Vi er oppriktig lei oss for at opplevelsen ikke holdt mål. Takk for ærligheten; ta gjerne direkte kontakt så vi kan rette det opp.","Vi beklager det dere beskriver. Det er ikke vår standard. Gi oss gjerne en ny sjanse til å gjøre det godt igjen."],mix:["Takk for en balansert anmeldelse. Vi er glade for at mye fungerte; tilbakemeldingene er sendt videre til teamet. Vi ses.","Vi setter pris på ærligheten. Vi jobber med punktene dere nevner og håper å imponere neste gang."]},
+    da:{pos:["Mange tak for disse pæne ord! Vi er glade for, at I nød det, og glæder os til at byde jer velkommen igen.","Sikke en dejlig anmeldelse, tak. Vi er glade for, at alt var efter jeres ønske, og ser frem til jeres næste besøg."],neg:["Vi er oprigtigt kede af, at oplevelsen ikke levede op til forventningerne. Tak for ærligheden; kontakt os gerne direkte, så vi kan rette op på det.","Vi undskylder for det, I beskriver. Det er ikke vores standard. Giv os gerne en chance mere for at gøre det godt igen."],mix:["Tak for en afbalanceret anmeldelse. Vi er glade for, at meget fungerede; jeres bemærkninger er givet videre til teamet. Vi ses.","Vi sætter pris på ærligheden. Vi arbejder på de nævnte punkter og håber at imponere næste gang."]},
+    fi:{pos:["Suurkiitos näistä ystävällisistä sanoista! Ilahduimme, että viihdyitte, ja odotamme innolla, että saamme toivottaa teidät pian uudelleen tervetulleeksi.","Mahtava arvostelu, kiitos. Olemme iloisia, että kaikki oli toiveidenne mukaista, ja odotamme seuraavaa käyntiänne."],neg:["Olemme vilpittömän pahoillamme, ettei kokemus ollut tasolla. Kiitos rehellisyydestänne; ottakaa rohkeasti suoraan yhteyttä, niin korjaamme asian.","Pahoittelemme kuvailemaanne. Tämä ei ole tasomme. Antakaa meille vielä mahdollisuus hyvittää se."],mix:["Kiitos tasapainoisesta arvostelusta. Mukava kuulla, että moni asia toimi; huomionne on välitetty tiimille. Nähdään.","Arvostamme rehellisyyttänne. Työstämme mainitsemianne kohtia ja toivomme tekevämme vaikutuksen ensi kerralla."]},
+    et:{pos:["Suur tänu nende lahkete sõnade eest! Meil on hea meel, et teile meeldis, ja ootame teid peagi taas.","Milline imeline arvustus, aitäh. Rõõm kuulda, et kõik oli teie soovide kohaselt, ja ootame teie järgmist külastust."],neg:["Meil on siiralt kahju, et kogemus ei olnud tasemel. Täname avameelsuse eest; võtke meiega palun otse ühendust, et saaksime selle heastada.","Vabandame kirjeldatu pärast. See ei ole meie tase. Andke meile palun veel üks võimalus see heastada."],mix:["Aitäh tasakaaluka arvustuse eest. Rõõm, et paljugi õnnestus; teie märkused edastasime meeskonnale. Näeme.","Hindame teie avameelsust. Tegeleme nimetatud punktidega ja loodame teid järgmisel korral võluda."]},
+    lv:{pos:["Liels paldies par šiem laipnajiem vārdiem! Priecājamies, ka jums patika, un nevaram sagaidīt, kad atkal jūs sagaidīsim.","Brīnišķīga atsauksme, paldies. Priecājamies, ka viss bija pēc jūsu vēlmēm, un gaidām jūsu nākamo apmeklējumu."],neg:["Mums patiesi žēl, ka pieredze nebija atbilstoša. Paldies par godīgumu; lūdzu, sazinieties ar mums tieši, lai to labotu.","Atvainojamies par aprakstīto. Tas nav mūsu standarts. Lūdzu, dodiet mums vēl vienu iespēju to izlabot."],mix:["Paldies par līdzsvarotu atsauksmi. Priecājamies, ka daudz kas izdevās; jūsu piezīmes nodevām komandai. Uz redzēšanos.","Novērtējam jūsu godīgumu. Strādājam pie minētajiem aspektiem un ceram nākamreiz jūs pārsteigt."]},
+    lt:{pos:["Labai ačiū už šiuos malonius žodžius! Džiaugiamės, kad jums patiko, ir nekantriai laukiame, kada vėl jus pasveikinsime.","Nuostabus atsiliepimas, ačiū. Džiaugiamės, kad viskas buvo pagal jūsų pageidavimus, ir laukiame kito jūsų apsilankymo."],neg:["Nuoširdžiai apgailestaujame, kad patirtis nebuvo tinkamo lygio. Ačiū už nuoširdumą; prašome susisiekti tiesiogiai, kad galėtume tai ištaisyti.","Atsiprašome už tai, ką aprašote. Tai nėra mūsų standartas. Suteikite mums dar vieną galimybę pasitaisyti."],mix:["Ačiū už subalansuotą atsiliepimą. Džiaugiamės, kad daug kas pavyko; jūsų pastabas perdavėme komandai. Iki.","Vertiname jūsų nuoširdumą. Dirbame ties paminėtais dalykais ir tikimės kitą kartą jus sužavėti."]},
+    id:{pos:["Terima kasih banyak atas kata-kata yang baik ini! Kami senang Anda menikmatinya dan tidak sabar menyambut Anda kembali.","Ulasan yang luar biasa, terima kasih. Kami senang semuanya sesuai harapan Anda dan menantikan kunjungan Anda berikutnya."],neg:["Kami sungguh menyesal pengalaman Anda kurang memuaskan. Terima kasih atas kejujurannya; silakan hubungi kami langsung agar dapat kami perbaiki.","Kami mohon maaf atas apa yang Anda alami. Ini bukan standar kami. Beri kami kesempatan lagi untuk memperbaikinya."],mix:["Terima kasih atas ulasan yang seimbang. Kami senang banyak hal berjalan baik; masukan Anda telah kami sampaikan ke tim. Sampai jumpa.","Kami menghargai kejujuran Anda. Kami sedang menangani hal yang Anda sebutkan dan berharap dapat memukau Anda lain kali."]},
+    vi:{pos:["Cảm ơn bạn rất nhiều vì những lời tốt đẹp này! Chúng tôi rất vui vì bạn đã hài lòng và mong sớm được đón tiếp bạn trở lại.","Một đánh giá tuyệt vời, cảm ơn bạn. Chúng tôi vui mừng vì mọi thứ đều như ý và mong chờ lần ghé thăm tới của bạn."],neg:["Chúng tôi thành thật xin lỗi vì trải nghiệm chưa được như mong đợi. Cảm ơn sự thẳng thắn của bạn; vui lòng liên hệ trực tiếp để chúng tôi khắc phục.","Chúng tôi xin lỗi về những gì bạn mô tả. Đây không phải tiêu chuẩn của chúng tôi. Xin hãy cho chúng tôi một cơ hội nữa để bù đắp."],mix:["Cảm ơn đánh giá cân bằng của bạn. Chúng tôi vui vì nhiều điều đã tốt; góp ý của bạn đã được chuyển tới đội ngũ. Hẹn gặp lại.","Chúng tôi trân trọng sự chân thành của bạn. Chúng tôi đang cải thiện những điểm bạn nêu và hy vọng sẽ làm bạn hài lòng lần tới."]},
+    el:{pos:["Σας ευχαριστούμε πολύ για αυτά τα όμορφα λόγια! Χαιρόμαστε που το απολαύσατε και ανυπομονούμε να σας καλωσορίσουμε ξανά.","Τι υπέροχη κριτική, ευχαριστούμε. Χαιρόμαστε που όλα ήταν όπως τα θέλατε και περιμένουμε την επόμενη επίσκεψή σας."],neg:["Λυπούμαστε ειλικρινά που η εμπειρία σας δεν ήταν στο ύψος. Ευχαριστούμε για την ειλικρίνεια· επικοινωνήστε μαζί μας απευθείας για να το διορθώσουμε.","Ζητούμε συγγνώμη για όσα περιγράφετε. Δεν είναι το επίπεδό μας. Δώστε μας άλλη μια ευκαιρία να επανορθώσουμε."],mix:["Ευχαριστούμε για την δίκαιη κριτική. Χαιρόμαστε που πολλά πήγαν καλά· οι παρατηρήσεις σας διαβιβάστηκαν στην ομάδα. Τα λέμε.","Εκτιμούμε την ειλικρίνειά σας. Εργαζόμαστε πάνω στα σημεία που αναφέρατε και ελπίζουμε να σας εντυπωσιάσουμε την επόμενη φορά."]},
+    ru:{pos:["Большое спасибо за такие тёплые слова! Мы рады, что вам понравилось, и с нетерпением ждём вашего следующего визита.","Какой замечательный отзыв, спасибо. Нам приятно, что всё было по вашему вкусу, и мы будем рады снова вас видеть."],neg:["Нам искренне жаль, что впечатление оказалось не на высоте. Спасибо за честность; пожалуйста, свяжитесь с нами напрямую, чтобы мы всё исправили.","Приносим извинения за описанное. Это не наш стандарт. Дайте нам ещё один шанс всё исправить."],mix:["Спасибо за объективный отзыв. Рады, что многое удалось; ваши замечания переданы команде. До встречи.","Ценим вашу честность. Мы работаем над упомянутыми моментами и надеемся приятно удивить вас в следующий раз."]},
+    uk:{pos:["Щиро дякуємо за такі теплі слова! Ми раді, що вам сподобалося, і з нетерпінням чекаємо на ваш наступний візит.","Який чудовий відгук, дякуємо. Нам приємно, що все було до вподоби, і ми будемо раді знову вас бачити."],neg:["Нам щиро шкода, що враження виявилося не на висоті. Дякуємо за відвертість; будь ласка, зв'яжіться з нами напряму, щоб ми все виправили.","Перепрошуємо за описане. Це не наш стандарт. Дайте нам ще один шанс усе виправити."],mix:["Дякуємо за зважений відгук. Раді, що багато що вдалося; ваші зауваження передано команді. До зустрічі.","Цінуємо вашу відвертість. Ми працюємо над згаданими моментами й сподіваємося приємно вас здивувати наступного разу."]},
+    bg:{pos:["Благодарим ви много за тези мили думи! Радваме се, че ви хареса, и нямаме търпение да ви посрещнем отново.","Каква прекрасна оценка, благодарим. Радваме се, че всичко беше по ваш вкус, и очакваме следващото ви посещение."],neg:["Искрено съжаляваме, че преживяването не беше на ниво. Благодарим за откровеността; моля, свържете се с нас директно, за да го поправим.","Извиняваме се за описаното. Това не е нашият стандарт. Дайте ни още един шанс да се реваншираме."],mix:["Благодарим за балансираната оценка. Радваме се, че много неща се получиха; бележките ви предадохме на екипа. До скоро.","Оценяваме откровеността ви. Работим по посочените неща и се надяваме да ви впечатлим следващия път."]},
+    mk:{pos:["Ви благодариме многу за овие убави зборови! Се радуваме што уживавте и едвај чекаме повторно да ве пречекаме.","Каква прекрасна рецензија, благодариме. Ни е драго што сè беше по ваша желба и го очекуваме вашето следно доаѓање."],neg:["Искрено ни е жал што искуството не беше на ниво. Ви благодариме на искреноста; ве молиме контактирајте нè директно за да го поправиме.","Се извинуваме за опишаното. Тоа не е нашиот стандард. Дајте ни уште една шанса да го поправиме."],mix:["Ви благодариме за избалансираната рецензија. Ни е драго што многу нешта успеаја; забелешките ги пренесовме на тимот. Се гледаме.","Ја цениме вашата искреност. Работиме на споменатите нешта и се надеваме дека следниот пат ќе ве воодушевиме."]},
+    ar:{pos:["شكرًا جزيلًا على هذه الكلمات الطيبة! يسعدنا أنكم استمتعتم بزيارتكم ونتطلع إلى الترحيب بكم مجددًا.","يا له من تقييم رائع، شكرًا لكم. نحن سعداء بأن كل شيء كان على ما يرام ونتطلع إلى زيارتكم القادمة."],neg:["نعتذر بصدق لأن تجربتكم لم تكن بالمستوى المطلوب. شكرًا لصراحتكم؛ يرجى التواصل معنا مباشرةً حتى نتمكن من تصحيح الأمر.","نأسف لما وصفتم. هذا ليس مستوانا المعتاد. امنحونا فرصة أخرى لنعوضكم."],mix:["شكرًا على تقييمكم المنصف. يسعدنا أن أمورًا كثيرة كانت جيدة؛ وقد نقلنا ملاحظاتكم إلى الفريق. إلى اللقاء.","نقدّر صراحتكم. نعمل على النقاط التي ذكرتموها ونأمل أن ننال إعجابكم في المرة القادمة."]},
+    he:{pos:["תודה רבה על המילים החמות האלה! אנחנו שמחים שנהניתם ומצפים לארח אתכם שוב.","איזו ביקורת נפלאה, תודה. אנו שמחים שהכול היה לשביעות רצונכם ומצפים לביקורכם הבא."],neg:["אנו מצטערים בכנות שהחוויה לא הייתה ברמה. תודה על הכנות; אנא צרו איתנו קשר ישיר כדי שנוכל לתקן.","אנו מתנצלים על שתיארתם. זה אינו הסטנדרט שלנו. תנו לנו הזדמנות נוספת לפצות אתכם."],mix:["תודה על ביקורת מאוזנת. אנו שמחים שדברים רבים עבדו; הערותיכם הועברו לצוות. להתראות.","אנו מעריכים את כנותכם. אנו עובדים על הנקודות שציינתם ומקווים להרשים אתכם בפעם הבאה."]},
+    zh:{pos:["非常感谢您的赞美！很高兴您度过了愉快的时光，我们期待着再次为您服务。","多么美好的评价，谢谢您。很高兴一切都合您心意，期待您的下次光临。"],neg:["我们诚挚地为这次体验未达预期而致歉。感谢您的坦诚；请直接与我们联系，让我们有机会改正。","对于您所描述的情况我们深表歉意。这并非我们的标准。请再给我们一次机会来弥补。"],mix:["感谢您客观的评价。很高兴大部分都令您满意；您的建议已转达团队。期待再会。","我们很感激您的坦诚。我们正在改进您提到的问题，希望下次能让您完全满意。"]},
+    ja:{pos:["温かいお言葉をありがとうございます！お楽しみいただけて嬉しく思います。またのお越しを心よりお待ちしております。","素晴らしいご評価をありがとうございます。すべてご満足いただけたようで何よりです。次回のご来店をお待ちしております。"],neg:["ご期待に沿えず、心よりお詫び申し上げます。率直なご意見をありがとうございます。改善のため、ぜひ直接ご連絡ください。","ご指摘の点について深くお詫び申し上げます。当店本来の姿ではございません。挽回の機会をいただければ幸いです。"],mix:["公平なご評価をありがとうございます。多くの点でご満足いただけて嬉しく思います。ご意見はチームに共有いたしました。またお待ちしております。","率直なご意見に感謝いたします。ご指摘の点を改善し、次回こそご満足いただけるよう努めます。"]},
+    ko:{pos:["따뜻한 말씀 정말 감사합니다! 즐거우셨다니 기쁘며, 다시 모실 수 있기를 기대하겠습니다.","멋진 후기 감사합니다. 모든 것이 마음에 드셨다니 기쁩니다. 다음 방문을 기다리겠습니다."],neg:["기대에 미치지 못해 진심으로 사과드립니다. 솔직한 말씀 감사합니다. 바로잡을 수 있도록 직접 연락 주시면 감사하겠습니다.","말씀하신 점에 대해 사과드립니다. 저희의 기준이 아닙니다. 만회할 기회를 한 번 더 주시면 감사하겠습니다."],mix:["균형 잡힌 후기 감사합니다. 많은 부분이 만족스러우셨다니 기쁘며, 의견은 팀에 전달했습니다. 또 뵙겠습니다.","솔직한 의견에 감사드립니다. 말씀하신 부분을 개선하고 있으며 다음에는 꼭 만족시켜 드리겠습니다."]},
+    th:{pos:["ขอบคุณมากสำหรับคำชมดีๆ เหล่านี้! เรายินดีที่คุณพึงพอใจ และรอต้อนรับคุณอีกครั้ง","รีวิวที่ยอดเยี่ยมมาก ขอบคุณค่ะ เราดีใจที่ทุกอย่างเป็นไปตามที่คุณต้องการ และรอการมาเยือนครั้งหน้าของคุณ"],neg:["เราขออภัยอย่างจริงใจที่ประสบการณ์ไม่เป็นไปตามที่คาดหวัง ขอบคุณสำหรับความตรงไปตรงมา โปรดติดต่อเราโดยตรงเพื่อให้เราได้แก้ไข","เราขออภัยสำหรับสิ่งที่คุณพบเจอ นี่ไม่ใช่มาตรฐานของเรา โปรดให้โอกาสเราอีกครั้งเพื่อชดเชย"],mix:["ขอบคุณสำหรับรีวิวที่สมดุล เรายินดีที่หลายอย่างเป็นไปด้วยดี และได้ส่งต่อความคิดเห็นของคุณให้ทีมแล้ว แล้วพบกันใหม่","เราขอบคุณในความจริงใจของคุณ เรากำลังปรับปรุงในจุดที่คุณกล่าวถึง และหวังว่าจะทำให้คุณประทับใจในครั้งหน้า"]},
+    hi:{pos:["इन प्यारे शब्दों के लिए आपका बहुत-बहुत धन्यवाद! हमें खुशी है कि आपको अच्छा लगा और हम आपका दोबारा स्वागत करने के लिए उत्सुक हैं।","कितनी शानदार समीक्षा, धन्यवाद। हमें खुशी है कि सब कुछ आपकी पसंद के अनुसार रहा और हम आपकी अगली यात्रा की प्रतीक्षा करेंगे।"],neg:["हमें सच में खेद है कि आपका अनुभव अपेक्षा के अनुरूप नहीं रहा। आपकी ईमानदारी के लिए धन्यवाद; कृपया हमसे सीधे संपर्क करें ताकि हम इसे ठीक कर सकें।","आपने जो बताया उसके लिए हम क्षमा चाहते हैं। यह हमारा स्तर नहीं है। कृपया हमें भरपाई का एक और अवसर दें।"],mix:["संतुलित समीक्षा के लिए धन्यवाद। हमें खुशी है कि बहुत कुछ अच्छा रहा; आपकी टिप्पणियाँ टीम तक पहुँचा दी गई हैं। फिर मिलेंगे।","हम आपकी ईमानदारी की सराहना करते हैं। आपने जिन बातों का उल्लेख किया उन पर हम काम कर रहे हैं और अगली बार आपको प्रभावित करने की आशा करते हैं।"]}
+  };
+
+  function buildReply(a){
+    let lang=a.lang;
+    if(lang==='hr'||lang==='bs')lang='sr'; // Serbo-Croatian shares templates
+    // Rich engine (item + venue aware) for these; others use GEN
+    if(L[lang]){
+      return richReply(lang,a);
+    }
+    if(GEN[lang]){
+      return pick(GEN[lang][a.sentiment]||GEN[lang].mix);
+    }
+    return richReply('en',a);
+  }
+
+  function richReply(lang,a){
+    const T=L[lang], v=(V[lang]&&V[lang][venue])||V.en[venue]||V.en.restaurant, loc=LOC[lang];
+    const{sentiment,praise,issues,willReturn}=a;
+    const praiseStr=joinLang(praise.map(id=>loc[id]).filter(Boolean),lang);
+    const issuesStr=joinLang(issues.map(id=>loc[id]).filter(Boolean),lang);
+    let s='';
+    if(sentiment==='positive'){
+      s+=pick(T.open_pos);
+      s+=praiseStr?fill(pick(T.pos_items),{items:praiseStr,team:v.team}):pick(T.pos_none);
+      s+=' '+pick(willReturn?v.posBack:v.posSoft);
+    }else if(sentiment==='negative'){
+      s+=pick(T.open_neg);
+      s+=issuesStr?fill(pick(T.neg_items),{items:issuesStr}):pick(T.neg_none);
+      s+=' '+fill(pick(T.fix),{fix:pick(v.negFix)});
+    }else{
+      s+=pick(T.open_mix);
+      if(praiseStr)s+=fill(pick(T.mix_praise),{items:praiseStr})+' ';
+      if(issuesStr)s+=fill(pick(T.mix_issue),{items:issuesStr})+' ';
+      else s+=fill(pick(T.mix_none),{team:v.team})+' ';
+      s+=pick(v.mixBack);
+    }
+    let out=s+pick(v.sign);
+    if(lang==='sr'&&a.dialect==='ije')out=ijekavize(out); // convert to ijekavica when review is ijekavian
+    return out;
+  }
+
+  function typeReply(txt){
+    lastReply=txt;box.innerHTML='<div class="reply-text" id="rt"></div>';
+    const el=document.getElementById('rt');let i=0;
+    (function t(){if(i<txt.length){i++;el.textContent=txt.slice(0,i);el.insertAdjacentHTML('beforeend','<span class="tcursor"></span>');setTimeout(t,i<50?24:i<140?16:9)}else el.textContent=txt})();
+  }
+
+  btn.addEventListener('click',()=>{
+    const text=input.value.trim();
+    if(text.length<12){input.focus();input.style.borderColor='rgba(255,68,102,.5)';setTimeout(()=>input.style.borderColor='',1400);return;}
+    btn.disabled=true;btnTxt.innerHTML='<span class="loading-dots"><span></span><span></span><span></span></span>';
+    panel.classList.remove('has-reply');label.textContent='Drafting your reply...';copyBtn.style.display='none';
+    panel.querySelectorAll('.sent-row').forEach(el=>el.remove()); // clear previous sentiment badge
+    box.innerHTML='<div class="loading-dots"><span></span><span></span><span></span></div>';
+    setTimeout(()=>{
+      const a=analyze(text);const reply=buildReply(a);
+      panel.classList.add('has-reply');label.textContent='Reply ready';
+      copyBtn.style.display='block';copyBtn.classList.remove('copied');copyBtn.textContent='Copy';
+      typeReply(reply);
+      // sentiment row
+      const sr=document.createElement('div');sr.className='sent-row';
+      const sName=a.sentiment==='positive'?'Positive ↑':a.sentiment==='negative'?'Negative ↓':'Mixed';
+      const sCls=a.sentiment==='positive'?'sp-pos':a.sentiment==='negative'?'sp-neg':'sp-mix';
+      sr.innerHTML=`<span class="sent-label">Sentiment:</span><span class="sent-pill ${sCls}">${sName}</span><span class="sent-label" style="margin-left:.2rem">Topics:</span><span class="sent-pill ch-b">${a.topics.slice(0,3).join(' · ')}</span>`;
+      const wait=setInterval(()=>{const rt=document.getElementById('rt');if(rt&&rt.textContent.length>=reply.length-2){clearInterval(wait);panel.querySelectorAll('.sent-row').forEach(el=>el.remove());panel.appendChild(sr)}},120);
+      btn.disabled=false;btnTxt.innerHTML='Draft another reply &rarr;';
+    },1400);
+  });
+
+  copyBtn.addEventListener('click',()=>{
+    if(!lastReply)return;
+    const done=()=>{copyBtn.textContent='Copied ✓';copyBtn.classList.add('copied');setTimeout(()=>{copyBtn.textContent='Copy';copyBtn.classList.remove('copied')},2200)};
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(lastReply).then(done).catch(()=>fallback());
+    else fallback();
+    function fallback(){const ta=document.createElement('textarea');ta.value=lastReply;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(ta);done()}
+  });
+
+  input.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')btn.click()});
+})();
+</script>
+</body>
+</html>
