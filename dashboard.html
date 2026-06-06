@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#060612">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%233b82f6'/><stop offset='1' stop-color='%2322d3ee'/></linearGradient></defs><rect x='2' y='2' width='96' height='96' rx='26' fill='%230c1424'/><path d='M50 18 C53 41,55 45,82 50 C55 55,53 59,50 82 C47 59,45 55,18 50 C45 45,47 41,50 18 Z' fill='url(%23g)'/><circle cx='73' cy='29' r='5' fill='%2322d3ee'/></svg>">
+  <title>Dashboard — Rezpona</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;1,9..144,200&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#060612;--bg2:#0a0a1c;--acc:#00CEFF;--acc2:#5B6FFF;--text:#EEF2FF;--muted:#6B7B92;--muted2:#8A99B2;--bd:rgba(255,255,255,0.075);--card:rgba(255,255,255,0.025)}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden}
+.bg-orb{position:fixed;border-radius:50%;z-index:0;pointer-events:none}
+.orb1{width:500px;height:500px;background:radial-gradient(circle,rgba(0,206,255,.06),transparent 70%);top:-150px;left:-150px}
+.orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(91,111,255,.06),transparent 70%);bottom:-150px;right:-150px}
+
+/* LAYOUT */
+.layout{display:flex;min-height:100vh;position:relative;z-index:1}
+
+/* SIDEBAR */
+.sidebar{width:240px;flex-shrink:0;background:rgba(255,255,255,.02);border-right:1px solid var(--bd);display:flex;flex-direction:column;padding:1.4rem 1rem;position:fixed;top:0;left:0;bottom:0;z-index:50}
+.sb-logo{display:flex;align-items:center;gap:.55rem;text-decoration:none;color:var(--text);margin-bottom:2rem;padding:.3rem .4rem}
+.logo-ic{width:30px;height:30px;flex-shrink:0}
+.logo-t{font-size:1.15rem;font-weight:700;letter-spacing:-.02em}
+.logo-t span{background:linear-gradient(135deg,var(--acc),var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sb-nav{display:flex;flex-direction:column;gap:.2rem;flex:1}
+.sb-item{display:flex;align-items:center;gap:.7rem;padding:.7rem .8rem;border-radius:10px;text-decoration:none;color:var(--muted2);font-size:.88rem;font-weight:400;transition:all .2s;border:none;background:transparent;cursor:pointer;width:100%;text-align:left}
+.sb-item:hover{background:rgba(255,255,255,.04);color:var(--text)}
+.sb-item.active{background:rgba(0,206,255,.1);color:var(--acc)}
+.sb-item .ic{width:18px;height:18px;opacity:.7;flex-shrink:0}
+.sb-item.active .ic{opacity:1}
+.sb-sep{height:1px;background:var(--bd);margin:.6rem 0}
+.sb-plan{background:linear-gradient(135deg,rgba(0,206,255,.08),rgba(91,111,255,.08));border:1px solid rgba(0,206,255,.15);border-radius:12px;padding:.85rem;margin-top:auto}
+.sb-plan-name{font-size:.75rem;font-weight:600;color:var(--acc);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem}
+.sb-plan-desc{font-size:.78rem;color:var(--muted);margin-bottom:.6rem}
+.sb-upgrade{width:100%;padding:.5rem;border-radius:8px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#060612;font-size:.78rem;font-weight:600;border:none;cursor:pointer;font-family:'Outfit',sans-serif}
+
+/* MAIN */
+.main{margin-left:240px;flex:1;padding:2rem 2.5rem;min-height:100vh}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:2.2rem}
+.topbar-left h1{font-family:'Fraunces',serif;font-weight:300;font-size:1.7rem;letter-spacing:-.02em}
+.topbar-left p{font-size:.87rem;color:var(--muted);margin-top:.2rem}
+.topbar-right{display:flex;align-items:center;gap:.8rem}
+.user-chip{display:flex;align-items:center;gap:.6rem;background:var(--card);border:1px solid var(--bd);border-radius:100px;padding:.4rem .9rem .4rem .5rem}
+.user-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--acc2),var(--acc));display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:600;color:#060612;flex-shrink:0}
+.user-email{font-size:.82rem;color:var(--muted2);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btn-signout{padding:.45rem 1rem;border-radius:100px;border:1px solid var(--bd);background:transparent;color:var(--muted);font-size:.8rem;font-family:'Outfit',sans-serif;cursor:pointer;transition:all .2s}
+.btn-signout:hover{border-color:rgba(255,68,102,.35);color:#FF7090}
+
+/* STAT CARDS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+.stat-card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:1.3rem}
+.stat-card-label{font-size:.76rem;color:var(--muted);font-weight:400;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
+.stat-card-val{font-family:'Fraunces',serif;font-size:2rem;font-weight:400;line-height:1}
+.stat-card-sub{font-size:.75rem;color:var(--muted);margin-top:.3rem}
+.stat-pos{color:#00FF94}
+.stat-neg{color:#FF4466}
+
+/* EMPTY STATE */
+.empty{background:var(--card);border:1px solid var(--bd);border-radius:20px;padding:3rem 2rem;text-align:center;margin-bottom:1.5rem}
+.empty-icon{font-size:2.5rem;margin-bottom:1rem;opacity:.5}
+.empty h3{font-size:1.05rem;font-weight:600;margin-bottom:.5rem}
+.empty p{font-size:.88rem;color:var(--muted);font-weight:300;max-width:360px;margin:0 auto 1.5rem}
+.btn-p{padding:.8rem 1.8rem;border-radius:100px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#060612;font-family:'Outfit',sans-serif;font-weight:600;font-size:.9rem;border:none;cursor:pointer;box-shadow:0 4px 20px rgba(0,206,255,.28);transition:transform .2s,box-shadow .2s}
+.btn-p:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(0,206,255,.4)}
+
+/* WELCOME */
+.welcome-card{background:linear-gradient(135deg,rgba(0,206,255,.07),rgba(91,111,255,.07));border:1px solid rgba(0,206,255,.18);border-radius:20px;padding:1.8rem;margin-bottom:2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.welcome-card h2{font-size:1.1rem;font-weight:600;margin-bottom:.3rem}
+.welcome-card p{font-size:.87rem;color:var(--muted2);font-weight:300}
+.steps-row{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem}
+.step-chip{padding:.35rem .85rem;border-radius:100px;font-size:.76rem;font-weight:500;display:flex;align-items:center;gap:.4rem}
+.step-done{background:rgba(0,255,148,.1);color:#00FF94;border:1px solid rgba(0,255,148,.2)}
+.step-todo{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--bd)}
+
+/* LOADING */
+.loading{display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:1rem;color:var(--muted)}
+.spinner{width:36px;height:36px;border:2.5px solid var(--bd);border-top-color:var(--acc);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:900px){
+  .sidebar{display:none}
+  .main{margin-left:0;padding:1.5rem}
+  .stats{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:500px){
+  .stats{grid-template-columns:1fr}
+  .topbar{flex-direction:column;align-items:flex-start;gap:1rem}
+}
+  </style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+
+<div id="loadingScreen" class="loading">
+  <div class="spinner"></div>
+  <span>Loading your dashboard...</span>
+</div>
+
+<div class="layout" id="app" style="display:none">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <a href="/" class="sb-logo">
+      <svg class="logo-ic" viewBox="0 0 100 100">
+        <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs>
+        <rect x="2" y="2" width="96" height="96" rx="26" fill="#0c1424" stroke="rgba(120,170,255,.18)" stroke-width="1"/>
+        <path d="M50 18 C53 41,55 45,82 50 C55 55,53 59,50 82 C47 59,45 55,18 50 C45 45,47 41,50 18 Z" fill="url(#g)"/>
+        <circle cx="73" cy="29" r="4.6" fill="#22d3ee"/>
+      </svg>
+      <span class="logo-t">Rez<span>pona</span></span>
+    </a>
+
+    <nav class="sb-nav">
+      <a class="sb-item active" href="#">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </a>
+      <a class="sb-item" href="#">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        My venues
+      </a>
+      <a class="sb-item" href="#">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Reviews
+      </a>
+      <a class="sb-item" href="#">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Analytics
+      </a>
+      <div class="sb-sep"></div>
+      <a class="sb-item" href="#">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
+        Settings
+      </a>
+    </nav>
+
+    <div class="sb-plan">
+      <div class="sb-plan-name" id="planName">Starter</div>
+      <div class="sb-plan-desc">14-day free trial</div>
+      <button class="sb-upgrade" onclick="window.location.href='/#pricing'">Upgrade plan</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1>Dashboard</h1>
+        <p id="greeting">Good to see you!</p>
+      </div>
+      <div class="topbar-right">
+        <div class="user-chip">
+          <div class="user-av" id="userAv">?</div>
+          <span class="user-email" id="userEmail">Loading...</span>
+        </div>
+        <button class="btn-signout" onclick="signOut()">Sign out</button>
+      </div>
+    </div>
+
+    <!-- Welcome / setup card -->
+    <div class="welcome-card">
+      <div>
+        <h2>👋 Welcome to Rezpona!</h2>
+        <p>Complete setup to start managing your reviews automatically.</p>
+        <div class="steps-row">
+          <span class="step-chip step-done">✓ Account created</span>
+          <span class="step-chip step-todo">◦ Connect Google Business</span>
+          <span class="step-chip step-todo">◦ Add your venue</span>
+        </div>
+      </div>
+      <button class="btn-p" onclick="alert('Google Business integration coming soon!')">Connect Google →</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-card-label">⭐ Average rating</div>
+        <div class="stat-card-val">—</div>
+        <div class="stat-card-sub">No reviews yet</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">📨 Reviews this month</div>
+        <div class="stat-card-val">0</div>
+        <div class="stat-card-sub">Connect Google to start</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">✅ Replies sent</div>
+        <div class="stat-card-val">0</div>
+        <div class="stat-card-sub">Ready to draft</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">⏱ Avg. reply time</div>
+        <div class="stat-card-val">—</div>
+        <div class="stat-card-sub">Target: under 30s</div>
+      </div>
+    </div>
+
+    <!-- Empty reviews -->
+    <div class="empty">
+      <div class="empty-icon">📬</div>
+      <h3>No reviews yet</h3>
+      <p>Connect your Google Business Profile to start pulling in reviews and drafting replies automatically.</p>
+      <button class="btn-p" onclick="alert('Google Business integration coming soon!')">Connect Google Business</button>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  const SUPABASE_URL = 'https://upepsbyqqefdaygmjxie.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZXBzYnlxcWVmZGF5Z21qeGllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NDM1NjMsImV4cCI6MjA5NjMxOTU2M30.XZNA0TmVZQmPeoniut3fkOyj1A6-lmfHvhvx5hMBaTc';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  async function init() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) {
+      window.location.href = '/login.html';
+      return;
+    }
+    showDashboard(session.user);
+  }
+
+  function showDashboard(user) {
+    document.getElementById('loadingScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+
+    const email = user.email || '';
+    const name  = user.user_metadata?.full_name || email.split('@')[0] || 'there';
+    const initials = name.charAt(0).toUpperCase();
+
+    document.getElementById('userEmail').textContent = email;
+    document.getElementById('userAv').textContent = initials;
+
+    const hour = new Date().getHours();
+    const greet = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+    document.getElementById('greeting').textContent = `${greet}, ${name.split(' ')[0]}!`;
+  }
+
+  async function signOut() {
+    await sb.auth.signOut();
+    window.location.href = '/';
+  }
+
+  sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_OUT') window.location.href = '/';
+  });
+
+  init();
+</script>
+</body>
+</html>
