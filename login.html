@@ -164,6 +164,9 @@ footer a:hover{color:var(--text)}
     if (data.session) window.location.href = '/dashboard.html';
   });
 
+  // Auto-switch to signup tab if URL has #signup
+  if (window.location.hash === '#signup') switchTab('signup');
+
   // Handle OAuth redirect
   sb.auth.onAuthStateChange((event, session) => {
     if (event === 'SIGNED_IN' && session) {
