@@ -55,6 +55,8 @@ nav.s{background:rgba(6,6,18,.82);backdrop-filter:blur(22px) saturate(160%);-web
 .btn-login{color:var(--muted2);font-size:.86rem;font-weight:500;text-decoration:none;transition:color .2s;white-space:nowrap}
 .btn-login:hover{color:var(--text)}
 @media(max-width:768px){.btn-login{display:none}}
+/* When mobile menu is open, hide the navbar CTA so it doesn't duplicate the one inside the menu */
+@media(max-width:768px){body.menu-open .nav-r .btn-cta{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,visibility .2s}}
 
 /* Hamburger */
 .hamburger{display:none;width:42px;height:42px;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;background:none;border:none;-webkit-tap-highlight-color:transparent;z-index:130;border-radius:10px}
@@ -77,6 +79,8 @@ nav.s{background:rgba(6,6,18,.82);backdrop-filter:blur(22px) saturate(160%);-web
 .mob-menu a:not(.btn-cta):active{color:var(--acc)}
 .mob-menu .btn-cta{margin-top:1.2rem;font-size:1rem;padding:.8rem 2rem;opacity:0;transform:translateY(12px)}
 .mob-menu.open .btn-cta{opacity:1;transform:none;transition:.3s .36s}
+/* Short screens (landscape phones): allow the menu to scroll instead of clipping centered content */
+@media(max-height:560px){.mob-menu{justify-content:flex-start;padding:5rem 1rem 2rem;overflow-y:auto}.mob-menu a:not(.btn-cta){font-size:1.25rem;padding:.5rem 1rem}}
 
 /* ── HERO ── */
 .hero{min-height:100vh;min-height:100svh;display:flex;align-items:center;padding:7.5rem 1.5rem 4rem}
@@ -390,17 +394,6 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
 <div class="bg-orb orb2"></div>
 <div class="grain"></div>
 
-<!-- MOBILE MENU -->
-<div class="mob-menu" id="mobMenu">
-  <a href="#features" data-mc>Features</a>
-  <a href="#how" data-mc>How it works</a>
-  <a href="#demo" data-mc>Try it free</a>
-  <a href="#pricing" data-mc>Pricing</a>
-  <a href="#faq" data-mc>FAQ</a>
-  <a href="/login.html" data-mc>Log in</a>
-  <a href="/login.html#signup" class="btn-cta" data-mc>Start free →</a>
-</div>
-
 <div class="page">
 
 <!-- NAV -->
@@ -421,6 +414,17 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
     </div>
   </div>
 </nav>
+
+<!-- MOBILE MENU (inside .page so the navbar/hamburger stay above it and the X stays clickable) -->
+<div class="mob-menu" id="mobMenu">
+  <a href="#features" data-mc>Features</a>
+  <a href="#how" data-mc>How it works</a>
+  <a href="#demo" data-mc>Try it free</a>
+  <a href="#pricing" data-mc>Pricing</a>
+  <a href="#faq" data-mc>FAQ</a>
+  <a href="/login.html" data-mc>Log in</a>
+  <a href="/login.html#signup" class="btn-cta" data-mc>Start free →</a>
+</div>
 
 <!-- HERO -->
 <section class="hero" id="hero">
@@ -601,7 +605,7 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
       <div class="pdesc">For a single venue getting started.</div>
       <div class="pdiv"></div>
       <ul class="pfeats"><li>Up to 30 reviews per month</li><li>Replies in 30+ languages</li><li>One-click publishing</li><li>Google My Business integration</li><li>Email notifications</li></ul>
-      <button class="pbtn pb-o" style="border:1px solid var(--bd)" onclick="location.href='/login.html'">Start free trial</button>
+      <button class="pbtn pb-o" style="border:1px solid var(--bd)" onclick="location.href='/login.html#signup'">Start free trial</button>
     </div>
     <div class="pc pop reveal d1">
       <div class="pop-b">Most popular</div>
@@ -610,7 +614,7 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
       <div class="pdesc">For growing restaurants &amp; hotels.</div>
       <div class="pdiv"></div>
       <ul class="pfeats"><li>Unlimited reviews</li><li>Monthly performance reports</li><li>Priority support</li><li>Sentiment &amp; topic analytics</li><li>Autopilot mode</li><li>SMS &amp; Slack notifications</li></ul>
-      <button class="pbtn pb-f" onclick="location.href='/login.html'">Start free trial &rarr;</button>
+      <button class="pbtn pb-f" onclick="location.href='/login.html#signup'">Start free trial &rarr;</button>
     </div>
     <div class="pc reveal d2">
       <div class="pname">Agency</div>
@@ -644,7 +648,7 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
   <div class="reveal"><div class="seye">Get started</div></div>
   <h2 class="stitle reveal">Turn your reviews into<br><em>your best asset.</em></h2>
   <p class="ssub reveal">Join 500+ HoReCa businesses already managing their reputation with Rezpona.</p>
-  <div class="cta-btns reveal"><a href="/login.html" class="btn-p">Start free &rarr;</a><a href="mailto:rezpona@gmail.com" class="btn-g">Book a demo</a></div>
+  <div class="cta-btns reveal"><a href="/login.html#signup" class="btn-p">Start free &rarr;</a><a href="mailto:rezpona@gmail.com" class="btn-g">Book a demo</a></div>
   <div class="cta-note reveal">No credit card &nbsp;&middot;&nbsp; 2-minute setup &nbsp;&middot;&nbsp; Cancel anytime</div>
 </section>
 
@@ -709,7 +713,13 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
     scene.rotation.y+=.00016;renderer.render(scene,cam);
   }
   loop();
-  let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{cam.aspect=window.innerWidth/window.innerHeight;cam.updateProjectionMatrix();renderer.setSize(window.innerWidth,window.innerHeight)},150)},{passive:true});
+  let rt,lastW=window.innerWidth;
+  window.addEventListener('resize',()=>{
+    // On mobile, ignore height-only resizes (browser address bar show/hide) to avoid canvas jank
+    if(window.innerWidth<768 && window.innerWidth===lastW)return;
+    lastW=window.innerWidth;
+    clearTimeout(rt);rt=setTimeout(()=>{cam.aspect=window.innerWidth/window.innerHeight;cam.updateProjectionMatrix();renderer.setSize(window.innerWidth,window.innerHeight)},150);
+  },{passive:true});
 })();
 
 /* ════════ PHONE TILT (desktop only) ════════ */
@@ -741,10 +751,14 @@ const hamb=document.getElementById('hamb'),mob=document.getElementById('mobMenu'
 function toggleMenu(open){
   const o=open!==undefined?open:!mob.classList.contains('open');
   mob.classList.toggle('open',o);hamb.classList.toggle('active',o);
+  document.body.classList.toggle('menu-open',o);
   document.body.style.overflow=o?'hidden':'';
 }
+/* Close menu with Escape key for accessibility */
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&mob.classList.contains('open'))toggleMenu(false);});
 hamb.addEventListener('click',()=>toggleMenu());
 document.querySelectorAll('[data-mc]').forEach(a=>a.addEventListener('click',()=>toggleMenu(false)));
+mob.addEventListener('click',e=>{if(e.target===mob)toggleMenu(false);});
 
 /* ════════ FEATURE CARD GLOW (desktop) ════════ */
 if(window.matchMedia('(pointer:fine)').matches){
