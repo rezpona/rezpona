@@ -194,6 +194,27 @@ footer a:hover{color:var(--text)}
     el.className = 'msg';
   }
 
+  function showConfirmScreen(email) {
+    document.querySelector('.card-body').innerHTML = `
+      <div style="text-align:center;padding:1rem 0">
+        <div style="font-size:2.8rem;margin-bottom:1rem">📧</div>
+        <h2 style="font-size:1.2rem;font-weight:600;margin-bottom:.6rem;color:var(--text)">Check your email</h2>
+        <p style="font-size:.9rem;color:var(--muted);font-weight:300;margin-bottom:.4rem">
+          We sent a confirmation link to:
+        </p>
+        <p style="font-size:.95rem;font-weight:600;color:var(--acc);margin-bottom:1.4rem">${email}</p>
+        <p style="font-size:.85rem;color:var(--muted);font-weight:300;line-height:1.6;margin-bottom:1.6rem">
+          Click the link in the email to activate your account.<br>
+          Check your spam folder if you don't see it.
+        </p>
+        <button onclick="location.reload()" style="padding:.7rem 1.8rem;border-radius:100px;border:1px solid var(--bd);background:transparent;color:var(--muted2);font-family:'Outfit',sans-serif;font-size:.88rem;cursor:pointer;">
+          Back to sign in
+        </button>
+      </div>
+    `;
+    document.getElementById('cardFoot').innerHTML = '';
+  }
+
   async function signInGoogle() {
     const { error } = await sb.auth.signInWithOAuth({
       provider: 'google',
@@ -220,11 +241,21 @@ footer a:hover{color:var(--text)}
           options: { data: { full_name: name } }
         });
         if (error) throw error;
-        showMsg('Account created! Check your email to confirm, then sign in.', 'ok');
-        switchTab('signin');
+        // Show success screen instead of just a message
+        showConfirmScreen(email);
+        return;
       } else {
         const { error } = await sb.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        if (error) {
+          if (error.message.toLowerCase().includes('email not confirmed')) {
+            showMsg('Please check your email and click the confirmation link before signing in.', 'err');
+          } else if (error.message.toLowerCase().includes('invalid login')) {
+            showMsg('Wrong email or password. Please try again.', 'err');
+          } else {
+            throw error;
+          }
+          return;
+        }
         window.location.href = '/dashboard.html';
       }
     } catch (err) {
