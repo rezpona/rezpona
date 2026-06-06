@@ -150,7 +150,7 @@ nav.s{background:rgba(6,6,18,.82);backdrop-filter:blur(22px) saturate(160%);-web
 .tbar{padding:3rem 1.5rem}
 .tbar-i{max-width:1140px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:3rem;flex-wrap:wrap}
 .tstat{text-align:center}
-.tstat-n{font-family:'Fraunces',serif;font-size:2.3rem;font-weight:400;background:linear-gradient(135deg,var(--text),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.tstat-n{font-family:'Fraunces',serif;font-size:2.3rem;font-weight:400;background:linear-gradient(135deg,var(--text),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
 .tstat-l{font-size:.78rem;color:var(--muted2);font-weight:300;margin-top:.3rem}
 .tsep{width:1px;height:46px;background:var(--bd);flex-shrink:0}
 
@@ -353,7 +353,8 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
   .phone-scene{height:430px;order:-1}
   .phone-scene::before{width:280px;height:280px}
   .phone-frame{width:218px;height:444px;border-radius:38px}
-  .tbar-i{gap:1.6rem 2rem}
+  .tbar-i{display:grid;grid-template-columns:repeat(2,1fr);gap:2.2rem 1rem;max-width:360px}
+  .tstat{width:100%}
   .tsep{display:none}
   .tstat-n{font-size:2rem}
   .fgrid{grid-template-columns:1fr}
