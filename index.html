@@ -596,7 +596,7 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
   <div class="container sh c reveal">
     <div class="seye">Pricing</div>
     <h2 class="stitle">Simple, transparent<br><em>pricing</em></h2>
-    <p class="ssub">14-day free trial. No credit card required. Cancel anytime.</p>
+    <p class="ssub">Free to get started. No credit card required.</p>
   </div>
   <div class="pgrid">
     <div class="pc reveal">
@@ -605,7 +605,7 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
       <div class="pdesc">For a single venue getting started.</div>
       <div class="pdiv"></div>
       <ul class="pfeats"><li>Up to 30 reviews per month</li><li>Replies in 30+ languages</li><li>One-click publishing</li><li>Google My Business integration</li><li>Email notifications</li></ul>
-      <button class="pbtn pb-o" style="border:1px solid var(--bd)" onclick="location.href='/login.html#signup'">Start free trial</button>
+      <button class="pbtn pb-o" style="border:1px solid var(--bd)" onclick="location.href='/login.html#signup'">Start for free</button>
     </div>
     <div class="pc pop reveal d1">
       <div class="pop-b">Most popular</div>
@@ -614,7 +614,7 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
       <div class="pdesc">For growing restaurants &amp; hotels.</div>
       <div class="pdiv"></div>
       <ul class="pfeats"><li>Unlimited reviews</li><li>Monthly performance reports</li><li>Priority support</li><li>Sentiment &amp; topic analytics</li><li>Autopilot mode</li><li>SMS &amp; Slack notifications</li></ul>
-      <button class="pbtn pb-f" onclick="location.href='/login.html#signup'">Start free trial &rarr;</button>
+      <button class="pbtn pb-f" onclick="location.href='/login.html#signup'">Start for free &rarr;</button>
     </div>
     <div class="pc reveal d2">
       <div class="pname">Agency</div>
@@ -637,7 +637,7 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
       <div class="fi reveal d2"><button class="fq" data-faq>Can I edit the replies before publishing?<span class="fchev">&#8964;</span></button><div class="fbody"><div class="fbody-in"><div class="fans">Absolutely. Every reply is a draft — edit it, rewrite it, or regenerate it before publishing. Nothing goes live without your approval unless you've explicitly enabled Autopilot mode, which you can toggle on or off anytime.</div></div></div></div>
       <div class="fi reveal d1"><button class="fq" data-faq>Is it suitable for multiple restaurant locations?<span class="fchev">&#8964;</span></button><div class="fbody"><div class="fbody-in"><div class="fans">Yes — our Agency plan is built exactly for this. Manage unlimited locations from one dashboard, assign team members to specific venues, and get consolidated analytics across your whole portfolio.</div></div></div></div>
       <div class="fi reveal d2"><button class="fq" data-faq>Do I need technical skills to use it?<span class="fchev">&#8964;</span></button><div class="fbody"><div class="fbody-in"><div class="fans">Not at all. Rezpona is built for busy hospitality professionals, not developers. Setup takes under 2 minutes — just connect your Google My Business profile and you're ready to go.</div></div></div></div>
-      <div class="fi reveal d3"><button class="fq" data-faq>Can I cancel my subscription anytime?<span class="fchev">&#8964;</span></button><div class="fbody"><div class="fbody-in"><div class="fans">Yes, cancel anytime — no questions asked, no cancellation fees. Your account stays active until the end of your billing period, and you get a full 14-day free trial before any charge.</div></div></div></div>
+      <div class="fi reveal d3"><button class="fq" data-faq>Can I cancel my subscription anytime?<span class="fchev">&#8964;</span></button><div class="fbody"><div class="fbody-in"><div class="fans">Yes, cancel anytime — no questions asked, no cancellation fees.</div></div></div></div>
     </div>
   </div>
 </section>
@@ -762,10 +762,15 @@ mob.addEventListener('click',e=>{if(e.target===mob)toggleMenu(false);});
 /* ════════ FEATURE CARD GLOW (desktop) ════════ */
 if(window.matchMedia('(pointer:fine)').matches){
   document.querySelectorAll('.fc').forEach(c=>{
+    let raf=0,lx=0,ly=0;
     c.addEventListener('mousemove',e=>{
-      const r=c.getBoundingClientRect();
-      c.style.setProperty('--mx',((e.clientX-r.left)/r.width*100)+'%');
-      c.style.setProperty('--my',((e.clientY-r.top)/r.height*100)+'%');
+      lx=e.clientX;ly=e.clientY;
+      if(raf)return; // throttle to one update per frame (avoids layout thrashing)
+      raf=requestAnimationFrame(()=>{
+        raf=0;const r=c.getBoundingClientRect();
+        c.style.setProperty('--mx',((lx-r.left)/r.width*100)+'%');
+        c.style.setProperty('--my',((ly-r.top)/r.height*100)+'%');
+      });
     },{passive:true});
   });
 }
@@ -794,8 +799,21 @@ document.querySelectorAll('[data-faq]').forEach(btn=>btn.addEventListener('click
 (function(){
   const el=document.getElementById('phoneTxt');if(!el)return;
   const msgs=["Hi Maria, thank you for the wonderful visit — it genuinely made our day to read this!","Hi Peter, thanks for the honest note. You're right about the wait, and we're working hard to fix it.","Hi Anna, we're sorry this one fell short. We'd love the chance to make it right — please reach out."];
-  let mi=0,ci=0;
-  (function type(){if(ci<msgs[mi].length){el.innerHTML=msgs[mi].slice(0,++ci)+'<span class="tcursor"></span>';setTimeout(type,34)}else setTimeout(()=>{mi=(mi+1)%msgs.length;ci=0;type()},2600)})();
+  let mi=0,ci=0,visible=false,scheduled=false;
+  function tick(){
+    scheduled=false;
+    if(!visible||document.hidden)return; // pause when phone is off-screen or tab is hidden
+    if(ci<msgs[mi].length){el.innerHTML=msgs[mi].slice(0,++ci)+'<span class="tcursor"></span>';schedule(34,false);}
+    else schedule(2600,true);
+  }
+  function schedule(ms,cycle){
+    if(scheduled)return;scheduled=true;
+    setTimeout(()=>{if(cycle){mi=(mi+1)%msgs.length;ci=0;}tick();},ms);
+  }
+  function resume(){if(visible&&!document.hidden&&!scheduled)tick();}
+  const target=el.closest('.phone-frame')||el;
+  new IntersectionObserver(e=>{visible=e[0].isIntersecting;resume();},{threshold:0}).observe(target);
+  document.addEventListener('visibilitychange',resume);
 })();
 
 /* ════════ HOW PREVIEW TYPING ════════ */
