@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Auth / app pages have no SEO value and should not be indexed
+Disallow: /dashboard.html
+Disallow: /login.html
+
+Sitemap: https://rezpona.com/sitemap.xml
