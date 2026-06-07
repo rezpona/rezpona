@@ -9,6 +9,69 @@
   <meta name="description" content="AI review management for restaurants, hotels & cafés. Rezpona writes thoughtful, on-brand replies to every guest review in seconds. No credit card required.">
   <link rel="canonical" href="https://rezpona.com/">
   <meta name="robots" content="index, follow">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://rezpona.com/#organization",
+        "name": "Rezpona",
+        "url": "https://rezpona.com/",
+        "email": "rezpona@gmail.com",
+        "description": "AI review management platform that writes thoughtful, on-brand replies to guest reviews for restaurants, hotels and cafés."
+      },
+      {
+        "@type": "SoftwareApplication",
+        "name": "Rezpona",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web",
+        "url": "https://rezpona.com/",
+        "description": "Rezpona reads every guest review and writes a thoughtful, on-brand reply in seconds. Built for restaurants, hotels and cafés.",
+        "offers": [
+          { "@type": "Offer", "name": "Starter", "price": "19", "priceCurrency": "EUR" },
+          { "@type": "Offer", "name": "Pro", "price": "39", "priceCurrency": "EUR" },
+          { "@type": "Offer", "name": "Agency", "price": "99", "priceCurrency": "EUR" }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Does Rezpona support all languages?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes. Rezpona automatically detects the language of each incoming review and replies in the same language. We currently support 40+ languages — all major European languages, plus Arabic, Japanese, Mandarin and more." }
+          },
+          {
+            "@type": "Question",
+            "name": "How secure is the Google integration?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Rezpona connects to Google My Business via the official OAuth 2.0 flow — we never see or store your Google password. All data is encrypted in transit and at rest, and you can revoke access at any time from your Google account." }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I edit the replies before publishing?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Absolutely. Every reply is a draft — edit it, rewrite it, or regenerate it before publishing. Nothing goes live without your approval unless you've explicitly enabled Autopilot mode, which you can toggle on or off anytime." }
+          },
+          {
+            "@type": "Question",
+            "name": "Is it suitable for multiple restaurant locations?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes — our Agency plan is built exactly for this. Manage unlimited locations from one dashboard, assign team members to specific venues, and get consolidated analytics across your whole portfolio." }
+          },
+          {
+            "@type": "Question",
+            "name": "Do I need technical skills to use it?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Not at all. Rezpona is built for busy hospitality professionals, not developers. Setup takes under 2 minutes — just connect your Google My Business profile and you're ready to go." }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I cancel my subscription anytime?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes, cancel anytime — no questions asked, no cancellation fees." }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,400;0,9..144,500;1,9..144,200;1,9..144,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
