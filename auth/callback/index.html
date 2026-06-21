@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#060612">
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <title>Signing you in… — Rezpona</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#060612;--acc:#00CEFF;--acc2:#5B6FFF;--text:#EEF2FF;--muted:#6B7B92;--bd:rgba(255,255,255,0.075);--err:#FF4466}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem 1.5rem;overflow-x:hidden}
+.bg-orb{position:fixed;border-radius:50%;z-index:0;pointer-events:none}
+.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(0,206,255,.07),transparent 70%);top:-200px;left:-200px}
+.orb2{width:600px;height:600px;background:radial-gradient(circle,rgba(91,111,255,.07),transparent 70%);bottom:-200px;right:-200px}
+.box{position:relative;z-index:1;text-align:center;max-width:420px}
+.logo-ic{height:34px;width:auto;margin-bottom:1.6rem;filter:drop-shadow(0 2px 10px rgba(0,206,255,.3))}
+.spinner{width:38px;height:38px;border-radius:50%;border:3px solid rgba(255,255,255,.12);border-top-color:var(--acc);margin:0 auto 1.3rem;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+h1{font-family:'Fraunces',serif;font-weight:200;font-size:1.6rem;letter-spacing:-.02em;margin-bottom:.5rem}
+p{font-size:.9rem;color:var(--muted);font-weight:300;line-height:1.6}
+.err-ic{font-size:2.4rem;margin-bottom:1rem}
+.btn{display:inline-block;margin-top:1.5rem;padding:.7rem 1.8rem;border-radius:100px;border:1px solid var(--bd);background:transparent;color:var(--text);font-family:'Outfit',sans-serif;font-size:.88rem;cursor:pointer;text-decoration:none;transition:border-color .2s,background .2s}
+.btn:hover{border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.04)}
+.hidden{display:none}
+  </style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+
+<div class="box">
+  <div id="loading">
+    <div class="spinner"></div>
+    <h1>Signing you in…</h1>
+    <p>Connecting your Google Business Profile. This only takes a moment.</p>
+  </div>
+  <div id="error" class="hidden">
+    <img class="logo-ic" src="/logo.png" alt="Rezpona logo">
+    <div class="err-ic">&#9888;&#65039;</div>
+    <h1>Sign-in failed</h1>
+    <p id="errText">Something went wrong while signing you in.</p>
+    <a class="btn" href="/login.html">Back to sign in</a>
+  </div>
+</div>
+
+<script>
+  const SUPABASE_URL = 'https://upepsbyqqefdaygmjxie.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZXBzYnlxcWVmZGF5Z21qeGllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NDM1NjMsImV4cCI6MjA5NjMxOTU2M30.XZNA0TmVZQmPeoniut3fkOyj1A6-lmfHvhvx5hMBaTc';
+  // Must match the login page: PKCE + detectSessionInUrl so the ?code= is exchanged automatically.
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: { flowType: 'pkce', detectSessionInUrl: true, persistSession: true, autoRefreshToken: true }
+  });
+
+  const GOOGLE_SCOPE = 'https://www.googleapis.com/auth/business.manage';
+
+  function fail(msg) {
+    document.getElementById('loading').classList.add('hidden');
+    document.getElementById('error').classList.remove('hidden');
+    if (msg) document.getElementById('errText').textContent = msg;
+  }
+
+  // Hand the Google tokens to the gbp-connect Edge Function, which lists the user's
+  // Business Profile locations and saves them as venues + google_connections (tokens
+  // are stored server-side, per venue). Nothing sensitive is written from the browser.
+  async function connectVenues(session) {
+    const providerToken = session.provider_token || null;
+    const refreshToken = session.provider_refresh_token || null;
+    if (!providerToken) return; // nothing to connect (e.g. token not returned) — dashboard will prompt reconnect
+    try {
+      const res = await fetch(SUPABASE_URL + '/functions/v1/gbp-connect', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + session.access_token,
+          'apikey': SUPABASE_KEY,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          access_token: providerToken,
+          refresh_token: refreshToken,
+          google_email: session.user?.email || null
+        })
+      });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        console.error('gbp-connect failed:', j.error || res.status);
+      }
+    } catch (e) {
+      console.error('gbp-connect error:', e);
+    }
+  }
+
+  let finished = false;
+  async function finish() {
+    if (finished) return;
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) { fail('We could not establish a session. Please try signing in again.'); return; }
+    finished = true;
+    try { localStorage.setItem('rz_google', '1'); } catch (e) { /* ignore */ }
+    await connectVenues(session);   // best-effort; dashboard works even if Google API isn't approved yet
+    window.location.replace('/dashboard.html');
+  }
+
+  // If Google/Supabase returned an error in the URL, show it.
+  const qp = new URLSearchParams(window.location.search);
+  const hp = new URLSearchParams((window.location.hash || '').replace(/^#/, ''));
+  const oauthError = qp.get('error_description') || qp.get('error') || hp.get('error_description') || hp.get('error');
+
+  if (oauthError) {
+    fail(decodeURIComponent(oauthError));
+  } else {
+    // detectSessionInUrl exchanges the ?code= automatically; SIGNED_IN fires when it's done.
+    sb.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) finish();
+    });
+    // Fallback in case the session is already available (or the event fired before we subscribed).
+    setTimeout(finish, 1500);
+    // Last-resort timeout: if nothing happened, show an error instead of spinning forever.
+    setTimeout(() => { if (!finished) fail('Sign-in is taking too long. Please try again.'); }, 8000);
+  }
+</script>
+</body>
+</html>

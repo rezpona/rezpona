@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;1,9..144,200&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/reply-engine.js"></script>
   <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#060612;--bg2:#0a0a1c;--acc:#00CEFF;--acc2:#5B6FFF;--text:#EEF2FF;--muted:#6B7B92;--muted2:#8A99B2;--bd:rgba(255,255,255,0.075);--card:rgba(255,255,255,0.025)}
@@ -85,10 +86,55 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 .spinner{width:36px;height:36px;border:2.5px solid var(--bd);border-top-color:var(--acc);border-radius:50%;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+/* CONTROLS */
+.controls{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;margin-bottom:1.4rem}
+.controls select{padding:.6rem .9rem;border-radius:10px;background:var(--card);border:1px solid var(--bd);color:var(--text);font-family:'Outfit',sans-serif;font-size:.86rem;outline:none;cursor:pointer}
+.btn-ghost{padding:.6rem 1.1rem;border-radius:100px;border:1px solid var(--bd);background:transparent;color:var(--text);font-family:'Outfit',sans-serif;font-size:.84rem;cursor:pointer;transition:all .2s}
+.btn-ghost:hover{border-color:rgba(0,206,255,.35);color:var(--acc)}
+.btn-ghost:disabled{opacity:.5;cursor:default}
+
+/* AUTOPILOT TOGGLE */
+.mode-row{display:flex;align-items:center;gap:.7rem;margin-left:auto;background:var(--card);border:1px solid var(--bd);border-radius:100px;padding:.4rem .9rem}
+.mode-row .lbl{font-size:.82rem;color:var(--muted2)}
+.switch{position:relative;width:42px;height:23px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:rgba(255,255,255,.12);border-radius:100px;cursor:pointer;transition:.25s}
+.slider::before{content:'';position:absolute;width:17px;height:17px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.25s}
+.switch input:checked+.slider{background:linear-gradient(135deg,var(--acc),var(--acc2))}
+.switch input:checked+.slider::before{transform:translateX(19px)}
+.mode-tag{font-size:.78rem;font-weight:600;color:var(--acc)}
+
+/* REVIEW CARDS */
+.rev-list{display:flex;flex-direction:column;gap:1rem}
+.rev{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:1.3rem}
+.rev-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.6rem}
+.rev-who{display:flex;align-items:center;gap:.6rem}
+.rev-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--acc2),var(--acc));display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:600;color:#060612;flex-shrink:0}
+.rev-name{font-size:.9rem;font-weight:600}
+.rev-stars{font-size:.78rem;color:#FFB800;letter-spacing:1px}
+.rev-date{font-size:.74rem;color:var(--muted)}
+.rev-text{font-size:.9rem;color:var(--muted2);line-height:1.6;font-weight:300;margin-bottom:.9rem}
+.rev-reply-l{font-size:.74rem;color:var(--acc);font-weight:600;margin-bottom:.4rem;display:flex;align-items:center;gap:.4rem}
+.rev-reply-box{width:100%;min-height:90px;background:rgba(0,206,255,.03);border:1px solid rgba(0,206,255,.16);border-radius:12px;padding:.8rem .95rem;color:var(--text);font-family:'Outfit',sans-serif;font-size:.88rem;font-weight:300;line-height:1.6;resize:vertical;outline:none}
+.rev-reply-box:focus{border-color:rgba(0,206,255,.4)}
+.rev-actions{display:flex;align-items:center;gap:.6rem;margin-top:.7rem}
+.btn-publish{padding:.55rem 1.3rem;border-radius:100px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#060612;font-family:'Outfit',sans-serif;font-weight:600;font-size:.84rem;border:none;cursor:pointer;transition:transform .2s}
+.btn-publish:hover:not(:disabled){transform:translateY(-1px)}
+.btn-publish:disabled{opacity:.55;cursor:default}
+.btn-regen{padding:.55rem 1rem;border-radius:100px;border:1px solid var(--bd);background:transparent;color:var(--muted2);font-family:'Outfit',sans-serif;font-size:.82rem;cursor:pointer}
+.btn-regen:hover{color:var(--text);border-color:var(--bd)}
+.rev.published{border-color:rgba(0,255,148,.2)}
+.published-tag{font-size:.76rem;color:#00FF94;font-weight:600;display:flex;align-items:center;gap:.35rem}
+.published-reply{font-size:.86rem;color:var(--muted2);line-height:1.6;font-weight:300;background:rgba(0,255,148,.04);border:1px solid rgba(0,255,148,.14);border-radius:12px;padding:.8rem .95rem}
+.banner{background:rgba(255,184,0,.08);border:1px solid rgba(255,184,0,.25);color:#FFD479;border-radius:12px;padding:.9rem 1.1rem;font-size:.85rem;line-height:1.5;margin-bottom:1.4rem;display:none}
+.inline-msg{font-size:.82rem;color:var(--muted)}
+.inline-msg.err{color:#FF7090}
+
 @media(max-width:900px){
   .sidebar{display:none}
   .main{margin-left:0;padding:1.5rem}
   .stats{grid-template-columns:repeat(2,1fr)}
+  .mode-row{margin-left:0}
 }
 @media(max-width:500px){
   .stats{grid-template-columns:1fr}
@@ -161,50 +207,40 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
       </div>
     </div>
 
-    <!-- Welcome / setup card -->
-    <div class="welcome-card">
+    <!-- Connect state (shown when Google is not yet connected) -->
+    <div class="welcome-card" id="connectCard" style="display:none">
       <div>
-        <h2>👋 Welcome to Rezpona!</h2>
-        <p>Complete setup to start managing your reviews automatically.</p>
+        <h2>👋 Connect your Google Business Profile</h2>
+        <p>Authorize Rezpona to read your reviews and post replies on your behalf.</p>
         <div class="steps-row">
           <span class="step-chip step-done">✓ Account created</span>
-          <span class="step-chip step-todo">◦ Connect Google Business</span>
-          <span class="step-chip step-todo">◦ Add your venue</span>
+          <span class="step-chip step-todo">◦ Connect Google Business Profile</span>
+          <span class="step-chip step-todo">◦ Start replying</span>
         </div>
       </div>
-      <button class="btn-p" onclick="alert('Google Business integration coming soon!')">Connect Google →</button>
+      <button class="btn-p" onclick="connectGoogle()">Connect Google →</button>
     </div>
 
-    <!-- Stats -->
-    <div class="stats">
-      <div class="stat-card">
-        <div class="stat-card-label">⭐ Average rating</div>
-        <div class="stat-card-val">—</div>
-        <div class="stat-card-sub">No reviews yet</div>
+    <!-- Workspace (shown when connected) -->
+    <div id="workspace" style="display:none">
+      <div class="controls">
+        <select id="locationSel" onchange="selectVenue()"></select>
+        <select id="venueSel" onchange="changeVenueType()" title="Used to tailor reply wording">
+          <option value="restaurant">Restaurant</option>
+          <option value="hotel">Hotel</option>
+          <option value="cafe">Café</option>
+        </select>
+        <button class="btn-ghost" id="refreshBtn" onclick="loadReviews()">↻ Refresh reviews</button>
+        <div class="mode-row">
+          <span class="lbl">Autopilot</span>
+          <label class="switch"><input type="checkbox" id="autopilot" onchange="onAutopilotToggle()"><span class="slider"></span></label>
+          <span class="mode-tag" id="modeTag">Approve mode</span>
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-card-label">📨 Reviews this month</div>
-        <div class="stat-card-val">0</div>
-        <div class="stat-card-sub">Connect Google to start</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card-label">✅ Replies sent</div>
-        <div class="stat-card-val">0</div>
-        <div class="stat-card-sub">Ready to draft</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card-label">⏱ Avg. reply time</div>
-        <div class="stat-card-val">—</div>
-        <div class="stat-card-sub">Target: under 30s</div>
-      </div>
-    </div>
 
-    <!-- Empty reviews -->
-    <div class="empty">
-      <div class="empty-icon">📬</div>
-      <h3>No reviews yet</h3>
-      <p>Connect your Google Business Profile to start pulling in reviews and drafting replies automatically.</p>
-      <button class="btn-p" onclick="alert('Google Business integration coming soon!')">Connect Google Business</button>
+      <div class="banner" id="banner"></div>
+
+      <div id="reviewsArea" class="rev-list"></div>
     </div>
 
   </main>
@@ -213,41 +249,253 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 <script>
   const SUPABASE_URL = 'https://upepsbyqqefdaygmjxie.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZXBzYnlxcWVmZGF5Z21qeGllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NDM1NjMsImV4cCI6MjA5NjMxOTU2M30.XZNA0TmVZQmPeoniut3fkOyj1A6-lmfHvhvx5hMBaTc';
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: { flowType: 'pkce', detectSessionInUrl: true, persistSession: true, autoRefreshToken: true }
+  });
+  const GOOGLE_SCOPES = 'https://www.googleapis.com/auth/business.manage';
+  const FN_BASE = SUPABASE_URL + '/functions/v1/';
 
+  let currentUser = null;
+  let venues = [];            // rows from public.venues
+  let currentVenue = null;    // selected venue row
+  let lastReviews = [];       // last fetched reviews for re-render
+
+  /* ---------- bootstrap ---------- */
   async function init() {
     const { data: { session } } = await sb.auth.getSession();
-    if (!session) {
-      window.location.href = '/login.html';
-      return;
-    }
-    showDashboard(session.user);
+    if (!session) { window.location.href = '/login.html'; return; }
+    currentUser = session.user;
+    showDashboard(currentUser);
+    await refreshConnectionUI();
   }
 
   function showDashboard(user) {
     document.getElementById('loadingScreen').style.display = 'none';
     document.getElementById('app').style.display = 'flex';
-
     const email = user.email || '';
     const name  = user.user_metadata?.full_name || email.split('@')[0] || 'there';
-    const initials = name.charAt(0).toUpperCase();
-
     document.getElementById('userEmail').textContent = email;
-    document.getElementById('userAv').textContent = initials;
-
+    document.getElementById('userAv').textContent = name.charAt(0).toUpperCase();
     const hour = new Date().getHours();
     const greet = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
     document.getElementById('greeting').textContent = `${greet}, ${name.split(' ')[0]}!`;
   }
 
-  async function signOut() {
-    await sb.auth.signOut();
-    window.location.href = '/';
+  /* ---------- edge function caller ---------- */
+  async function fn(name, body) {
+    const { data: { session } } = await sb.auth.getSession();
+    const res = await fetch(FN_BASE + name, {
+      method: body ? 'POST' : 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + session.access_token,
+        'apikey': SUPABASE_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: body ? JSON.stringify(body) : undefined
+    });
+    const out = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(out.error || ('Request failed (' + res.status + ')'));
+    return out;
   }
 
-  sb.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_OUT') window.location.href = '/';
-  });
+  function banner(msg, isErr) {
+    const b = document.getElementById('banner');
+    if (!msg) { b.style.display = 'none'; return; }
+    b.textContent = msg;
+    b.style.display = 'block';
+    b.style.background = isErr ? 'rgba(255,68,102,.08)' : 'rgba(255,184,0,.08)';
+    b.style.borderColor = isErr ? 'rgba(255,68,102,.25)' : 'rgba(255,184,0,.25)';
+    b.style.color = isErr ? '#FF7090' : '#FFD479';
+  }
+
+  /* ---------- connection ---------- */
+  function connectGoogle() {
+    sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin + '/auth/callback',
+        scopes: GOOGLE_SCOPES,
+        queryParams: { access_type: 'offline', prompt: 'consent' }
+      }
+    });
+  }
+
+  async function refreshConnectionUI() {
+    await loadVenues();
+    const has = venues.length > 0;
+    document.getElementById('workspace').style.display = has ? 'block' : 'none';
+    const card = document.getElementById('connectCard');
+    card.style.display = has ? 'none' : 'flex';
+    // If they already did OAuth but no venues came back, explain (likely API approval pending).
+    if (!has && localStorage.getItem('rz_google') === '1') {
+      card.querySelector('h2').textContent = '⏳ Connected — waiting for venues';
+      card.querySelector('p').textContent = 'Your Google account is connected, but no Business Profile locations came back yet. If your Business Profile API access is still pending Google approval, your venues will appear here once it is granted.';
+      const b = card.querySelector('.btn-p'); if (b) b.textContent = 'Reconnect / retry';
+    }
+    if (has) { populateVenueSelector(); await selectVenue(); }
+  }
+
+  /* ---------- venues ---------- */
+  async function loadVenues() {
+    const { data } = await sb.from('venues')
+      .select('id,name,type,autopilot,google_location_id')
+      .eq('owner_id', currentUser.id).order('name');
+    venues = data || [];
+  }
+
+  function populateVenueSelector() {
+    document.getElementById('locationSel').innerHTML =
+      venues.map(v => `<option value="${v.id}">${escapeHtml(v.name)}</option>`).join('');
+  }
+
+  async function selectVenue() {
+    const id = document.getElementById('locationSel').value || (venues[0] && venues[0].id);
+    currentVenue = venues.find(v => v.id === id) || venues[0] || null;
+    if (!currentVenue) return;
+    document.getElementById('locationSel').value = currentVenue.id;
+    document.getElementById('venueSel').value = currentVenue.type || 'restaurant';
+    const auto = !!currentVenue.autopilot;
+    document.getElementById('autopilot').checked = auto;
+    document.getElementById('modeTag').textContent = auto ? 'Autopilot on' : 'Approve mode';
+    await loadReviews();
+  }
+
+  async function changeVenueType() {
+    if (!currentVenue) return;
+    currentVenue.type = document.getElementById('venueSel').value;
+    await sb.from('venues').update({ type: currentVenue.type }).eq('id', currentVenue.id);
+    renderReviews(lastReviews); // regenerate drafts with the new wording
+  }
+
+  async function onAutopilotToggle() {
+    if (!currentVenue) return;
+    const on = document.getElementById('autopilot').checked;
+    currentVenue.autopilot = on;
+    document.getElementById('modeTag').textContent = on ? 'Autopilot on' : 'Approve mode';
+    await sb.from('venues').update({ autopilot: on }).eq('id', currentVenue.id);
+    if (on) await runAutopilot();
+  }
+
+  /* ---------- reviews ---------- */
+  async function loadReviews() {
+    if (!currentVenue) return;
+    const area = document.getElementById('reviewsArea');
+    area.innerHTML = '<div class="loading" style="min-height:30vh"><div class="spinner"></div><span>Loading reviews…</span></div>';
+    try {
+      const r = await fn('gbp-reviews', { venue_id: currentVenue.id });
+      lastReviews = r.reviews || [];
+      banner('');
+      if (document.getElementById('autopilot').checked) { await runAutopilot(); return; }
+      renderReviews(lastReviews);
+    } catch (e) {
+      lastReviews = [];
+      area.innerHTML = '';
+      banner('Could not load reviews: ' + e.message, true);
+    }
+  }
+
+  function renderReviews(reviews) {
+    const area = document.getElementById('reviewsArea');
+    if (!reviews.length) {
+      area.innerHTML = '<div class="empty"><div class="empty-icon">📬</div><h3>No reviews yet</h3><p>New reviews for this venue will show up here, each with a ready-to-publish reply.</p></div>';
+      return;
+    }
+    area.innerHTML = reviews.map(rv => rv.replied ? publishedCard(rv) : draftCard(rv)).join('');
+  }
+
+  function stars(n) { n = n || 0; return '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5 - n); }
+  function initialOf(s) { return (s || '?').trim().charAt(0).toUpperCase(); }
+
+  function draftFor(rv) {
+    return RezponaReply.generate({
+      rating: rv.rating, comment: rv.text,
+      venue: (currentVenue && currentVenue.type) || 'restaurant'
+    });
+  }
+
+  function draftCard(rv) {
+    const id = cssId(rv.google_review_id);
+    const draft = draftFor(rv);
+    return `<div class="rev" id="rev-${id}">
+      <div class="rev-head">
+        <div class="rev-who"><div class="rev-av">${initialOf(rv.author_name)}</div>
+          <div><div class="rev-name">${escapeHtml(rv.author_name)}</div><div class="rev-date">${fmtDate(rv.review_created_at)}</div></div></div>
+        <div class="rev-stars">${stars(rv.rating)}</div>
+      </div>
+      ${rv.text ? `<div class="rev-text">${escapeHtml(rv.text)}</div>` : '<div class="rev-text" style="opacity:.6">(no comment — rating only)</div>'}
+      <div class="rev-reply-l">✍ Suggested reply</div>
+      <textarea class="rev-reply-box" id="ta-${id}">${escapeHtml(draft)}</textarea>
+      <div class="rev-actions">
+        <button class="btn-publish" onclick="publish('${jsStr(rv.google_review_id)}')">Approve &amp; publish</button>
+        <button class="btn-regen" onclick="regen('${jsStr(rv.google_review_id)}')">↻ Regenerate</button>
+        <span class="inline-msg" id="msg-${id}"></span>
+      </div>
+    </div>`;
+  }
+
+  function publishedCard(rv) {
+    const id = cssId(rv.google_review_id);
+    return `<div class="rev published" id="rev-${id}">
+      <div class="rev-head">
+        <div class="rev-who"><div class="rev-av">${initialOf(rv.author_name)}</div>
+          <div><div class="rev-name">${escapeHtml(rv.author_name)}</div><div class="rev-date">${fmtDate(rv.review_created_at)}</div></div></div>
+        <div class="rev-stars">${stars(rv.rating)}</div>
+      </div>
+      ${rv.text ? `<div class="rev-text">${escapeHtml(rv.text)}</div>` : ''}
+      <div class="rev-reply-l published-tag">✓ Reply published</div>
+      <div class="published-reply">${escapeHtml(rv.existing_reply || '')}</div>
+    </div>`;
+  }
+
+  function regen(gid) {
+    const rv = lastReviews.find(x => x.google_review_id === gid);
+    if (!rv) return;
+    document.getElementById('ta-' + cssId(gid)).value = draftFor(rv);
+  }
+
+  async function publish(gid) {
+    const ta = document.getElementById('ta-' + cssId(gid));
+    const msg = document.getElementById('msg-' + cssId(gid));
+    const text = ta.value.trim();
+    if (text.length < 3) { msg.textContent = 'Write a reply first.'; msg.className = 'inline-msg err'; return; }
+    const card = document.getElementById('rev-' + cssId(gid));
+    const btn = card.querySelector('.btn-publish');
+    btn.disabled = true; msg.className = 'inline-msg'; msg.textContent = 'Publishing…';
+    try {
+      await fn('gbp-reply', { venue_id: currentVenue.id, google_review_id: gid, reply_text: text });
+      const rv = lastReviews.find(x => x.google_review_id === gid);
+      if (rv) { rv.replied = true; rv.existing_reply = text; }
+      card.outerHTML = publishedCard(lastReviews.find(x => x.google_review_id === gid));
+    } catch (e) {
+      btn.disabled = false; msg.textContent = e.message; msg.className = 'inline-msg err';
+    }
+  }
+
+  // Autopilot: publish a generated reply for every not-yet-replied review.
+  async function runAutopilot() {
+    const pending = lastReviews.filter(rv => !rv.replied);
+    renderReviews(lastReviews);
+    if (!pending.length) return;
+    banner('Autopilot is replying to ' + pending.length + ' review(s)…');
+    for (const rv of pending) {
+      const text = draftFor(rv);
+      try {
+        await fn('gbp-reply', { venue_id: currentVenue.id, google_review_id: rv.google_review_id, reply_text: text });
+        rv.replied = true; rv.existing_reply = text;
+      } catch (e) { banner('Autopilot stopped: ' + e.message, true); break; }
+    }
+    renderReviews(lastReviews);
+    if (document.getElementById('banner').textContent.indexOf('stopped') === -1) banner('');
+  }
+
+  /* ---------- utils ---------- */
+  function escapeHtml(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+  function jsStr(s) { return String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+  function cssId(s) { return String(s).replace(/[^a-zA-Z0-9_-]/g, '_'); }
+  function fmtDate(iso) { if (!iso) return ''; const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }); }
+
+  async function signOut() { await sb.auth.signOut(); window.location.href = '/'; }
+  sb.auth.onAuthStateChange((event) => { if (event === 'SIGNED_OUT') window.location.href = '/'; });
 
   init();
 </script>

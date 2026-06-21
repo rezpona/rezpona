@@ -1,3 +1,7 @@
+# Secrets / local config (the real .env must never be committed)
+.env
+.env.local
+
 # OS / editor cruft
 .DS_Store
 Thumbs.db

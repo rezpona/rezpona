@@ -150,7 +150,13 @@ footer a:hover{color:var(--text)}
 <script>
   const SUPABASE_URL = 'https://upepsbyqqefdaygmjxie.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZXBzYnlxcWVmZGF5Z21qeGllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NDM1NjMsImV4cCI6MjA5NjMxOTU2M30.XZNA0TmVZQmPeoniut3fkOyj1A6-lmfHvhvx5hMBaTc';
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  // PKCE flow so the OAuth redirect comes back as /auth/callback?code=... (handled by auth/callback/index.html)
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: { flowType: 'pkce', detectSessionInUrl: true, persistSession: true, autoRefreshToken: true }
+  });
+
+  // Google scope we need for the Business Profile API later
+  const GOOGLE_SCOPES = 'https://www.googleapis.com/auth/business.manage';
 
   let mode = 'signin';
 
@@ -216,7 +222,12 @@ footer a:hover{color:var(--text)}
   async function signInGoogle() {
     const { error } = await sb.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.origin + '/dashboard.html' }
+      options: {
+        redirectTo: window.location.origin + '/auth/callback',
+        scopes: GOOGLE_SCOPES,
+        // access_type=offline + prompt=consent are required for Google to return a refresh token
+        queryParams: { access_type: 'offline', prompt: 'consent' }
+      }
     });
     if (error) showMsg(error.message, 'err');
   }

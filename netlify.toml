@@ -11,6 +11,13 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "geolocation=(), microphone=(), camera=()"
 
+# OAuth callback — serve the static handler at the exact path Google/Supabase redirect to
+# (200 rewrite keeps the URL as /auth/callback and preserves the ?code= query string)
+[[redirects]]
+  from = "/auth/callback"
+  to = "/auth/callback/index.html"
+  status = 200
+
 # Clean URLs: allow /privacy and /terms without the .html extension
 [[redirects]]
   from = "/privacy"
