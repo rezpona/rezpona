@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#060612">
   <meta name="google-site-verification" content="CHKhLtGOTnd20XUpfCswO88428R8I8nICL94i8m1wm4" />
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%233b82f6'/><stop offset='1' stop-color='%2322d3ee'/></linearGradient></defs><rect x='2' y='2' width='96' height='96' rx='26' fill='%230c1424'/><path d='M50 18 C53 41,55 45,82 50 C55 55,53 59,50 82 C47 59,45 55,18 50 C45 45,47 41,50 18 Z' fill='url(%23g)'/><circle cx='73' cy='29' r='5' fill='%2322d3ee'/></svg>">
+  <link rel="icon" type="image/png" href="/favicon.png">
   <title>Rezpona — Review Management for Restaurants, Hotels &amp; Cafés</title>
   <meta name="description" content="Review management for restaurants, hotels & cafés. Rezpona writes thoughtful, on-brand replies to every guest review in seconds. No credit card required.">
   <link rel="canonical" href="https://rezpona.com/">
@@ -46,7 +46,7 @@
           {
             "@type": "Question",
             "name": "How secure is the Google integration?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Rezpona connects to Google My Business via the official OAuth 2.0 flow — we never see or store your Google password. All data is encrypted in transit and at rest, and you can revoke access at any time from your Google account." }
+            "acceptedAnswer": { "@type": "Answer", "text": "Rezpona connects to Google Business Profile via the official OAuth 2.0 flow — we never see or store your Google password. All data is encrypted in transit and at rest, and you can revoke access at any time from your Google account." }
           },
           {
             "@type": "Question",
@@ -61,7 +61,7 @@
           {
             "@type": "Question",
             "name": "Do I need technical skills to use it?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Not at all. Rezpona is built for busy hospitality professionals, not developers. Setup takes under 2 minutes — just connect your Google My Business profile and you're ready to go." }
+            "acceptedAnswer": { "@type": "Answer", "text": "Not at all. Rezpona is built for busy hospitality professionals, not developers. Setup takes under 2 minutes — just connect your Google Business Profile profile and you're ready to go." }
           },
           {
             "@type": "Question",
@@ -108,7 +108,7 @@ nav.s{background:rgba(6,6,18,.82);backdrop-filter:blur(22px) saturate(160%);-web
 .nav-i{max-width:1140px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:2rem}
 .logo{display:flex;align-items:center;gap:.55rem;text-decoration:none;color:var(--text)}
 .logo-m{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.82rem;color:#060612;flex-shrink:0;box-shadow:0 2px 12px rgba(0,206,255,.35)}
-.logo-ic{width:34px;height:34px;flex-shrink:0;display:block;filter:drop-shadow(0 2px 10px rgba(0,206,255,.3))}
+.logo-ic{height:30px;width:auto;flex-shrink:0;display:block;filter:drop-shadow(0 2px 10px rgba(0,206,255,.3))}
 .logo-t{font-size:1.25rem;font-weight:700;letter-spacing:-.02em}
 .logo-t span{background:linear-gradient(135deg,var(--acc),var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .nav-links{display:flex;gap:1.8rem;list-style:none}
@@ -121,9 +121,18 @@ nav.s{background:rgba(6,6,18,.82);backdrop-filter:blur(22px) saturate(160%);-web
 .btn-cta:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,206,255,.42)}
 .btn-login{color:var(--muted2);font-size:.86rem;font-weight:500;text-decoration:none;transition:color .2s;white-space:nowrap}
 .btn-login:hover{color:var(--text)}
-@media(max-width:768px){.btn-login{display:none}}
-/* When mobile menu is open, hide the navbar CTA so it doesn't duplicate the one inside the menu */
-@media(max-width:768px){body.menu-open .nav-r .btn-cta{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,visibility .2s}}
+/* Keep "Log in" visible on mobile too, just tighter so it fits next to Start free + hamburger */
+@media(max-width:768px){
+  .nav-r{gap:.7rem}
+  .btn-login{font-size:.82rem}
+  .btn-cta{padding:.5rem 1rem;font-size:.8rem}
+}
+@media(max-width:360px){
+  .nav-r{gap:.55rem}
+  .btn-cta{padding:.45rem .85rem;font-size:.78rem}
+}
+/* When mobile menu is open, hide the navbar CTA + Log in so they don't duplicate the ones inside the menu */
+@media(max-width:768px){body.menu-open .nav-r .btn-cta,body.menu-open .nav-r .btn-login{display:none}}
 
 /* Hamburger */
 .hamburger{display:none;width:42px;height:42px;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;background:none;border:none;-webkit-tap-highlight-color:transparent;z-index:130;border-radius:10px}
@@ -445,19 +454,6 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
 </head>
 <body>
 <canvas id="bgc"></canvas>
-<!-- Rezpona logo mark (reusable SVG symbol) -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-  <linearGradient id="rzbc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#22d3ee"/></linearGradient>
-  <filter id="rzglow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="3.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-  <symbol id="rztile" viewBox="0 0 100 100">
-    <rect x="2" y="2" width="96" height="96" rx="26" fill="#0c1424" stroke="rgba(120,170,255,.18)" stroke-width="1"/>
-    <g filter="url(#rzglow)">
-      <path d="M50 18 C53 41,55 45,82 50 C55 55,53 59,50 82 C47 59,45 55,18 50 C45 45,47 41,50 18 Z" fill="url(#rzbc)"/>
-      <circle cx="73" cy="29" r="4.6" fill="#22d3ee"/>
-      <line x1="60" y1="40" x2="70" y2="32" stroke="#22d3ee" stroke-width="1.6" stroke-linecap="round" opacity=".7"/>
-    </g>
-  </symbol>
-</defs></svg>
 <div class="bg-orb orb1"></div>
 <div class="bg-orb orb2"></div>
 <div class="grain"></div>
@@ -467,7 +463,7 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
 <!-- NAV -->
 <nav id="nav">
   <div class="nav-i">
-    <a href="#hero" class="logo" aria-label="Rezpona home"><svg class="logo-ic"><use href="#rztile"/></svg><div class="logo-t">Rez<span>pona</span></div></a>
+    <a href="#hero" class="logo" aria-label="Rezpona home"><img class="logo-ic" src="/logo.png" alt="Rezpona logo"><div class="logo-t">Rez<span>pona</span></div></a>
     <ul class="nav-links">
       <li><a href="#features">Features</a></li>
       <li><a href="#how">How it works</a></li>
@@ -498,9 +494,9 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
 <section class="hero" id="hero">
   <div class="hero-i">
     <div>
-      <div class="htag">Restaurants &middot; Hotels &middot; Cafés</div>
-      <h1>Every review.<br><em>A perfect reply.</em></h1>
-      <p class="hero-p">Rezpona reads every guest review and crafts a thoughtful, on-brand reply in seconds — so you can focus on running your venue, not typing responses.</p>
+      <div class="htag">Works with Google Business Profile</div>
+      <h1>Reply to every Google review<br><em>in seconds.</em></h1>
+      <p class="hero-p">Rezpona reads each guest review and writes a thoughtful, on-brand reply — ready to publish straight to your Google Business Profile. Built for restaurants, hotels and cafés.</p>
       <div class="hero-btns">
         <a href="#demo" class="btn-p">Try it free &rarr;</a>
         <a href="#how" class="btn-g">&#9654; See how it works</a>
@@ -541,13 +537,13 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
 <!-- TRUST BAR -->
 <div class="tbar">
   <div class="tbar-i">
-    <div class="tstat reveal"><div class="tstat-n" data-target="500" data-suffix="+">0</div><div class="tstat-l">Venues worldwide</div></div>
+    <div class="tstat reveal"><div class="tstat-n" data-target="30" data-suffix="s">0</div><div class="tstat-l">Avg. reply time</div></div>
     <div class="tsep reveal d1"></div>
-    <div class="tstat reveal d1"><div class="tstat-n" data-target="50000" data-suffix="+">0</div><div class="tstat-l">Reviews managed</div></div>
+    <div class="tstat reveal d1"><div class="tstat-n" data-target="40" data-suffix="+">0</div><div class="tstat-l">Languages supported</div></div>
     <div class="tsep reveal d2"></div>
-    <div class="tstat reveal d2"><div class="tstat-n" data-target="40" data-suffix="+">0</div><div class="tstat-l">Languages supported</div></div>
+    <div class="tstat reveal d2"><div class="tstat-n" data-target="2" data-suffix=" min">0</div><div class="tstat-l">Setup time</div></div>
     <div class="tsep reveal d3"></div>
-    <div class="tstat reveal d3"><div class="tstat-n" data-target="30" data-suffix="s">0</div><div class="tstat-l">Avg. reply time</div></div>
+    <div class="tstat reveal d3"><div class="tstat-n" data-target="100" data-suffix="%">0</div><div class="tstat-l">Replies you approve</div></div>
   </div>
 </div>
 
@@ -564,7 +560,7 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
     <div class="fc reveal d2"><div class="ficon">&#127758;</div><div class="ftitle">40+ Languages</div><div class="fdesc">Rezpona detects the review's language automatically and responds in the same one — no manual translation needed, ever.</div></div>
     <div class="fc reveal"><div class="ficon">&#128276;</div><div class="ftitle">Real-time Alerts</div><div class="fdesc">Get notified the moment a new review lands — via email, SMS, or Slack. Never miss important guest feedback again.</div></div>
     <div class="fc reveal d1"><div class="ficon">&#128200;</div><div class="ftitle">Monthly Performance Reports</div><div class="fdesc">Track rating trends, spot your wins and weak spots, and measure how your reputation evolves over time with clear, actionable reports.</div></div>
-    <div class="fc reveal d2"><div class="ficon">&#128279;</div><div class="ftitle">One-Click Publishing</div><div class="fdesc">Review the draft, make any edits, and publish straight to Google My Business with a single click — or turn on Autopilot.</div></div>
+    <div class="fc reveal d2"><div class="ficon">&#128279;</div><div class="ftitle">One-Click Publishing</div><div class="fdesc">Review the draft, make any edits, and publish straight to Google Business Profile with a single click — or turn on Autopilot.</div></div>
   </div>
 </section>
 
@@ -574,7 +570,7 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
     <div>
       <div class="reveal"><div class="seye">How it works</div><h2 class="stitle">Three steps to<br><em>a stellar reputation</em></h2></div>
       <div class="steps">
-        <div class="step reveal"><div class="step-n">01</div><div><div class="step-t">Connect your Google profile</div><div class="step-d">Authorize access to your Google My Business account in under 2 minutes. No technical knowledge required — just click and authenticate.</div></div></div>
+        <div class="step reveal"><div class="step-n">01</div><div><div class="step-t">Connect your Google profile</div><div class="step-d">Authorize access to your Google Business Profile account in under 2 minutes. No technical knowledge required — just click and authenticate.</div></div></div>
         <div class="step reveal d1"><div class="step-n">02</div><div><div class="step-t">Rezpona reads &amp; drafts a reply</div><div class="step-d">New reviews are picked up automatically. Rezpona reads the sentiment, spots the key topics, and writes a tailored reply within seconds.</div></div></div>
         <div class="step reveal d2"><div class="step-n">03</div><div><div class="step-t">Approve and publish</div><div class="step-d">Review the draft, edit if needed, and publish directly to Google — all in one click. Or enable Autopilot and let Rezpona handle it.</div></div></div>
       </div>
@@ -634,31 +630,6 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
   </div>
 </section>
 
-<!-- TESTIMONIALS -->
-<section id="testimonials">
-  <div class="container sh c reveal">
-    <div class="seye">Loved by owners</div>
-    <h2 class="stitle">Hospitality teams<br><em>who trust Rezpona</em></h2>
-  </div>
-  <div class="test-grid">
-    <div class="tcard reveal">
-      <div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-      <div class="tquote">"It saved us over 10 hours a week we used to spend writing replies. Our average rating climbed from 4.2 to 4.7 in just three months."</div>
-      <div class="tauthor"><div class="tav">&#127860;</div><div><div class="tname">Restaurant Owner</div><div class="trole">Fine dining · Belgrade</div></div></div>
-    </div>
-    <div class="tcard reveal d1">
-      <div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-      <div class="tquote">"With 150 rooms, keeping up with reviews was impossible. Now we get an alert, approve the reply, and we're done. Guests notice the speed."</div>
-      <div class="tauthor"><div class="tav">&#127976;</div><div><div class="tname">General Manager</div><div class="trole">Boutique hotel · Zagreb</div></div></div>
-    </div>
-    <div class="tcard reveal d2">
-      <div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-      <div class="tquote">"Three cafés, one dashboard. The replies sound more professional than anything we'd write ourselves. Honestly a no-brainer for HoReCa."</div>
-      <div class="tauthor"><div class="tav">&#9749;</div><div><div class="tname">Café Owner</div><div class="trole">Specialty coffee · Sarajevo</div></div></div>
-    </div>
-  </div>
-</section>
-
 <!-- PRICING -->
 <section class="pricing-wrap" id="pricing">
   <div class="container sh c reveal">
@@ -672,7 +643,7 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
       <div class="pprice"><span class="pcurr">&euro;</span><span class="pnum">19</span><span class="pper">/month</span></div>
       <div class="pdesc">For a single venue getting started.</div>
       <div class="pdiv"></div>
-      <ul class="pfeats"><li>Up to 30 reviews per month</li><li>Replies in 30+ languages</li><li>One-click publishing</li><li>Google My Business integration</li><li>Email notifications</li></ul>
+      <ul class="pfeats"><li>Up to 30 reviews per month</li><li>Replies in 30+ languages</li><li>One-click publishing</li><li>Google Business Profile integration</li><li>Email notifications</li></ul>
       <button class="pbtn pb-o" style="border:1px solid var(--bd)" onclick="location.href='/login.html#signup'">Start for free</button>
     </div>
     <div class="pc pop reveal d1">
@@ -701,10 +672,10 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
     <div class="sh c reveal"><div class="seye">FAQ</div><h2 class="stitle">Common questions</h2><p class="ssub">Everything you need to know before getting started.</p></div>
     <div class="flist">
       <div class="fi reveal"><button class="fq" data-faq>Does Rezpona support all languages?<span class="fchev">&#8964;</span></button><div class="fbody"><div class="fbody-in"><div class="fans">Yes. Rezpona automatically detects the language of each incoming review and replies in the same language. We currently support 40+ languages — all major European languages, plus Arabic, Japanese, Mandarin and more.</div></div></div></div>
-      <div class="fi reveal d1"><button class="fq" data-faq>How secure is the Google integration?<span class="fchev">&#8964;</span></button><div class="fbody"><div class="fbody-in"><div class="fans">Rezpona connects to Google My Business via the official OAuth 2.0 flow — we never see or store your Google password. All data is encrypted in transit and at rest, and you can revoke access at any time from your Google account.</div></div></div></div>
+      <div class="fi reveal d1"><button class="fq" data-faq>How secure is the Google integration?<span class="fchev">&#8964;</span></button><div class="fbody"><div class="fbody-in"><div class="fans">Rezpona connects to Google Business Profile via the official OAuth 2.0 flow — we never see or store your Google password. All data is encrypted in transit and at rest, and you can revoke access at any time from your Google account.</div></div></div></div>
       <div class="fi reveal d2"><button class="fq" data-faq>Can I edit the replies before publishing?<span class="fchev">&#8964;</span></button><div class="fbody"><div class="fbody-in"><div class="fans">Absolutely. Every reply is a draft — edit it, rewrite it, or regenerate it before publishing. Nothing goes live without your approval unless you've explicitly enabled Autopilot mode, which you can toggle on or off anytime.</div></div></div></div>
       <div class="fi reveal d1"><button class="fq" data-faq>Is it suitable for multiple restaurant locations?<span class="fchev">&#8964;</span></button><div class="fbody"><div class="fbody-in"><div class="fans">Yes — our Agency plan is built exactly for this. Manage unlimited locations from one dashboard, assign team members to specific venues, and get consolidated analytics across your whole portfolio.</div></div></div></div>
-      <div class="fi reveal d2"><button class="fq" data-faq>Do I need technical skills to use it?<span class="fchev">&#8964;</span></button><div class="fbody"><div class="fbody-in"><div class="fans">Not at all. Rezpona is built for busy hospitality professionals, not developers. Setup takes under 2 minutes — just connect your Google My Business profile and you're ready to go.</div></div></div></div>
+      <div class="fi reveal d2"><button class="fq" data-faq>Do I need technical skills to use it?<span class="fchev">&#8964;</span></button><div class="fbody"><div class="fbody-in"><div class="fans">Not at all. Rezpona is built for busy hospitality professionals, not developers. Setup takes under 2 minutes — just connect your Google Business Profile profile and you're ready to go.</div></div></div></div>
       <div class="fi reveal d3"><button class="fq" data-faq>Can I cancel my subscription anytime?<span class="fchev">&#8964;</span></button><div class="fbody"><div class="fbody-in"><div class="fans">Yes, cancel anytime — no questions asked, no cancellation fees.</div></div></div></div>
     </div>
   </div>
@@ -715,16 +686,16 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
   <div class="cta-glow"></div>
   <div class="reveal"><div class="seye">Get started</div></div>
   <h2 class="stitle reveal">Turn your reviews into<br><em>your best asset.</em></h2>
-  <p class="ssub reveal">Join 500+ HoReCa businesses already managing their reputation with Rezpona.</p>
+  <p class="ssub reveal">Connect your Google Business Profile, set up in two minutes, and reply to your next review with confidence.</p>
   <div class="cta-btns reveal"><a href="/login.html#signup" class="btn-p">Start free &rarr;</a></div>
 </section>
 
 <!-- FOOTER -->
 <footer>
   <div class="foot-i">
-    <a href="#hero" class="logo" style="text-decoration:none" aria-label="Rezpona home"><svg class="logo-ic"><use href="#rztile"/></svg><div class="logo-t">Rez<span>pona</span></div></a>
+    <a href="#hero" class="logo" style="text-decoration:none" aria-label="Rezpona home"><img class="logo-ic" src="/logo.png" alt="Rezpona logo"><div class="logo-t">Rez<span>pona</span></div></a>
     <ul class="foot-links"><li><a href="privacy.html">Privacy Policy</a></li><li><a href="terms.html">Terms of Service</a></li><li><a href="mailto:rezpona@gmail.com">Contact</a></li></ul>
-    <div class="foot-copy">&copy; 2025 Rezpona. All rights reserved.</div>
+    <div class="foot-copy">&copy; 2026 Rezpona. All rights reserved.</div>
   </div>
 </footer>
 </div>
@@ -930,7 +901,12 @@ document.querySelectorAll('[data-faq]').forEach(btn=>btn.addEventListener('click
   document.querySelectorAll('.vt-btn').forEach(b=>b.addEventListener('click',()=>{
     document.querySelectorAll('.vt-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');venue=b.dataset.venue;updateSamples();
   }));
-  pills.forEach(p=>p.addEventListener('click',()=>{input.value=p.dataset.text;input.focus();}));
+  pills.forEach(p=>p.addEventListener('click',()=>{
+    input.value=p.dataset.text;
+    btn.click(); // generate the reply immediately so the result shows up — same outcome on desktop and mobile
+    // on stacked (mobile/tablet) layouts the reply panel sits below the fold, so bring it into view
+    if(window.innerWidth<=1040){setTimeout(()=>{panel.scrollIntoView({behavior:'smooth',block:'center'});},140);}
+  }));
 
   /* ---------- MULTILINGUAL SENTIMENT LEXICONS ---------- */
   const POSL={

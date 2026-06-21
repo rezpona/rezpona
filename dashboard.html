@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#060612">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%233b82f6'/><stop offset='1' stop-color='%2322d3ee'/></linearGradient></defs><rect x='2' y='2' width='96' height='96' rx='26' fill='%230c1424'/><path d='M50 18 C53 41,55 45,82 50 C55 55,53 59,50 82 C47 59,45 55,18 50 C45 45,47 41,50 18 Z' fill='url(%23g)'/><circle cx='73' cy='29' r='5' fill='%2322d3ee'/></svg>">
+  <link rel="icon" type="image/png" href="/favicon.png">
   <title>Dashboard — Rezpona</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,7 +25,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 /* SIDEBAR */
 .sidebar{width:240px;flex-shrink:0;background:rgba(255,255,255,.02);border-right:1px solid var(--bd);display:flex;flex-direction:column;padding:1.4rem 1rem;position:fixed;top:0;left:0;bottom:0;z-index:50}
 .sb-logo{display:flex;align-items:center;gap:.55rem;text-decoration:none;color:var(--text);margin-bottom:2rem;padding:.3rem .4rem}
-.logo-ic{width:30px;height:30px;flex-shrink:0}
+.logo-ic{height:26px;width:auto;flex-shrink:0}
 .logo-t{font-size:1.15rem;font-weight:700;letter-spacing:-.02em}
 .logo-t span{background:linear-gradient(135deg,var(--acc),var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .sb-nav{display:flex;flex-direction:column;gap:.2rem;flex:1}
@@ -110,12 +110,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <a href="/" class="sb-logo">
-      <svg class="logo-ic" viewBox="0 0 100 100">
-        <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs>
-        <rect x="2" y="2" width="96" height="96" rx="26" fill="#0c1424" stroke="rgba(120,170,255,.18)" stroke-width="1"/>
-        <path d="M50 18 C53 41,55 45,82 50 C55 55,53 59,50 82 C47 59,45 55,18 50 C45 45,47 41,50 18 Z" fill="url(#g)"/>
-        <circle cx="73" cy="29" r="4.6" fill="#22d3ee"/>
-      </svg>
+      <img class="logo-ic" src="/logo.png" alt="Rezpona logo">
       <span class="logo-t">Rez<span>pona</span></span>
     </a>
 
