@@ -12,7 +12,10 @@ export const corsHeaders = {
 export function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
+    // charset matters here: replies come back in 37 languages, and a client that
+    // does not assume UTF-8 (PowerShell, older HTTP stacks) will otherwise decode
+    // every accented character as mojibake.
+    headers: { ...corsHeaders, "Content-Type": "application/json; charset=utf-8" },
   });
 }
 
