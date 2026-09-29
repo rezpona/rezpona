@@ -12,6 +12,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/assets/reply-engine.js"></script>
   <script src="/assets/billing.js"></script>
+<script src="/assets/brand.js"></script>
   <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#060612;--bg2:#0a0a1c;--acc:#00CEFF;--acc2:#5B6FFF;--text:#EEF2FF;--muted:#6B7B92;--muted2:#8A99B2;--bd:rgba(255,255,255,0.075);--card:rgba(255,255,255,0.025)}
@@ -403,9 +404,12 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 
   /* ---------- venues ---------- */
   async function loadVenues() {
+    // No owner_id filter: RLS already limits this to venues the user owns OR was
+    // given access to, and filtering here as well would hide every shared venue
+    // from the teammate it was shared with.
     const { data } = await sb.from('venues')
-      .select('id,name,type,autopilot,google_location_id')
-      .eq('owner_id', currentUser.id).order('name');
+      .select('id,name,type,autopilot,google_location_id,brand_logo_url,brand_color')
+      .order('name');
     venues = data || [];
   }
 
@@ -423,6 +427,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
     const auto = !!currentVenue.autopilot;
     document.getElementById('autopilot').checked = auto;
     document.getElementById('modeTag').textContent = auto ? 'Autopilot on' : 'Approve mode';
+    if (window.RezponaBrand) window.RezponaBrand.apply(currentVenue);
     await loadReviews();
   }
 

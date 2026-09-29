@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;1,9..144,200&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/brand.js"></script>
   <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#060612;--acc:#00CEFF;--acc2:#5B6FFF;--text:#EEF2FF;--muted:#6B7B92;--muted2:#8A99B2;--bd:rgba(255,255,255,0.075);--card:rgba(255,255,255,0.025)}
@@ -239,6 +240,7 @@ function loadVenue() {
   el('nSlack').value = v.slack_webhook_url || '';
   el('bLogo').value = v.brand_logo_url || '';
   el('bColor').value = v.brand_color || '';
+  if (window.RezponaBrand) window.RezponaBrand.apply(v);
   listMembers();
 }
 
@@ -271,6 +273,7 @@ async function saveBrand() {
   const { error } = await sb.from('venues').update(patch).eq('id', v.id);
   if (error) { flash('brandMsg', error.message, 'err'); return; }
   Object.assign(v, patch);
+  if (window.RezponaBrand) window.RezponaBrand.apply(v);   // show it straight away
   flash('brandMsg', 'Saved', 'ok');
 }
 
