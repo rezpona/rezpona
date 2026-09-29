@@ -184,7 +184,21 @@ function flash(id, text, cls) {
 
 let venues = [], plan = 'starter';
 
+// Anything thrown in here used to leave the page sitting on "Loading settings..."
+// for ever, with the reason only in the console. A page that cannot load should
+// say so on the page.
+function fatal(err) {
+  const msg = (err && (err.message || err.error_description || err.details)) || String(err);
+  el('loadingScreen').innerHTML =
+    '<div style="max-width:420px;text-align:center">' +
+    '<h3 style="font-size:1rem;color:var(--text);margin-bottom:.6rem">Could not load your settings</h3>' +
+    '<p style="font-size:.85rem;line-height:1.6">' + esc(msg) + '</p>' +
+    '<p style="font-size:.85rem;margin-top:1rem"><a href="/dashboard.html" style="color:var(--acc)">Back to dashboard</a></p></div>';
+  console.error('[settings]', err);
+}
+
 (async function init() {
+ try {
   const { data: { session } } = await sb.auth.getSession();
   if (!session) { location.href = '/login.html'; return; }
 
@@ -192,6 +206,11 @@ let venues = [], plan = 'starter';
     sb.rpc('my_usage'),
     sb.from('venues').select('*').order('created_at'),
   ]);
+
+  // A failed usage lookup should not cost you the whole page; the plan simply
+  // falls back to Starter, which is what the server assumes anyway.
+  if (usageRes.error) console.error('[settings] my_usage:', usageRes.error);
+  if (venueRes.error) throw venueRes.error;
 
   const u = (usageRes.data || [])[0];
   if (u) {
@@ -227,6 +246,7 @@ let venues = [], plan = 'starter';
     loadVenue();
   }
   if (plan === 'agency') listKeys();
+ } catch (e) { fatal(e); }
 })();
 
 function current() { return venues.find((v) => v.id === el('venueSel').value); }
