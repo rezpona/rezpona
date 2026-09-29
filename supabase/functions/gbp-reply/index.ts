@@ -20,6 +20,18 @@ Deno.serve(async (req) => {
     const venue = await ownsVenue(admin, user.id, venue_id);
     if (!venue) return json({ error: "Unknown venue for this user" }, 403);
 
+    // Starter is sold as "up to 30 replies per month". Enforced here rather than in
+    // the browser, because the browser is not where the decision can be trusted.
+    const { data: usage } = await admin.rpc("usage_status", { p_user: user.id });
+    const u = Array.isArray(usage) ? usage[0] : null;
+    if (u && Number(u.remaining) <= 0) {
+      return json({
+        error: "limit_reached",
+        message: `You have used all ${u.allowed} replies on your ${u.plan} plan this month.`,
+        plan: u.plan, used: u.used, allowed: u.allowed,
+      }, 402);
+    }
+
     const token = await getVenueToken(admin, venue_id);
 
     const res = await gfetch(

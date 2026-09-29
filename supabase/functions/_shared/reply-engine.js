@@ -1,3 +1,10 @@
+// GENERATED FILE - do not edit.
+// Produced from /assets/reply-engine.js by `node sync-engine.js`.
+// The dashboard and the autopilot must word replies identically, so both sides
+// come from that single source. Edit the browser file, then re-run the script.
+// deno-lint-ignore-file
+// @ts-nocheck
+
 /* Rezpona reply engine
  *
  * Writes a reply to a Google review the way a busy owner actually writes one:
@@ -13,8 +20,6 @@
  *   4. No corporate filler: "we strive", "rest assured", "valued guest", "thrilled".
  *   5. Reply in the language the guest used.
  */
-(function (global) {
-  'use strict';
 
   const pick = (a) => a[Math.floor(Math.random() * a.length)];
   const maybe = (p) => Math.random() < p;          // include a part only sometimes
@@ -464,5 +469,4 @@
     return text;
   }
 
-  global.RezponaReply = { generate, detect, analyse };
-})(window);
+export { generate, detect, analyse };

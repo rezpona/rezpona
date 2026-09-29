@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Analytics · Rezpona</title>
+  <link rel="icon" type="image/png" href="/favicon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;1,9..144,200&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#060612;--acc:#00CEFF;--acc2:#5B6FFF;--text:#EEF2FF;--muted:#6B7B92;--muted2:#8A99B2;--bd:rgba(255,255,255,0.075);--card:rgba(255,255,255,0.025)}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden}
+.bg-orb{position:fixed;border-radius:50%;z-index:0;pointer-events:none}
+.orb1{width:500px;height:500px;background:radial-gradient(circle,rgba(0,206,255,.06),transparent 70%);top:-150px;left:-150px}
+.orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(91,111,255,.06),transparent 70%);bottom:-150px;right:-150px}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1}
+
+.sidebar{width:240px;flex-shrink:0;background:rgba(255,255,255,.02);border-right:1px solid var(--bd);display:flex;flex-direction:column;padding:1.4rem 1rem;position:fixed;top:0;left:0;bottom:0;z-index:50}
+.sb-logo{display:flex;align-items:center;gap:.55rem;text-decoration:none;color:var(--text);margin-bottom:2rem;padding:.3rem .4rem}
+.logo-ic{height:26px;width:auto;flex-shrink:0}
+.logo-t{font-size:1.15rem;font-weight:700;letter-spacing:-.02em}
+.logo-t span{background:linear-gradient(135deg,var(--acc),var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sb-nav{display:flex;flex-direction:column;gap:.2rem;flex:1}
+.sb-item{display:flex;align-items:center;gap:.7rem;padding:.7rem .8rem;border-radius:10px;text-decoration:none;color:var(--muted2);font-size:.88rem;transition:all .2s}
+.sb-item:hover{background:rgba(255,255,255,.04);color:var(--text)}
+.sb-item.active{background:rgba(0,206,255,.1);color:var(--acc)}
+.sb-item .ic{width:18px;height:18px;opacity:.7;flex-shrink:0}
+.sb-item.active .ic{opacity:1}
+
+.main{margin-left:240px;flex:1;padding:2rem 2.5rem;min-height:100vh}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;gap:1rem;flex-wrap:wrap}
+.topbar-left h1{font-family:'Fraunces',serif;font-weight:300;font-size:1.7rem;letter-spacing:-.02em}
+.topbar-left p{font-size:.87rem;color:var(--muted);margin-top:.2rem}
+select{padding:.6rem .9rem;border-radius:10px;background:var(--card);border:1px solid var(--bd);color:var(--text);font-family:'Outfit',sans-serif;font-size:.86rem;outline:none;cursor:pointer}
+.controls{display:flex;gap:.7rem;flex-wrap:wrap}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.6rem}
+.stat-card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:1.3rem}
+.stat-card-label{font-size:.76rem;color:var(--muted);margin-bottom:.5rem}
+.stat-card-val{font-family:'Fraunces',serif;font-size:2rem;font-weight:400;line-height:1}
+.stat-card-sub{font-size:.75rem;color:var(--muted);margin-top:.35rem}
+.pos{color:#00FF94}.neg{color:#FF4466}.neu{color:#FFB800}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.6rem}
+.panel{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:1.4rem}
+.panel h2{font-size:.95rem;font-weight:600;margin-bottom:.3rem}
+.panel .hint{font-size:.78rem;color:var(--muted);margin-bottom:1.1rem}
+
+.bar-row{display:flex;align-items:center;gap:.7rem;margin-bottom:.6rem;font-size:.83rem}
+.bar-lab{width:90px;flex-shrink:0;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{flex:1;height:9px;background:rgba(255,255,255,.05);border-radius:100px;overflow:hidden}
+.bar-fill{height:100%;border-radius:100px;transition:width .5s ease}
+.bar-num{width:54px;text-align:right;color:var(--muted);font-size:.78rem;flex-shrink:0}
+
+.spark{display:flex;align-items:flex-end;gap:5px;height:130px;margin-top:.4rem}
+.spark-col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:.35rem;min-width:0}
+.spark-bar{width:100%;border-radius:5px 5px 0 0;background:linear-gradient(180deg,var(--acc),var(--acc2));min-height:2px;transition:height .5s ease}
+.spark-lab{font-size:.66rem;color:var(--muted);white-space:nowrap}
+
+.topic{display:flex;align-items:center;justify-content:space-between;padding:.7rem 0;border-bottom:1px solid var(--bd);font-size:.86rem}
+.topic:last-child{border-bottom:none}
+.topic-n{color:var(--muted2)}
+.topic-r{font-weight:600}
+.pill{font-size:.72rem;padding:.2rem .6rem;border-radius:100px;background:rgba(255,255,255,.05);color:var(--muted);margin-left:.5rem}
+
+.empty{background:var(--card);border:1px solid var(--bd);border-radius:20px;padding:3rem 2rem;text-align:center}
+.empty h3{font-size:1.05rem;font-weight:600;margin-bottom:.5rem}
+.empty p{font-size:.88rem;color:var(--muted);font-weight:300;max-width:380px;margin:0 auto}
+.loading{display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:1rem;color:var(--muted)}
+.spinner{width:36px;height:36px;border:2.5px solid var(--bd);border-top-color:var(--acc);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:900px){
+  .sidebar{display:none}
+  .main{margin-left:0;padding:1.5rem}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .grid2{grid-template-columns:1fr}
+}
+@media(max-width:500px){.stats{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+
+<div id="loadingScreen" class="loading">
+  <div class="spinner"></div>
+  <span>Loading your analytics...</span>
+</div>
+
+<div class="layout" id="app" style="display:none">
+  <aside class="sidebar">
+    <a href="/" class="sb-logo">
+      <img class="logo-ic" src="/logo.png" alt="Rezpona logo">
+      <span class="logo-t">Rez<span>pona</span></span>
+    </a>
+    <nav class="sb-nav">
+      <a class="sb-item" href="/dashboard.html">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </a>
+      <a class="sb-item active" href="/analytics.html">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Analytics
+      </a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1>Analytics</h1>
+        <p id="sub">What your guests are actually talking about.</p>
+      </div>
+      <div class="controls">
+        <select id="venueSel" onchange="load()"></select>
+        <select id="daysSel" onchange="load()">
+          <option value="30">Last 30 days</option>
+          <option value="90" selected>Last 90 days</option>
+          <option value="365">Last 12 months</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="content"></div>
+  </main>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://upepsbyqqefdaygmjxie.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZXBzYnlxcWVmZGF5Z21qeGllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NDM1NjMsImV4cCI6MjA5NjMxOTU2M30.XZNA0TmVZQmPeoniut3fkOyj1A6-lmfHvhvx5hMBaTc';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+});
+
+const el = (id) => document.getElementById(id);
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) =>
+  ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+let venues = [];
+
+(async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { location.href = '/login.html'; return; }
+
+  const { data, error } = await sb.from('venues').select('id, name').order('created_at');
+  if (error) console.error(error);
+  venues = data || [];
+
+  el('loadingScreen').style.display = 'none';
+  el('app').style.display = 'flex';
+
+  if (!venues.length) {
+    el('venueSel').style.display = 'none';
+    el('content').innerHTML =
+      '<div class="empty"><h3>No venues yet</h3>' +
+      '<p>Connect your Google Business Profile from the dashboard and your numbers will show up here.</p></div>';
+    return;
+  }
+
+  el('venueSel').innerHTML = venues.map((v) =>
+    '<option value="' + esc(v.id) + '">' + esc(v.name) + '</option>').join('');
+  load();
+})();
+
+async function load() {
+  const venue = el('venueSel').value;
+  const days = Number(el('daysSel').value);
+  el('content').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+  // Both of these are security-definer functions that check ownership themselves,
+  // so the browser never gets to ask for a venue that is not the user's.
+  const [statsRes, topicsRes, trendRes] = await Promise.all([
+    sb.rpc('venue_stats', { p_venue: venue, p_days: days }),
+    sb.rpc('venue_topics', { p_venue: venue, p_days: days }),
+    sb.from('reviews').select('rating, review_created_at')
+      .eq('venue_id', venue)
+      .gte('review_created_at', new Date(Date.now() - days * 864e5).toISOString())
+      .order('review_created_at'),
+  ]);
+
+  const s = (statsRes.data || [])[0];
+  if (!s || !s.total_reviews) {
+    el('content').innerHTML =
+      '<div class="empty"><h3>Nothing to show yet</h3>' +
+      '<p>Once reviews come in for this period, you will see ratings, reply rate and the topics guests bring up most.</p></div>';
+    return;
+  }
+
+  el('content').innerHTML =
+    statCards(s) +
+    '<div class="grid2">' + sentimentPanel(s) + topicsPanel(topicsRes.data || []) + '</div>' +
+    trendPanel(trendRes.data || [], days);
+}
+
+function statCards(s) {
+  const avg = s.avg_rating == null ? '0.0' : Number(s.avg_rating).toFixed(1);
+  return '<div class="stats">' +
+    card('Reviews', s.total_reviews, 'in this period') +
+    card('Average rating', avg + ' <span style="font-size:1rem;color:var(--muted)">/ 5</span>', stars(Number(s.avg_rating))) +
+    card('Reply rate', s.reply_rate + '%', s.replied + ' of ' + s.total_reviews + ' answered') +
+    card('Needs attention', s.negative, s.negative === 1 ? 'review at 2 stars or below' : 'reviews at 2 stars or below',
+         s.negative > 0 ? 'neg' : 'pos') +
+    '</div>';
+}
+function card(label, val, sub, cls) {
+  return '<div class="stat-card"><div class="stat-card-label">' + esc(label) + '</div>' +
+    '<div class="stat-card-val ' + (cls || '') + '">' + val + '</div>' +
+    '<div class="stat-card-sub">' + esc(sub) + '</div></div>';
+}
+function stars(n) {
+  if (!n) return '';
+  const full = Math.round(n);
+  return '★'.repeat(full) + '☆'.repeat(5 - full);
+}
+
+function sentimentPanel(s) {
+  const total = s.total_reviews || 1;
+  const rows = [
+    ['Positive', s.positive, '#00FF94'],
+    ['Neutral',  s.neutral,  '#FFB800'],
+    ['Negative', s.negative, '#FF4466'],
+  ].map(([lab, n, colour]) =>
+    '<div class="bar-row"><span class="bar-lab">' + lab + '</span>' +
+    '<span class="bar-track"><span class="bar-fill" style="width:' + Math.round(100 * n / total) + '%;background:' + colour + '"></span></span>' +
+    '<span class="bar-num">' + n + ' · ' + Math.round(100 * n / total) + '%</span></div>').join('');
+
+  return '<div class="panel"><h2>Sentiment</h2>' +
+    '<p class="hint">Split by star rating: 4 and up positive, 3 neutral, 2 and below negative.</p>' + rows + '</div>';
+}
+
+function topicsPanel(topics) {
+  if (!topics.length) {
+    return '<div class="panel"><h2>Topics</h2>' +
+      '<p class="hint">What guests mention most, and how they rate when they do.</p>' +
+      '<p style="font-size:.85rem;color:var(--muted)">No topics picked up yet. Refresh your reviews from the dashboard and they will appear here.</p></div>';
+  }
+  const rows = topics.slice(0, 8).map((t) => {
+    const r = Number(t.avg_rating) || 0;
+    const cls = r >= 4 ? 'pos' : r >= 3 ? 'neu' : 'neg';
+    return '<div class="topic"><span class="topic-n">' + esc(t.topic) +
+      '<span class="pill">' + t.mentions + ' mention' + (t.mentions === 1 ? '' : 's') + '</span></span>' +
+      '<span class="topic-r ' + cls + '">' + r.toFixed(1) + ' ★</span></div>';
+  }).join('');
+
+  return '<div class="panel"><h2>Topics</h2>' +
+    '<p class="hint">What guests mention most, and how they rate when they do.</p>' + rows + '</div>';
+}
+
+function trendPanel(reviews, days) {
+  // Monthly buckets for anything longer than a month, weekly below that. A daily
+  // chart of a small restaurant's reviews is mostly empty columns.
+  const monthly = days > 60;
+  const buckets = new Map();
+  reviews.forEach((r) => {
+    if (!r.review_created_at) return;
+    const d = new Date(r.review_created_at);
+    const key = monthly
+      ? d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0')
+      : isoWeek(d);
+    if (!buckets.has(key)) buckets.set(key, { n: 0, sum: 0, rated: 0 });
+    const b = buckets.get(key);
+    b.n++;
+    if (r.rating != null) { b.sum += r.rating; b.rated++; }
+  });
+
+  const keys = Array.from(buckets.keys()).sort().slice(-12);
+  if (!keys.length) return '';
+  const max = Math.max.apply(null, keys.map((k) => buckets.get(k).n));
+
+  const cols = keys.map((k) => {
+    const b = buckets.get(k);
+    const h = Math.round(100 * b.n / max);
+    const avg = b.rated ? (b.sum / b.rated).toFixed(1) : '–';
+    return '<div class="spark-col" title="' + esc(k) + ': ' + b.n + ' reviews, avg ' + avg + '">' +
+      '<span style="font-size:.7rem;color:var(--muted2)">' + b.n + '</span>' +
+      '<span class="spark-bar" style="height:' + h + '%"></span>' +
+      '<span class="spark-lab">' + esc(shortLabel(k, monthly)) + '</span></div>';
+  }).join('');
+
+  return '<div class="panel"><h2>Review volume</h2>' +
+    '<p class="hint">' + (monthly ? 'By month' : 'By week') + '. Hover a column for the average rating.</p>' +
+    '<div class="spark">' + cols + '</div></div>';
+}
+
+function isoWeek(d) {
+  const t = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  const day = t.getUTCDay() || 7;
+  t.setUTCDate(t.getUTCDate() + 4 - day);
+  const start = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
+  const week = Math.ceil(((t - start) / 864e5 + 1) / 7);
+  return t.getUTCFullYear() + '-W' + String(week).padStart(2, '0');
+}
+const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function shortLabel(key, monthly) {
+  if (!monthly) return key.split('-W')[1] ? 'W' + key.split('-W')[1] : key;
+  const p = key.split('-');
+  return MON[Number(p[1]) - 1] || key;
+}
+</script>
+</body>
+</html>

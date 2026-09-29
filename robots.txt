@@ -3,6 +3,9 @@ Allow: /
 
 # Auth / app pages have no SEO value and should not be indexed
 Disallow: /dashboard.html
+Disallow: /analytics.html
+Disallow: /settings.html
 Disallow: /login.html
+Disallow: /auth/
 
 Sitemap: https://rezpona.com/sitemap.xml

@@ -69,10 +69,22 @@ p{font-size:.9rem;color:var(--muted);font-weight:300;line-height:1.6}
   // Hand the Google tokens to the gbp-connect Edge Function, which lists the user's
   // Business Profile locations and saves them as venues + google_connections (tokens
   // are stored server-side, per venue). Nothing sensitive is written from the browser.
+  // Remember why the import failed so the dashboard can show a real reason
+  // instead of a generic "waiting for venues".
+  function noteConnect(msg) {
+    try {
+      if (msg) localStorage.setItem('rz_google_msg', msg);
+      else localStorage.removeItem('rz_google_msg');
+    } catch (e) { /* ignore */ }
+  }
+
   async function connectVenues(session) {
     const providerToken = session.provider_token || null;
     const refreshToken = session.provider_refresh_token || null;
-    if (!providerToken) return; // nothing to connect (e.g. token not returned) — dashboard will prompt reconnect
+    if (!providerToken) {
+      noteConnect('Google did not return access to your Business Profile. Please reconnect and accept the permission request.');
+      return;
+    }
     try {
       const res = await fetch(SUPABASE_URL + '/functions/v1/gbp-connect', {
         method: 'POST',
@@ -87,11 +99,23 @@ p{font-size:.9rem;color:var(--muted);font-weight:300;line-height:1.6}
           google_email: session.user?.email || null
         })
       });
-      if (!res.ok) {
-        const j = await res.json().catch(() => ({}));
-        console.error('gbp-connect failed:', j.error || res.status);
+
+      if (res.status === 404) {
+        noteConnect('The Rezpona connection service is not available right now. Please try again shortly.');
+        console.error('gbp-connect is not deployed (404)');
+        return;
       }
+
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        noteConnect(j.message || j.error || 'We could not reach your Business Profile. Please try reconnecting.');
+        console.error('gbp-connect failed:', j);
+        return;
+      }
+      // Success path: clear any stale message, keep one only if nothing was imported.
+      noteConnect(j.venues > 0 ? null : (j.message || null));
     } catch (e) {
+      noteConnect('We could not reach your Business Profile. Please check your connection and try again.');
       console.error('gbp-connect error:', e);
     }
   }

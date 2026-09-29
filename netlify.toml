@@ -3,13 +3,54 @@
   publish = "."
 
 # Security & caching headers
+#
+# The CSP allows 'unsafe-inline' for scripts and styles because the pages carry
+# large inline <script>/<style> blocks. That is the weak part of this policy and it
+# is a deliberate, known trade-off: everything else here still holds, so an injected
+# script cannot phone home to an origin that is not on this list, cannot be framed
+# into someone else's page, and cannot post a form off-site.
 [[headers]]
   for = "/*"
   [headers.values]
-    X-Frame-Options = "SAMEORIGIN"
+    X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=(), payment=(self \"https://buy.paddle.com\"), interest-cohort=()"
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+    Cross-Origin-Opener-Policy = "same-origin-allow-popups"
+    Cross-Origin-Resource-Policy = "same-site"
+    X-DNS-Prefetch-Control = "off"
+    Content-Security-Policy = """
+      default-src 'self'; \
+      base-uri 'self'; \
+      object-src 'none'; \
+      frame-ancestors 'none'; \
+      form-action 'self'; \
+      script-src 'self' 'unsafe-inline' https://cdn.paddle.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; \
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; \
+      font-src 'self' https://fonts.gstatic.com data:; \
+      img-src 'self' data: blob: https:; \
+      connect-src 'self' https://upepsbyqqefdaygmjxie.supabase.co wss://upepsbyqqefdaygmjxie.supabase.co https://www.googleapis.com https://mybusiness.googleapis.com https://*.paddle.com; \
+      frame-src https://*.paddle.com https://accounts.google.com; \
+      worker-src 'self' blob:; \
+      manifest-src 'self'; \
+      upgrade-insecure-requests"""
+
+# Never let a browser or proxy hold on to a signed-in page.
+[[headers]]
+  for = "/dashboard.html"
+  [headers.values]
+    Cache-Control = "no-store, max-age=0"
+
+[[headers]]
+  for = "/login.html"
+  [headers.values]
+    Cache-Control = "no-store, max-age=0"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
 
 # OAuth callback — serve the static handler at the exact path Google/Supabase redirect to
 # (200 rewrite keeps the URL as /auth/callback and preserves the ?code= query string)

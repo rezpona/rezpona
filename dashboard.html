@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;1,9..144,200&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/assets/reply-engine.js"></script>
+  <script src="/assets/billing.js"></script>
   <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#060612;--bg2:#0a0a1c;--acc:#00CEFF;--acc2:#5B6FFF;--text:#EEF2FF;--muted:#6B7B92;--muted2:#8A99B2;--bd:rgba(255,255,255,0.075);--card:rgba(255,255,255,0.025)}
@@ -173,12 +174,12 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
         <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
         Reviews
       </a>
-      <a class="sb-item" href="#">
+      <a class="sb-item" href="/analytics.html">
         <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         Analytics
       </a>
       <div class="sb-sep"></div>
-      <a class="sb-item" href="#">
+      <a class="sb-item" href="/settings.html">
         <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
         Settings
       </a>
@@ -187,7 +188,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
     <div class="sb-plan">
       <div class="sb-plan-name" id="planName">Starter</div>
       <div class="sb-plan-desc">Free plan</div>
-      <button class="sb-upgrade" onclick="window.location.href='/#pricing'">Upgrade plan</button>
+      <button class="sb-upgrade" onclick="upgradePlan()">Upgrade plan</button>
     </div>
   </aside>
 
@@ -266,8 +267,63 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
     if (!session) { window.location.href = '/login.html'; return; }
     currentUser = session.user;
     showDashboard(currentUser);
+    await loadPlan();
     await refreshConnectionUI();
+    await resumeCheckout();
   }
+
+  /* ---------- billing ---------- */
+  const PLAN_LABEL = { starter: 'Starter', pro: 'Pro', agency: 'Agency' };
+
+  async function loadPlan() {
+    const { data } = await sb.from('subscriptions')
+      .select('plan,status,current_period_end')
+      .eq('owner_id', currentUser.id).maybeSingle();
+
+    const plan   = data?.plan || 'starter';
+    const status = data?.status || 'trialing';
+    const paid   = status === 'active' || status === 'past_due';
+
+    document.getElementById('planName').textContent = PLAN_LABEL[plan] || 'Starter';
+
+    const desc = document.querySelector('.sb-plan-desc');
+    const btn  = document.querySelector('.sb-upgrade');
+    if (desc) {
+      if (paid && data?.current_period_end) {
+        const d = new Date(data.current_period_end);
+        desc.textContent = (status === 'past_due' ? 'Payment failed — ' : 'Renews ') +
+          d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+      } else if (status === 'canceled') {
+        desc.textContent = 'Subscription ended';
+      } else {
+        desc.textContent = 'Free plan';
+      }
+    }
+    // On a paid plan the button becomes "manage" unless they can still move up a tier.
+    if (btn) btn.textContent = (paid && plan === 'agency') ? 'Manage billing'
+      : paid ? 'Change plan' : 'Upgrade plan';
+
+    if (new URLSearchParams(location.search).get('upgraded') === '1') {
+      banner('Thanks! Your subscription is being activated — this can take a few seconds.', false);
+      history.replaceState({}, '', '/dashboard.html');
+      // The webhook usually lands within a second or two; refresh once it has.
+      setTimeout(loadPlan, 4000);
+    }
+  }
+
+  // Someone picked a plan on the pricing page before signing up — continue that checkout.
+  async function resumeCheckout() {
+    const plan = window.RezponaBilling && window.RezponaBilling.pendingPlan();
+    if (plan) openCheckout(plan);
+  }
+
+  function openCheckout(plan) {
+    if (!window.RezponaBilling) return;
+    window.RezponaBilling.checkout(plan, { id: currentUser.id, email: currentUser.email });
+  }
+
+  // Sidebar button: pick a plan (or jump to pricing to compare).
+  function upgradePlan() { window.location.href = '/#pricing'; }
 
   function showDashboard(user) {
     document.getElementById('loadingScreen').style.display = 'none';
@@ -294,7 +350,10 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
       body: body ? JSON.stringify(body) : undefined
     });
     const out = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(out.error || ('Request failed (' + res.status + ')'));
+    // The server sends a plain `error` code plus, where it has something useful to
+    // say to the person, a `message`. Prefer the message: "limit_reached" means
+    // nothing to someone looking at a button that just refused to work.
+    if (!res.ok) throw new Error(out.message || out.error || ('Request failed (' + res.status + ')'));
     return out;
   }
 
@@ -326,10 +385,13 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
     document.getElementById('workspace').style.display = has ? 'block' : 'none';
     const card = document.getElementById('connectCard');
     card.style.display = has ? 'none' : 'flex';
-    // If they already did OAuth but no venues came back, explain (likely API approval pending).
+    // If they already did OAuth but no venues came back, show the real reason we captured
+    // during the callback instead of a vague "waiting" message.
     if (!has && localStorage.getItem('rz_google') === '1') {
-      card.querySelector('h2').textContent = '⏳ Connected — waiting for venues';
-      card.querySelector('p').textContent = 'Your Google account is connected, but no Business Profile locations came back yet. If your Business Profile API access is still pending Google approval, your venues will appear here once it is granted.';
+      const why = localStorage.getItem('rz_google_msg');
+      card.querySelector('h2').textContent = why ? '⚠️ Couldn’t import your venues' : '⏳ Connected — waiting for venues';
+      card.querySelector('p').textContent = why
+        || 'Your Google account is connected, but no Business Profile locations came back yet. Try reconnecting.';
       const b = card.querySelector('.btn-p'); if (b) b.textContent = 'Reconnect / retry';
     }
     if (has) { populateVenueSelector(); await selectVenue(); }
@@ -409,7 +471,8 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
   function draftFor(rv) {
     return RezponaReply.generate({
       rating: rv.rating, comment: rv.text,
-      venue: (currentVenue && currentVenue.type) || 'restaurant'
+      venue: (currentVenue && currentVenue.type) || 'restaurant',
+      author: rv.author_name || ''   // lets the reply greet them by first name sometimes
     });
   }
 

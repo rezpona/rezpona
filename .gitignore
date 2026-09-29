@@ -10,3 +10,6 @@ Thumbs.db
 .idea/
 .netlify/
 node_modules/
+
+# Supabase CLI scratch state (project ref, pooler URL) - local only
+supabase/.temp/

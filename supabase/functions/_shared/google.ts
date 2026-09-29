@@ -23,7 +23,8 @@ export async function getUser(req: Request) {
 
 // Confirm a venue belongs to the user (RLS doesn't apply to the service role).
 export async function ownsVenue(admin: SupabaseClient, userId: string, venueId: string) {
-  const { data } = await admin.from("venues").select("id, google_location_id")
+  const { data } = await admin.from("venues")
+    .select("id, name, google_location_id, notify_email, notify_email_to, slack_webhook_url, notify_only_bad, last_notified_at, brand_logo_url, brand_color")
     .eq("id", venueId).eq("owner_id", userId).maybeSingle();
   return data ?? null;
 }
