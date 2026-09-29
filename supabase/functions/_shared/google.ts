@@ -21,11 +21,49 @@ export async function getUser(req: Request) {
   return data?.user ?? null;
 }
 
-// Confirm a venue belongs to the user (RLS doesn't apply to the service role).
+const VENUE_COLUMNS =
+  "id, name, owner_id, google_location_id, notify_email, notify_email_to, " +
+  "slack_webhook_url, notify_only_bad, last_notified_at, brand_logo_url, brand_color";
+
+/* Can this user reach this venue, and in what capacity?
+ *
+ * RLS does not apply to the service role, so every function has to ask this for
+ * itself. Ownership alone is not the answer: the Agency plan sells team access,
+ * and a venue an owner shared with a manager has to be reachable by that manager
+ * or the feature does not exist.
+ *
+ * `need` is the weakest role that may perform the action: "viewer" to read,
+ * "editor" to publish a reply.
+ */
+const RANK: Record<string, number> = { viewer: 1, editor: 2, admin: 3, owner: 4 };
+
+export async function venueFor(
+  admin: SupabaseClient,
+  userId: string,
+  venueId: string,
+  need: "viewer" | "editor" = "viewer",
+  // deno-lint-ignore no-explicit-any
+): Promise<any | null> {
+  const { data } = await admin.from("venues")
+    .select(VENUE_COLUMNS).eq("id", venueId).maybeSingle();
+  // deno-lint-ignore no-explicit-any
+  const venue = data as any;
+  if (!venue) return null;
+
+  if (venue.owner_id === userId) return venue;
+
+  const { data: member } = await admin.from("venue_members")
+    .select("role").eq("venue_id", venueId).eq("user_id", userId).maybeSingle();
+  if (!member) return null;
+  if ((RANK[member.role] ?? 0) < RANK[need]) return null;
+
+  return venue;
+}
+
+// Kept for callers that only ever want the owner.
 export async function ownsVenue(admin: SupabaseClient, userId: string, venueId: string) {
   const { data } = await admin.from("venues")
-    .select("id, name, google_location_id, notify_email, notify_email_to, slack_webhook_url, notify_only_bad, last_notified_at, brand_logo_url, brand_color")
-    .eq("id", venueId).eq("owner_id", userId).maybeSingle();
+    .select(VENUE_COLUMNS).eq("id", venueId).eq("owner_id", userId).maybeSingle();
   return data ?? null;
 }
 

@@ -1,7 +1,7 @@
 // POST { venue_id, google_review_id, reply_text } -> publishes the reply to Google (v4)
 // and records it in public.replies (status 'published').
 import { preflight, json } from "../_shared/cors.ts";
-import { getUser, adminClient, ownsVenue, getVenueToken, gfetch } from "../_shared/google.ts";
+import { getUser, adminClient, venueFor, getVenueToken, gfetch } from "../_shared/google.ts";
 
 Deno.serve(async (req) => {
   const pf = preflight(req);
@@ -17,12 +17,15 @@ Deno.serve(async (req) => {
     if (String(reply_text).length > 4096) return json({ error: "Reply too long (max 4096)." }, 400);
 
     const admin = adminClient();
-    const venue = await ownsVenue(admin, user.id, venue_id);
-    if (!venue) return json({ error: "Unknown venue for this user" }, 403);
+    // Publishing needs at least "editor"; a viewer may look but not answer.
+    const venue = await venueFor(admin, user.id, venue_id, "editor");
+    if (!venue) return json({ error: "You do not have permission to reply for this venue." }, 403);
 
     // Starter is sold as "up to 30 replies per month". Enforced here rather than in
     // the browser, because the browser is not where the decision can be trusted.
-    const { data: usage } = await admin.rpc("usage_status", { p_user: user.id });
+    // Against the OWNER's allowance, not the person clicking: a manager invited to
+    // a venue spends the account's quota, and has no plan of their own.
+    const { data: usage } = await admin.rpc("usage_status", { p_user: venue.owner_id });
     const u = Array.isArray(usage) ? usage[0] : null;
     if (u && Number(u.remaining) <= 0) {
       return json({

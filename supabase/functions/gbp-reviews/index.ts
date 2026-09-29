@@ -1,7 +1,7 @@
-// POST { venue_id } -> fetches Google reviews for the venue (v4), upserts them into
+﻿// POST { venue_id } -> fetches Google reviews for the venue (v4), upserts them into
 // public.reviews, and returns them (with whether a reply already exists on Google).
 import { preflight, json } from "../_shared/cors.ts";
-import { getUser, adminClient, ownsVenue, getVenueToken, gfetch } from "../_shared/google.ts";
+import { getUser, adminClient, venueFor, getVenueToken, gfetch } from "../_shared/google.ts";
 import { topicsOf } from "../_shared/topics.ts";
 import { sendEmail, sendSlack, newReviewsEmail, type ReviewLite } from "../_shared/notify.ts";
 
@@ -22,7 +22,7 @@ Deno.serve(async (req) => {
     if (!venue_id) return json({ error: "venue_id required" }, 400);
 
     const admin = adminClient();
-    const venue = await ownsVenue(admin, user.id, venue_id);
+    const venue = await venueFor(admin, user.id, venue_id, "viewer");
     if (!venue) return json({ error: "Unknown venue for this user" }, 403);
 
     const token = await getVenueToken(admin, venue_id);
