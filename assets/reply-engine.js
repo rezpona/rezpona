@@ -411,6 +411,39 @@
      ============================================================ */
   function capFirst(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
+  /* A Google reviewer is often not a person: "Mind Fuel", "TRW TRW", "UO & MA
+   * L.L.C". Addressing a company as "Mind," reads worse than not using a name at
+   * all, and the two mistakes are not symmetrical: a missing name goes unnoticed,
+   * a wrong one does not. So this leans towards silence whenever the display name
+   * carries any signal of not being a person's.
+   */
+  const ORG_WORDS = new RegExp(
+    '^(?:llc|l\\.l\\.c|ltd|inc|co|corp|gmbh|bv|srl|sarl|doo|d\\.o\\.o|oy|ab|as|kft|sp|sro|' +
+    'group|holdings?|studio|studios|media|agency|agencija|solutions|services|systems|labs?|' +
+    'team|crew|official|store|shop|cafe|restaurant|hotel|travel|tours|fuel|fitness|gym)$',
+    'i',
+  );
+
+  function firstName(author) {
+    const raw = String(author || '').trim();
+    if (!raw) return '';
+
+    const tokens = raw.split(/\s+/);
+    if (tokens.length > 2) return '';                       // "UO & MA L.L.C"
+    if (/[0-9@_/&|.]/.test(raw)) return '';                 // handles, initials, punctuation
+    if (tokens.some((t) => ORG_WORDS.test(t))) return '';   // "Mind Fuel"
+
+    // A repeated token is a placeholder, not a name: "TRW TRW".
+    if (tokens.length === 2 && tokens[0].toLowerCase() === tokens[1].toLowerCase()) return '';
+    // All caps across the whole name reads as a brand: "TRW TRW", "ACME".
+    if (raw === raw.toUpperCase() && /\p{L}{2,}/u.test(raw)) return '';
+
+    const first = tokens[0];
+    if (first.length < 2 || first.length > 20) return '';
+    if (!/^\p{Lu}\p{Ll}+$/u.test(first)) return '';         // "Marco" yes, "mARCO" or "MM" no
+    return first;
+  }
+
   function buildRich(lang, mood, a, author) {
     const L = RICH[lang];
     const parts = [];
@@ -462,8 +495,8 @@
     let out = parts.join(' ');
     // Greet by name now and then, the way a person would.
     if (author && maybe(0.4)) {
-      const first = String(author).trim().split(/\s+/)[0];
-      if (first && first.length > 1 && /^\p{L}+$/u.test(first)) out = first + ', ' + out.charAt(0).toLowerCase() + out.slice(1);
+      const first = firstName(author);
+      if (first) out = first + ', ' + out.charAt(0).toLowerCase() + out.slice(1);
     }
     return out;
   }
