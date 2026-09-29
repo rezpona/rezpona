@@ -304,7 +304,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
       : paid ? 'Change plan' : 'Upgrade plan';
 
     if (new URLSearchParams(location.search).get('upgraded') === '1') {
-      banner('Thanks! Your subscription is being activated — this can take a few seconds.', false);
+      banner('Thanks! Your subscription is being activated. This can take a few seconds.', false);
       history.replaceState({}, '', '/dashboard.html');
       // The webhook usually lands within a second or two; refresh once it has.
       setTimeout(loadPlan, 4000);
@@ -313,7 +313,11 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 
   // Someone picked a plan on the pricing page before signing up — continue that checkout.
   async function resumeCheckout() {
-    const plan = window.RezponaBilling && window.RezponaBilling.pendingPlan();
+    if (!window.RezponaBilling) return;
+    // Paddle sent them here to finish paying for a specific transaction (a retried
+    // payment, a card update). That takes priority over any plan they picked earlier.
+    if (await window.RezponaBilling.resumePaddleTransaction()) return;
+    const plan = window.RezponaBilling.pendingPlan();
     if (plan) openCheckout(plan);
   }
 

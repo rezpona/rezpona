@@ -69,7 +69,7 @@
     const ok = await load();
     if (!ok) {
       window.location.href = 'mailto:rezpona@gmail.com?subject=' +
-        encodeURIComponent('Subscription request — ' + plan);
+        encodeURIComponent('Subscription request: ' + plan);
       return;
     }
 
@@ -85,6 +85,29 @@
     });
   }
 
+  /* Paddle's "default payment link" points here.
+   *
+   * When a customer has to pay outside the normal signup flow, Paddle sends them
+   * to that link with ?_ptxn=txn_... and expects the page to open the checkout for
+   * that transaction. This covers a retried failed payment, a card update, and
+   * paying an invoice. Without it they would land on the dashboard with nothing
+   * happening and no way to pay, which is how a subscription quietly dies.
+   */
+  async function resumePaddleTransaction() {
+    let txn = null;
+    try { txn = new URLSearchParams(window.location.search).get('_ptxn'); } catch (e) { return false; }
+    if (!txn) return false;
+
+    const ok = await load();
+    if (!ok) return false;
+
+    global.Paddle.Checkout.open({
+      transactionId: txn,
+      settings: { displayMode: 'overlay', theme: 'dark' },
+    });
+    return true;
+  }
+
   // If someone picked a plan before signing up, resume that checkout after login.
   function pendingPlan() {
     try {
@@ -94,5 +117,5 @@
     } catch (e) { return null; }
   }
 
-  global.RezponaBilling = { checkout, load, pendingPlan, PRICES };
+  global.RezponaBilling = { checkout, load, pendingPlan, resumePaddleTransaction, PRICES };
 })(window);
