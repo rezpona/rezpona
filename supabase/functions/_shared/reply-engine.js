@@ -55,8 +55,40 @@
     en: ['the','and','was','very','great','food','staff','service','good','thank','we','with'],
   };
 
-  function detect(text) {
+  /* Google hands back a machine translation stapled to the review:
+   *
+   *   (Translated by Google) A solid place... (Original) Lugar sólido...
+   *
+   * Left alone, the detector reads the English half and answers a Spanish guest
+   * in English, which is exactly the thing a guest notices. Everything downstream
+   * should see only what the person actually wrote, so this runs before language
+   * detection and before the wording analysis.
+   *
+   * The markers arrive in the caller's locale, so the Google Business Profile API
+   * gives us the English ones; the others are here because the same text reaches
+   * us through other paths too. The check is deliberately loose: if no marker is
+   * found the text is returned untouched.
+   */
+  const ORIGINAL_RE = new RegExp(
+    '\\((?:Original|Originale|Original text|Originalni tekst|Оригинал)\\)\\s*([\\s\\S]+)$',
+    'i',
+  );
+  const TRANSLATED_RE = new RegExp(
+    '^\\s*\\((?:Translated by Google|Traduit par Google|Übersetzt von Google|' +
+    'Tradotto da Google|Traducido por Google|Prevedeno s Googleom)\\)\\s*',
+    'i',
+  );
+
+  function originalText(text) {
     const s = text || '';
+    const m = s.match(ORIGINAL_RE);
+    if (m && m[1].trim()) return m[1].trim();
+    // Translated, but Google gave no original half: strip the marker at least.
+    return s.replace(TRANSLATED_RE, '').trim() || s;
+  }
+
+  function detect(text) {
+    const s = originalText(text);
     // Scripts are unambiguous, so check them first.
     if (/[가-힣]/.test(s)) return 'ko';
     if (/[぀-ヿ]/.test(s)) return 'ja';
@@ -171,9 +203,10 @@
   const UNIV_POS = ['super','perfect','wow','😍','🥰','👍','❤','♥','💯','🔥','😊','⭐','5/5','10/10'];
   const UNIV_NEG = ['👎','😡','🤮','💩','😞','0/5','1/5'];
 
-  function analyse(text) {
-    const t = (text || '').toLowerCase();
-    const clauses = (text || '').split(/\s+(?:but|however|although|ali|aber|ma|però|pero|mais)\s+|[;.]\s+/i);
+  function analyse(raw) {
+    const text = originalText(raw);
+    const t = text.toLowerCase();
+    const clauses = text.split(/\s+(?:but|however|although|ali|aber|ma|però|pero|mais)\s+|[;.]\s+/i);
     let p = 0, n = 0;
     const praise = [], issues = [];
 
