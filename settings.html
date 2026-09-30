@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;1,9..144,200&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/assets/brand.js"></script>
+  <script src="/assets/support.js"></script>
   <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#060612;--acc:#00CEFF;--acc2:#5B6FFF;--text:#EEF2FF;--muted:#6B7B92;--muted2:#8A99B2;--bd:rgba(255,255,255,0.075);--card:rgba(255,255,255,0.025)}
@@ -224,6 +225,7 @@ function fatal(err) {
   venues = venueRes.data || [];
   el('loadingScreen').style.display = 'none';
   el('app').style.display = 'flex';
+  if (window.RezponaSupport) window.RezponaSupport.init(sb);
 
   // Lock what the plan does not include, rather than hiding it: people should be
   // able to see what they would get, and the server enforces it either way.

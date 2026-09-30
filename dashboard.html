@@ -13,6 +13,7 @@
   <script src="/assets/reply-engine.js"></script>
   <script src="/assets/billing.js"></script>
 <script src="/assets/brand.js"></script>
+<script src="/assets/support.js"></script>
   <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#060612;--bg2:#0a0a1c;--acc:#00CEFF;--acc2:#5B6FFF;--text:#EEF2FF;--muted:#6B7B92;--muted2:#8A99B2;--bd:rgba(255,255,255,0.075);--card:rgba(255,255,255,0.025)}
@@ -263,6 +264,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
     await loadPlan();
     await refreshConnectionUI();
     await resumeCheckout();
+    if (window.RezponaSupport) window.RezponaSupport.init(sb);
   }
 
   /* ---------- billing ---------- */
