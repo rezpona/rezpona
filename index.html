@@ -519,8 +519,8 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
     </ul>
     <div class="nav-r">
       <button class="theme-btn" data-theme-toggle></button>
-      <a href="/login.html" class="btn-login">Log in</a>
-      <a href="/login.html#signup" class="btn-cta">Start free →</a>
+      <a href="/login.html" class="btn-login" data-signed-out>Log in</a>
+      <a href="/login.html#signup" class="btn-cta" data-app-link>Start free →</a>
       <button class="hamburger" id="hamb" aria-label="Menu"><span></span><span></span><span></span></button>
     </div>
   </div>
@@ -533,8 +533,8 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
   <a href="#demo" data-mc>Try it free</a>
   <a href="#pricing" data-mc>Pricing</a>
   <a href="#faq" data-mc>FAQ</a>
-  <a href="/login.html" data-mc>Log in</a>
-  <a href="/login.html#signup" class="btn-cta" data-mc>Start free →</a>
+  <a href="/login.html" data-mc data-signed-out>Log in</a>
+  <a href="/login.html#signup" class="btn-cta" data-mc data-app-link>Start free →</a>
 </div>
 
 <!-- HERO -->
@@ -734,7 +734,7 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
   <div class="reveal"><div class="seye">Get started</div></div>
   <h2 class="stitle reveal">Turn your reviews into<br><em>your best asset.</em></h2>
   <p class="ssub reveal">Connect your Google Business Profile, set up in two minutes, and reply to your next review with confidence.</p>
-  <div class="cta-btns reveal"><a href="/login.html#signup" class="btn-p">Start free &rarr;</a></div>
+  <div class="cta-btns reveal"><a href="/login.html#signup" class="btn-p" data-app-link>Start free &rarr;</a></div>
 </section>
 
 <!-- FOOTER -->
@@ -917,48 +917,20 @@ document.querySelectorAll('[data-faq]').forEach(btn=>btn.addEventListener('click
    (a subscription has to be attached to a real account). */
 function pickPlan(plan){
   try { sessionStorage.setItem('rz_plan_intent', plan); } catch(e) { /* private mode */ }
-  location.href = signedIn() ? '/dashboard.html' : '/login.html#signup';
+  // rzSignedIn is set by /assets/session-nav.js once the Supabase client has
+  // confirmed a session. Signed in, the plan is picked inside the app.
+  location.href = window.rzSignedIn ? '/dashboard.html' : '/login.html#signup';
 }
-
-/* ── Show the way back in to someone who is already signed in ──
-   Coming back to the landing page does not sign anyone out; the session sits in
-   this browser either way. But the bar still offered "Log in" and "Start free",
-   which reads as having been logged out, and left no route back to the app.
-
-   The session is read straight out of the key the Supabase client keeps, rather
-   than by loading that client here: the landing page is the one page where a
-   visitor is deciding whether to bother, and it should not wait on a library to
-   paint its own navigation. Nothing here is trusted as authentication. It only
-   decides which label to show; the dashboard checks the session properly and
-   sends anyone without one to the login page. */
-function signedIn(){
-  try {
-    const raw = localStorage.getItem('sb-upepsbyqqefdaygmjxie-auth-token');
-    if (!raw) return false;
-    const s = JSON.parse(raw);
-    const exp = s && (s.expires_at || (s.currentSession && s.currentSession.expires_at));
-    // A refresh token outlives the access token, so a recently expired one is
-    // still a session worth offering. A month is well past any of ours.
-    return !!exp && (exp * 1000) > (Date.now() - 30 * 864e5);
-  } catch (e) { return false; }
-}
-
-(function reflectSession(){
-  if (!signedIn()) return;
-
-  document.querySelectorAll('a[href="/login.html"]').forEach(function (a) {
-    a.textContent = 'Dashboard';
-    a.href = '/dashboard.html';
-  });
-  document.querySelectorAll('a[href="/login.html#signup"]').forEach(function (a) {
-    a.innerHTML = 'Open dashboard &rarr;';
-    a.href = '/dashboard.html';
-  });
-})();
 </script>
 
 <!-- The live demo runs on the very same engine the dashboard uses. -->
 <script src="/assets/reply-engine.js" defer></script>
 <script src="/assets/demo.js" defer></script>
+
+<!-- Turns "Log in / Start free" into "Dashboard" for a visitor who is already
+     signed in, so returning here (or clicking the logo from inside the app)
+     does not look like being signed out. -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+<script src="/assets/session-nav.js" defer></script>
 </body>
 </html>
