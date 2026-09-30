@@ -113,10 +113,13 @@ Deno.serve(async (req) => {
           if (ex) { if (ex.status !== "published") await admin.from("replies").update(row).eq("id", ex.id); }
           else await admin.from("replies").insert(row);
         } else if (ex && ex.status === "published") {
-          // The reply was taken down on Google. Keep the text as a draft so the
-          // owner can put it back, but stop counting it as answered.
+          /* The reply was taken down on Google. Keep the text as a draft so the
+             owner can put it back, and stop counting it as answered.
+             published_at stays: it records that the reply did go out, which is
+             what the monthly allowance is counting. Clearing it would hand the
+             allowance back and let someone publish, delete, and publish again. */
           await admin.from("replies")
-            .update({ status: "draft", published_at: null })
+            .update({ status: "draft" })
             .eq("id", ex.id);
           unpublished++;
         }
