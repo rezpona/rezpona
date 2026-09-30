@@ -26,18 +26,31 @@ Deno.serve(async (req) => {
   // a single monthly allowance, and autopilot must respect it or Starter becomes
   // unlimited for anyone who switches it on.
   const allowance = new Map<string, number>();
-  async function remainingFor(owner: string): Promise<number> {
+  const plans = new Map<string, string>();
+  async function usageFor(owner: string): Promise<number> {
     if (allowance.has(owner)) return allowance.get(owner)!;
     const { data } = await admin.rpc("usage_status", { p_user: owner });
-    const n = Array.isArray(data) && data[0] ? Number(data[0].remaining) : 0;
+    const row = Array.isArray(data) && data[0] ? data[0] : null;
+    const n = row ? Number(row.remaining) : 0;
     allowance.set(owner, Number.isFinite(n) ? n : 0);
+    plans.set(owner, row?.plan ?? "starter");
     return allowance.get(owner)!;
   }
 
   for (const v of venues ?? []) {
     let published = 0;
     try {
-      if (v.owner_id && await remainingFor(v.owner_id) <= 0) {
+      // Autopilot is a Pro feature. The dashboard hides the switch from Starter,
+      // but a row can be flipped by other means, and this is where it actually
+      // counts: the switch does nothing unless the plan includes it.
+      if (v.owner_id) {
+        await usageFor(v.owner_id);
+        if (plans.get(v.owner_id) === "starter") {
+          summary.push({ venue: v.name, skipped: "autopilot requires Pro" });
+          continue;
+        }
+      }
+      if (v.owner_id && await usageFor(v.owner_id) <= 0) {
         summary.push({ venue: v.name, skipped: "monthly reply limit reached" });
         continue;
       }
@@ -50,7 +63,7 @@ Deno.serve(async (req) => {
 
       for (const rv of (r.data as any)?.reviews ?? []) {
         if (rv.reviewReply) continue;
-        if (v.owner_id && await remainingFor(v.owner_id) <= 0) break;
+        if (v.owner_id && await usageFor(v.owner_id) <= 0) break;
         const rating = STAR[rv.starRating] ?? 5;
         const gid = rv.reviewId ?? (rv.name?.split("/").pop());
         const reply = generateReply({

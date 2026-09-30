@@ -42,6 +42,12 @@ Deno.serve(async (req) => {
 
   let sent = 0, skipped = 0;
   for (const [owner, list] of byOwner) {
+    // Monthly reports are listed under Pro, not Starter. Checked here rather than
+    // when the cron fires, so a downgrade stops the reports from the next month.
+    const { data: usage } = await admin.rpc("usage_status", { p_user: owner });
+    const plan = (Array.isArray(usage) && usage[0]) ? usage[0].plan : "starter";
+    if (plan === "starter") { skipped++; continue; }
+
     // Claim the slot first. If this row already exists the report went out
     // already, and we move on without touching the mail provider.
     const { error: claimErr } = await admin.from("report_log").insert({ owner_id: owner, period });

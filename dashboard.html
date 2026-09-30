@@ -269,6 +269,31 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 
   /* ---------- billing ---------- */
   const PLAN_LABEL = { starter: 'Starter', pro: 'Pro', agency: 'Agency' };
+  let currentPlan = 'starter';
+
+  /* Autopilot is listed under Pro, not Starter. The switch is disabled rather
+     than hidden: someone who cannot see a feature never buys it, and the label
+     next to it says which plan it belongs to. The server refuses regardless, so
+     this is about telling the person, not about stopping them. */
+  function applyPlanLocks() {
+    const box = document.getElementById('autopilot');
+    const tag = document.getElementById('modeTag');
+    if (!box) return;
+
+    const locked = currentPlan === 'starter';
+    box.disabled = locked;
+    const row = box.closest('.mode-row');
+    if (row) {
+      row.style.opacity = locked ? '.75' : '';
+      row.title = locked ? 'Autopilot is part of the Pro plan' : '';
+    }
+    if (locked) {
+      box.checked = false;
+      if (tag) { tag.textContent = 'Pro feature'; tag.style.color = 'var(--muted)'; }
+    } else if (tag) {
+      tag.style.color = '';
+    }
+  }
 
   async function loadPlan() {
     const { data } = await sb.from('subscriptions')
@@ -297,6 +322,9 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
     // On a paid plan the button becomes "manage" unless they can still move up a tier.
     if (btn) btn.textContent = (paid && plan === 'agency') ? 'Manage billing'
       : paid ? 'Change plan' : 'Upgrade plan';
+
+    currentPlan = plan;
+    applyPlanLocks();
 
     if (new URLSearchParams(location.search).get('upgraded') === '1') {
       banner('Thanks! Your subscription is being activated. This can take a few seconds.', false);
@@ -421,6 +449,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
     const auto = !!currentVenue.autopilot;
     document.getElementById('autopilot').checked = auto;
     document.getElementById('modeTag').textContent = auto ? 'Autopilot on' : 'Approve mode';
+    applyPlanLocks();   // selecting a venue rewrites the label, so re-assert the lock
     if (window.RezponaBrand) window.RezponaBrand.apply(currentVenue);
     await loadReviews();
   }
@@ -434,6 +463,11 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 
   async function onAutopilotToggle() {
     if (!currentVenue) return;
+    if (currentPlan === 'starter') {   // belt and braces: the box is disabled too
+      applyPlanLocks();
+      banner('Autopilot is part of the Pro plan. Upgrade to let Rezpona reply on its own.', false);
+      return;
+    }
     const on = document.getElementById('autopilot').checked;
     currentVenue.autopilot = on;
     document.getElementById('modeTag').textContent = on ? 'Autopilot on' : 'Approve mode';
