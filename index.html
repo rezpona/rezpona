@@ -58,7 +58,7 @@
           {
             "@type": "Question",
             "name": "Does Rezpona support all languages?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Yes. Rezpona automatically detects the language of each incoming review and replies in the same language. We currently support 40+ languages, including all major European languages, plus Arabic, Japanese, Mandarin and more." }
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes. Rezpona automatically detects the language of each incoming review and replies in the same language. We currently support 37 languages, including all major European languages, plus Arabic, Japanese, Mandarin and more." }
           },
           {
             "@type": "Question",
@@ -385,7 +385,10 @@ section{padding:6.5rem 1.5rem;position:relative}
 /* ── PRICING ── */
 .pricing-wrap{background:linear-gradient(180deg,transparent,rgba(0,206,255,.012) 50%,transparent)}
 .pgrid{max-width:1060px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:1.3rem;padding:0 1.5rem}
-.pc{background:var(--s1);border:1px solid var(--bd);border-radius:22px;padding:2.3rem;position:relative;transition:transform .3s,border-color .3s,box-shadow .3s}
+/* The tiers no longer hold the same number of lines, so the buttons are tied to
+   the bottom rather than floating wherever each list happens to end. */
+.pc{background:var(--s1);border:1px solid var(--bd);border-radius:22px;padding:2.3rem;position:relative;display:flex;flex-direction:column;transition:transform .3s,border-color .3s,box-shadow .3s}
+.pc .pbtn{margin-top:auto}
 .pc:hover{transform:translateY(-5px);border-color:var(--bd2)}
 .pc.pop{border-color:rgba(0,206,255,.3);background:linear-gradient(135deg,rgba(0,206,255,.055),rgba(91,111,255,.055))}
 .pc.pop:hover{box-shadow:0 26px 64px rgba(0,206,255,.16)}
@@ -397,6 +400,9 @@ section{padding:6.5rem 1.5rem;position:relative}
 .pper{font-size:.88rem;color:var(--muted);margin-bottom:.25rem}
 .pdesc{font-size:.81rem;color:var(--muted2);margin-bottom:1.8rem;line-height:1.55}
 .pdiv{height:1px;background:var(--bd);margin-bottom:1.4rem}
+/* Each tier carries the one before it, so only what is new gets a tick. Repeating
+   the whole list three times hid the difference the buyer is actually weighing. */
+.pfrom{font-size:.78rem;font-weight:600;color:var(--text);margin-bottom:.9rem;letter-spacing:-.01em}
 .pfeats{list-style:none;display:flex;flex-direction:column;gap:.75rem;margin-bottom:1.9rem}
 .pfeats li{font-size:.83rem;color:var(--muted2);display:flex;align-items:flex-start;gap:.55rem;font-weight:300}
 .pfeats li::before{content:'✓';color:var(--acc);font-weight:700;font-size:.78rem;flex-shrink:0;margin-top:.05rem}
@@ -604,7 +610,7 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
   <div class="fgrid container" id="fgrid">
     <div class="fc reveal"><div class="ficon">&#9997;</div><div class="ftitle">Instant Reply Drafts</div><div class="fdesc">Professional, personalized replies for every review in seconds, written to match your venue's tone and the specific details of each guest's visit.</div></div>
     <div class="fc reveal d1"><div class="ficon">&#128202;</div><div class="ftitle">Sentiment &amp; Topic Analysis</div><div class="fdesc">Understand what guests truly think. Automatic classification by sentiment, topics, and recurring issues that need your attention.</div></div>
-    <div class="fc reveal d2"><div class="ficon">&#127758;</div><div class="ftitle">40+ Languages</div><div class="fdesc">Rezpona detects the review's language automatically and responds in the same one. No manual translation, ever.</div></div>
+    <div class="fc reveal d2"><div class="ficon">&#127758;</div><div class="ftitle">37 Languages</div><div class="fdesc">Rezpona detects the review's language automatically and responds in the same one. No manual translation, ever.</div></div>
     <div class="fc reveal"><div class="ficon">&#128276;</div><div class="ftitle">Real-time Alerts</div><div class="fdesc">Get notified the moment a new review lands, by email or Slack. Never miss important guest feedback again.</div></div>
     <div class="fc reveal d1"><div class="ficon">&#128200;</div><div class="ftitle">Monthly Performance Reports</div><div class="fdesc">Track rating trends, spot your wins and weak spots, and measure how your reputation evolves over time with clear, actionable reports.</div></div>
     <div class="fc reveal d2"><div class="ficon">&#128279;</div><div class="ftitle">One-Click Publishing</div><div class="fdesc">Review the draft, make any edits, and publish straight to Google Business Profile with a single click, or turn on Autopilot.</div></div>
@@ -690,7 +696,7 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
       <div class="pprice"><span class="pcurr">&euro;</span><span class="pnum">19</span><span class="pper">/month</span></div>
       <div class="pdesc">For a single venue getting started.</div>
       <div class="pdiv"></div>
-      <ul class="pfeats"><li>Up to 30 reviews per month</li><li>Replies in 30+ languages</li><li>One-click publishing</li><li>Google Business Profile integration</li><li>Email notifications</li></ul>
+      <ul class="pfeats"><li>Up to 30 replies per month</li><li>Replies in 37 languages</li><li>One-click publishing</li><li>Google Business Profile integration</li><li>Email notifications</li></ul>
       <button class="pbtn pb-o" style="border:1px solid var(--bd)" onclick="pickPlan('starter')">Start for free</button>
     </div>
     <div class="pc pop reveal d1">
@@ -699,7 +705,8 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
       <div class="pprice"><span class="pcurr">&euro;</span><span class="pnum">39</span><span class="pper">/month</span></div>
       <div class="pdesc">For growing restaurants &amp; hotels.</div>
       <div class="pdiv"></div>
-      <ul class="pfeats"><li>Unlimited reviews</li><li>Monthly performance reports</li><li>Priority support</li><li>Sentiment &amp; topic analytics</li><li>Autopilot mode</li><li>Slack &amp; email notifications</li></ul>
+      <div class="pfrom">Everything in Starter, and</div>
+      <ul class="pfeats"><li>Unlimited replies</li><li>Autopilot: replies published for you</li><li>Sentiment &amp; topic analytics</li><li>Monthly performance reports</li><li>Slack notifications</li><li>Priority support</li></ul>
       <button class="pbtn pb-f" onclick="pickPlan('pro')">Start for free &rarr;</button>
     </div>
     <div class="pc reveal d2">
@@ -707,7 +714,8 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
       <div class="pprice"><span class="pcurr">&euro;</span><span class="pnum">99</span><span class="pper">/month</span></div>
       <div class="pdesc">For multi-location groups.</div>
       <div class="pdiv"></div>
-      <ul class="pfeats"><li>Multiple locations</li><li>Team access &amp; roles</li><li>Unlimited reviews</li><li>Priority support</li><li>White-label option</li><li>API access</li></ul>
+      <div class="pfrom">Everything in Pro, and</div>
+      <ul class="pfeats"><li>Unlimited venues</li><li>Team access &amp; roles</li><li>White-label option</li><li>API access</li></ul>
       <button class="pbtn pb-o" style="border:1px solid var(--bd)" onclick="pickPlan('agency')">Start for free</button>
     </div>
   </div>
@@ -718,7 +726,7 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
   <div class="container">
     <div class="sh c reveal"><div class="seye">FAQ</div><h2 class="stitle">Common questions</h2><p class="ssub">Everything you need to know before getting started.</p></div>
     <div class="flist">
-      <div class="fi reveal"><button class="fq" data-faq>Does Rezpona support all languages?<span class="fchev">&#8964;</span></button><div class="fbody"><div class="fbody-in"><div class="fans">Yes. Rezpona automatically detects the language of each incoming review and replies in the same language. We currently support 40+ languages, including all major European languages, plus Arabic, Japanese, Mandarin and more.</div></div></div></div>
+      <div class="fi reveal"><button class="fq" data-faq>Does Rezpona support all languages?<span class="fchev">&#8964;</span></button><div class="fbody"><div class="fbody-in"><div class="fans">Yes. Rezpona automatically detects the language of each incoming review and replies in the same language. We currently support 37 languages, including all major European languages, plus Arabic, Japanese, Mandarin and more.</div></div></div></div>
       <div class="fi reveal d1"><button class="fq" data-faq>How secure is the Google integration?<span class="fchev">&#8964;</span></button><div class="fbody"><div class="fbody-in"><div class="fans">Rezpona connects to Google Business Profile via the official OAuth 2.0 flow, and we never see or store your Google password. All data is encrypted in transit and at rest, and you can revoke access at any time from your Google account.</div></div></div></div>
       <div class="fi reveal d2"><button class="fq" data-faq>Can I edit the replies before publishing?<span class="fchev">&#8964;</span></button><div class="fbody"><div class="fbody-in"><div class="fans">Absolutely. Every reply is a draft: edit it, rewrite it, or regenerate it before publishing. Nothing goes live without your approval unless you've explicitly enabled Autopilot mode, which you can toggle on or off anytime.</div></div></div></div>
       <div class="fi reveal d1"><button class="fq" data-faq>Is it suitable for multiple restaurant locations?<span class="fchev">&#8964;</span></button><div class="fbody"><div class="fbody-in"><div class="fans">Yes, our Agency plan is built exactly for this. Manage unlimited locations from one dashboard, assign team members to specific venues, and get consolidated analytics across your whole portfolio.</div></div></div></div>
