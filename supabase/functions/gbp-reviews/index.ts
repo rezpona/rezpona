@@ -48,6 +48,20 @@ Deno.serve(async (req) => {
       (prev ?? []).forEach((p: any) => known.add(p.google_review_id));
     }
     const fresh: ReviewLite[] = [];
+    let unpublished = 0;
+
+    /* Google's own headline numbers, straight from the same response. Maps shows
+     * the public view and filters some reviews out of it, while this API gives
+     * the owner everything, so the two counts legitimately differ. Storing both
+     * means the owner can see the difference instead of wondering which of two
+     * numbers to believe. */
+    const gRating = (r.data as any)?.averageRating ?? null;
+    const gCount = (r.data as any)?.totalReviewCount ?? null;
+    if (gCount !== null) {
+      await admin.from("venues")
+        .update({ google_rating: gRating, google_review_count: gCount })
+        .eq("id", venue_id);
+    }
 
     const out: any[] = [];
     for (const rv of fetched) {
@@ -79,14 +93,32 @@ Deno.serve(async (req) => {
         });
       }
 
-      // if Google already has a reply, make sure we have a published replies row
-      if (replied && reviewUuid) {
-        const { data: ex } = await admin.from("replies").select("id").eq("review_id", reviewUuid).maybeSingle();
-        if (!ex) {
-          await admin.from("replies").insert({
-            review_id: reviewUuid, venue_id, final_text: rv.reviewReply.comment ?? "",
-            status: "published", published_at: rv.reviewReply.updateTime ?? new Date().toISOString(),
-          });
+      /* Keep our record of the reply in step with Google, in both directions.
+       *
+       * It only ever learned that a reply existed. Delete one on Google and we
+       * went on counting it: the reply rate sat at 100% for a venue with nothing
+       * answered, and the month's allowance stayed spent on a reply that is no
+       * longer there. Google is the source of truth for what is published. */
+      if (reviewUuid) {
+        const { data: ex } = await admin.from("replies")
+          .select("id, status").eq("review_id", reviewUuid).maybeSingle();
+
+        if (replied) {
+          const row = {
+            review_id: reviewUuid, venue_id,
+            final_text: rv.reviewReply.comment ?? "",
+            status: "published",
+            published_at: rv.reviewReply.updateTime ?? new Date().toISOString(),
+          };
+          if (ex) { if (ex.status !== "published") await admin.from("replies").update(row).eq("id", ex.id); }
+          else await admin.from("replies").insert(row);
+        } else if (ex && ex.status === "published") {
+          // The reply was taken down on Google. Keep the text as a draft so the
+          // owner can put it back, but stop counting it as answered.
+          await admin.from("replies")
+            .update({ status: "draft", published_at: null })
+            .eq("id", ex.id);
+          unpublished++;
         }
       }
 
@@ -155,7 +187,13 @@ Deno.serve(async (req) => {
       }
     }
 
-    return json({ reviews: out, new_count: fresh.length, removed_count: removed });
+    return json({
+      reviews: out,
+      new_count: fresh.length,
+      removed_count: removed,
+      unpublished_count: unpublished,
+      google: { rating: gRating, total: gCount },
+    });
   } catch (e) {
     return json({ error: String((e as Error).message || e) }, 500);
   }

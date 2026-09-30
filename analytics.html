@@ -255,9 +255,24 @@ async function load() {
   }
 
   el('content').innerHTML =
-    statCards(s) +
+    statCards(s) + googleNote(s) +
     '<div class="grid2">' + sentimentPanel(s) + topicsPanel(topicsRes.data || []) + '</div>' +
     trendPanel(trendRes.data || [], days);
+}
+
+/* Maps and the owner's API do not agree, and both are right: Maps filters some
+   reviews out of the public view. Showing Google's own figure next to ours means
+   the owner sees the difference rather than wondering which number is broken. */
+function googleNote(s) {
+  if (s.google_total == null) return '';
+  const sameCount = Number(s.google_total) === Number(s.total_reviews);
+  const gAvg = s.google_rating == null ? null : Number(s.google_rating).toFixed(1);
+  if (sameCount) return '';
+  return '<p style="font-size:.8rem;color:var(--muted);margin:-.6rem 0 1.6rem;line-height:1.6">' +
+    'Google shows <strong style="color:var(--muted2);font-weight:600">' + s.google_total +
+    ' review' + (Number(s.google_total) === 1 ? '' : 's') + (gAvg ? ' at ' + gAvg : '') + '</strong> publicly. ' +
+    'The figures above come from your Business Profile, which also includes reviews Maps filters out of the public listing.' +
+    '</p>';
 }
 
 function statCards(s) {
