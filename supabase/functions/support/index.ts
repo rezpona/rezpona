@@ -45,7 +45,28 @@ Deno.serve(async (req) => {
     const { data: usage } = await admin.rpc("usage_status", { p_user: user.id });
     const u = Array.isArray(usage) ? usage[0] : null;
     const plan: string = u?.plan ?? "starter";
-    const priority = plan === "pro" || plan === "agency";
+
+    /* Three tiers of answer, not two. Agency is the only plan sold with priority
+     * support, so it is the only one whose mail jumps the queue; Pro gets a named
+     * turnaround it can hold us to, and Starter gets a reply without a promise
+     * attached to it. The subject carries the tier so triage happens by reading
+     * the inbox, not by looking anybody up. */
+    const TIER: Record<string, { tag: string; reply: string }> = {
+      agency: {
+        tag: "[PRIORITY] ",
+        reply: "Thanks. Your message is flagged as priority and we usually reply within a few hours.",
+      },
+      pro: {
+        tag: "[PRO] ",
+        reply: "Thanks. We have got your message and will reply within one business day.",
+      },
+      starter: {
+        tag: "",
+        reply: "Thanks. We have got your message and will reply by email.",
+      },
+    };
+    const tier = TIER[plan] ?? TIER.starter;
+    const priority = plan === "agency";
 
     const subj = String(subject ?? "").trim().slice(0, 140) || "Support request";
     const where = String(page ?? "").trim().slice(0, 200);
@@ -69,7 +90,7 @@ Deno.serve(async (req) => {
 
     const sent = await sendEmail(
       SUPPORT_INBOX,
-      (priority ? "[PRIORITY] " : "") + subj + " - " + (user.email ?? ""),
+      tier.tag + subj + " - " + (user.email ?? ""),
       html,
       // So hitting reply answers the customer rather than noreply@.
       user.email ?? undefined,
@@ -82,9 +103,7 @@ Deno.serve(async (req) => {
     return json({
       ok: true,
       priority,
-      message: priority
-        ? "Thanks. Your message is flagged as priority and we usually reply within a few hours."
-        : "Thanks. We have got your message and will reply by email.",
+      message: tier.reply,
     });
   } catch (e) {
     return json({ error: String((e as Error).message || e) }, 500);
