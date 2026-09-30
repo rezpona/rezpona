@@ -182,9 +182,17 @@ footer a:hover{color:var(--text)}
 
   let mode = 'signin';
 
-  // Redirect if already logged in
-  sb.auth.getSession().then(({ data }) => {
-    if (data.session) window.location.href = '/dashboard.html';
+  /* Already signed in? Go to the app.
+     getSession only reads what this browser has stored, and a stored session
+     whose refresh token no longer works still looks valid to it. Trusting that
+     sent people straight to the dashboard, which bounced them back here, and
+     round it went. getUser asks the server, so a dead session gets cleared and
+     the person sees the form instead of a loop. */
+  sb.auth.getSession().then(async ({ data }) => {
+    if (!data.session) return;
+    const { data: who, error } = await sb.auth.getUser();
+    if (who && who.user && !error) { window.location.href = '/dashboard.html'; return; }
+    try { await sb.auth.signOut({ scope: 'local' }); } catch (e) { /* show the form regardless */ }
   });
 
   // Auto-switch to signup tab if URL has #signup

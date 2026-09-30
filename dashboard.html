@@ -442,7 +442,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
        expire, and if the server rejects it anyway, refresh once and try again
        before giving up. */
     let { data: { session } } = await sb.auth.getSession();
-    if (!session) { location.href = '/login.html'; return; }
+    if (!session) throw new Error('SESSION_GONE');
 
     const expiresIn = (session.expires_at || 0) * 1000 - Date.now();
     if (expiresIn < 60000) {
@@ -460,11 +460,16 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
       body: body ? JSON.stringify(body) : undefined
     });
 
-    if (res.status === 401 && !retried) {
-      const { data } = await sb.auth.refreshSession();
-      if (data && data.session) return fn(name, body, true);
-      location.href = '/login.html';
-      return;
+    /* One refresh, one retry, and then stop. Sending the person to the login page
+       from here is what caused the loop: the login page saw the same stored
+       session, believed it, and sent them straight back. Better to say plainly
+       that the session ended and let them choose to sign in again. */
+    if (res.status === 401) {
+      if (!retried) {
+        const { data } = await sb.auth.refreshSession();
+        if (data && data.session) return fn(name, body, true);
+      }
+      throw new Error('SESSION_GONE');
     }
 
     const out = await res.json().catch(() => ({}));
@@ -473,6 +478,22 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
     // nothing to someone looking at a button that just refused to work.
     if (!res.ok) throw new Error(out.message || out.error || ('Request failed (' + res.status + ')'));
     return out;
+  }
+
+  /* A dead session is the one error worth naming, because the fix is a click and
+     the raw text ("Unauthorized") tells the person nothing. */
+  function isSessionGone(e) {
+    return e && (e.message === 'SESSION_GONE' || /unauthor/i.test(e.message || ''));
+  }
+
+  function sessionBanner() {
+    const b = document.getElementById('banner');
+    b.innerHTML = 'Your session has ended. ' +
+      '<a href="/login.html" style="color:inherit;font-weight:600;text-decoration:underline">Sign in again</a> to carry on.';
+    b.style.display = 'block';
+    b.style.background = 'rgba(255,184,0,.08)';
+    b.style.borderColor = 'rgba(255,184,0,.25)';
+    b.style.color = '#FFD479';
   }
 
   function banner(msg, isErr) {
@@ -580,7 +601,8 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
     } catch (e) {
       lastReviews = [];
       area.innerHTML = '';
-      banner('Could not load reviews: ' + e.message, true);
+      if (isSessionGone(e)) sessionBanner();
+      else banner('Could not load reviews: ' + e.message, true);
     }
   }
 
@@ -658,7 +680,9 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
       if (rv) { rv.replied = true; rv.existing_reply = text; }
       card.outerHTML = publishedCard(lastReviews.find(x => x.google_review_id === gid));
     } catch (e) {
-      btn.disabled = false; msg.textContent = e.message; msg.className = 'inline-msg err';
+      btn.disabled = false;
+      if (isSessionGone(e)) { sessionBanner(); msg.textContent = ''; return; }
+      msg.textContent = e.message; msg.className = 'inline-msg err';
     }
   }
 
@@ -673,7 +697,11 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
       try {
         await fn('gbp-reply', { venue_id: currentVenue.id, google_review_id: rv.google_review_id, reply_text: text });
         rv.replied = true; rv.existing_reply = text;
-      } catch (e) { banner('Autopilot stopped: ' + e.message, true); break; }
+      } catch (e) {
+        if (isSessionGone(e)) sessionBanner();
+        else banner('Autopilot stopped: ' + e.message, true);
+        break;
+      }
     }
     renderReviews(lastReviews);
     if (document.getElementById('banner').textContent.indexOf('stopped') === -1) banner('');
