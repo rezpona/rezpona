@@ -64,13 +64,15 @@ Deno.serve(async (req) => {
         <p style="margin:0 0 4px"><strong>${escapeHtml(user.email ?? "unknown")}</strong></p>
         <p style="margin:0 0 16px;color:#52617a">Plan: ${escapeHtml(plan)}${where ? " &middot; " + escapeHtml(where) : ""}</p>
         <div style="white-space:pre-wrap;border-left:3px solid #22a5d6;padding-left:14px;color:#111827">${escapeHtml(text)}</div>
-        <p style="margin:20px 0 0;font-size:12px;color:#9aa6ba">Reply straight to this address to answer them.</p>
+        <p style="margin:20px 0 0;font-size:12px;color:#9aa6ba">Hit reply to answer them directly.</p>
       </div>`;
 
     const sent = await sendEmail(
       SUPPORT_INBOX,
       (priority ? "[PRIORITY] " : "") + subj + " - " + (user.email ?? ""),
       html,
+      // So hitting reply answers the customer rather than noreply@.
+      user.email ?? undefined,
     );
 
     // The message is already stored, so a mail failure is not a lost message and

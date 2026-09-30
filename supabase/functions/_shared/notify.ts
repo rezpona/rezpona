@@ -26,13 +26,25 @@ function escapeHtml(s: string): string {
 
 /* ---------------------------------------------------------------- email */
 
-export async function sendEmail(to: string, subject: string, html: string): Promise<boolean> {
+/**
+ * @param replyTo where a reply should go. Without it a reply goes to the sending
+ *   address, which is noreply@, so support mail looked answerable and was not.
+ */
+export async function sendEmail(
+  to: string,
+  subject: string,
+  html: string,
+  replyTo?: string,
+): Promise<boolean> {
   if (!RESEND_KEY || !to) return false;
   try {
+    const payload: Record<string, unknown> = { from: FROM, to: [to], subject, html };
+    if (replyTo) payload.reply_to = replyTo;
+
     const resp = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${RESEND_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ from: FROM, to: [to], subject, html }),
+      body: JSON.stringify(payload),
     });
     if (!resp.ok) console.error("resend:", resp.status, await resp.text());
     return resp.ok;
