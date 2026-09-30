@@ -283,18 +283,9 @@ function fatal(err) {
   el('app').style.display = 'flex';
   if (window.RezponaSupport) window.RezponaSupport.init(sb);
 
-  // Lock what the plan does not include, rather than hiding it: people should be
-  // able to see what they would get, and the server enforces it either way.
-  if (plan !== 'agency') {
-    ['brandPanel', 'teamPanel', 'apiPanel'].forEach((id) => {
-      const p = el(id);
-      p.insertAdjacentHTML('afterbegin',
-        '<div class="lock-note">Included with the Agency plan. <a href="/#pricing" style="color:var(--acc)">Compare plans</a></div>');
-      p.querySelectorAll('input,select,button').forEach((c) => { c.disabled = true; });
-    });
+  if (!venues.length) {
+    applyLocks(plan, null);
   }
-  if (plan === 'starter') el('slackField').classList.add('locked');
-
   if (!venues.length) {
     el('venuePanel').innerHTML = '<h2>Venue</h2><p class="hint">Connect a venue from the dashboard first.</p>';
     ['notifPanel', 'brandPanel', 'teamPanel'].forEach((id) => { el(id).style.display = 'none'; });
@@ -309,6 +300,55 @@ function fatal(err) {
 
 function current() { return venues.find((v) => v.id === el('venueSel').value); }
 
+/* Lock what the plan does not include, rather than hiding it: people should be
+   able to see what they would get, and the server enforces it either way.
+
+   The plan is the one the VENUE's owner pays for. An invited teammate has no
+   subscription, so reading their own left every Agency panel locked on a venue
+   that had paid for all of them. Only an owner or an admin may change a venue,
+   so a viewer or an editor sees the panels read-only too. */
+let locksApplied = null;
+
+function applyLocks(plan, role) {
+  const key = plan + '/' + role;
+  if (locksApplied === key) return;
+  locksApplied = key;
+
+  document.querySelectorAll('.lock-note').forEach((n) => n.remove());
+  const mayConfigure = !role || role === 'owner' || role === 'admin';
+
+  ['brandPanel', 'teamPanel', 'apiPanel'].forEach((id) => {
+    const p = el(id);
+    if (!p) return;
+    const locked = plan !== 'agency' || !mayConfigure;
+    if (locked) {
+      p.insertAdjacentHTML('afterbegin', plan !== 'agency'
+        ? '<div class="lock-note">Included with the Agency plan. <a href="/#pricing" style="color:var(--acc)">Compare plans</a></div>'
+        : '<div class="lock-note">Only the owner or an admin can change this.</div>');
+    }
+    p.querySelectorAll('input,select,button').forEach((c) => { c.disabled = locked; });
+  });
+
+  const notif = el('notifPanel');
+  if (notif) notif.querySelectorAll('input,select,button').forEach((c) => { c.disabled = !mayConfigure; });
+  el('slackField').classList.toggle('locked', plan === 'starter');
+
+  // The API key panel belongs to the account, not the venue, so it stays with
+  // whoever actually pays: a teammate never mints keys on someone else's plan.
+  if (plan === 'agency' && mayConfigure && !role) listKeys();
+}
+
+/* The plan follows the selected venue, so it is re-read on every switch. */
+async function refreshVenuePlan() {
+  const v = current();
+  if (!v) return;
+  const { data } = await sb.rpc('venue_plan', { p_venue: v.id });
+  const row = Array.isArray(data) ? data[0] : data;
+  if (!row) return;
+  plan = row.plan;
+  applyLocks(row.plan, row.role === 'owner' ? null : row.role);
+}
+
 function loadVenue() {
   const v = current();
   if (!v) return;
@@ -319,6 +359,7 @@ function loadVenue() {
   el('bLogo').value = v.brand_logo_url || '';
   el('bColor').value = v.brand_color || '';
   if (window.RezponaBrand) window.RezponaBrand.apply(v);
+  refreshVenuePlan();
   listMembers();
 }
 
