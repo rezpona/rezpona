@@ -21,7 +21,7 @@
 :root[data-theme="light"]{
   --bg:#F6F7FB;--bg2:#FFFFFF;
   --text:#0B1120;--muted:#64748B;--muted2:#475569;
-  --bd:rgba(11,17,32,.10);--bd2:rgba(11,17,32,.20);
+  --bd:rgba(11,17,32,.14);--bd2:rgba(11,17,32,.26);
   --card:#FFFFFF;--s1:#FFFFFF;--s2:rgba(11,17,32,.035);--s3:rgba(11,17,32,.065);
   --acc:#0A86B4;--acc2:#3F52D9;--on-acc:#FFFFFF;
   --pos:#0E9F6E;--neg:#DC2626;--neu:#B45309;
@@ -119,6 +119,14 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 .switch input:checked+.slider{background:linear-gradient(135deg,var(--acc),var(--acc2))}
 .switch input:checked+.slider::before{transform:translateX(19px)}
 .mode-tag{font-size:.78rem;font-weight:600;color:var(--acc)}
+.mode-up{padding:.32rem .8rem;border-radius:100px;border:none;cursor:pointer;font-family:'Outfit',sans-serif;
+  font-size:.75rem;font-weight:600;color:var(--on-acc);background:linear-gradient(135deg,var(--acc),var(--acc2))}
+.up-note{display:flex;align-items:center;justify-content:space-between;gap:1.2rem;flex-wrap:wrap;
+  background:linear-gradient(135deg,rgba(0,206,255,.07),rgba(91,111,255,.07));
+  border:1px solid rgba(0,206,255,.2);border-radius:16px;padding:1.1rem 1.3rem;margin-bottom:1.4rem}
+.up-note strong{font-size:.92rem;font-weight:600}
+.up-note p{font-size:.85rem;color:var(--muted2);font-weight:300;margin-top:.25rem;max-width:52ch;line-height:1.55}
+.up-note .btn-p{flex-shrink:0;padding:.65rem 1.4rem;font-size:.85rem}
 
 /* REVIEW CARDS */
 .rev-list{display:flex;flex-direction:column;gap:1rem}
@@ -282,7 +290,17 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
           <span class="lbl">Autopilot</span>
           <label class="switch"><input type="checkbox" id="autopilot" onchange="onAutopilotToggle()"><span class="slider"></span></label>
           <span class="mode-tag" id="modeTag">Approve mode</span>
+          <button class="mode-up" id="modeUp" onclick="upgradeTo('pro')" style="display:none">Upgrade to Pro</button>
         </div>
+      </div>
+
+      <!-- Shown to Starter instead of leaving a dead switch with no explanation. -->
+      <div class="up-note" id="autopilotNote" style="display:none">
+        <div>
+          <strong>Autopilot is part of Pro.</strong>
+          <p>Rezpona replies to every new review on its own, day and night, and you only look when you want to.</p>
+        </div>
+        <button class="btn-p" onclick="upgradeTo('pro')">Upgrade to Pro →</button>
       </div>
 
       <div class="banner" id="banner"></div>
@@ -335,16 +353,26 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
     const locked = currentPlan === 'starter';
     box.disabled = locked;
     const row = box.closest('.mode-row');
-    if (row) {
-      row.style.opacity = locked ? '.75' : '';
-      row.title = locked ? 'Autopilot is part of the Pro plan' : '';
-    }
-    if (locked) {
-      box.checked = false;
-      if (tag) { tag.textContent = 'Pro feature'; tag.style.color = 'var(--muted)'; }
-    } else if (tag) {
+    if (row) row.title = locked ? 'Autopilot is part of the Pro plan' : '';
+
+    if (tag) {
+      tag.style.display = locked ? 'none' : '';
       tag.style.color = '';
     }
+    const up = document.getElementById('modeUp');
+    if (up) up.style.display = locked ? '' : 'none';
+
+    // The explanation sits with the switch, so the reason and the way out are in
+    // the same place. It only makes sense once a venue is on screen.
+    const note = document.getElementById('autopilotNote');
+    if (note) note.style.display = (locked && currentVenue) ? 'flex' : 'none';
+
+    if (locked) box.checked = false;
+  }
+
+  function upgradeTo(plan) {
+    if (!currentUser) return;
+    openCheckout(plan);
   }
 
   async function loadPlan() {
@@ -401,8 +429,16 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
     window.RezponaBilling.checkout(plan, { id: currentUser.id, email: currentUser.email });
   }
 
-  // Sidebar button: pick a plan (or jump to pricing to compare).
-  function upgradePlan() { window.location.href = '/#pricing'; }
+  /* Upgrading should not mean "go and read the pricing page again". Someone on
+     Starter who presses this wants Pro, so open the Pro checkout. Only the top
+     tier, with nothing left to buy, gets sent to the comparison. */
+  const NEXT_PLAN = { starter: 'pro', pro: 'agency' };
+
+  function upgradePlan() {
+    const next = NEXT_PLAN[currentPlan];
+    if (!next) { window.location.href = '/#pricing'; return; }
+    openCheckout(next);
+  }
 
   function showDashboard(user) {
     document.getElementById('loadingScreen').style.display = 'none';
@@ -417,8 +453,21 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
   }
 
   /* ---------- edge function caller ---------- */
-  async function fn(name, body) {
-    const { data: { session } } = await sb.auth.getSession();
+  async function fn(name, body, retried) {
+    /* getSession hands back whatever is cached, which can be an access token that
+       expired while the tab sat open. That came back as a bare "Unauthorized"
+       with nothing the person could act on. So: refresh when it is about to
+       expire, and if the server rejects it anyway, refresh once and try again
+       before giving up. */
+    let { data: { session } } = await sb.auth.getSession();
+    if (!session) { location.href = '/login.html'; return; }
+
+    const expiresIn = (session.expires_at || 0) * 1000 - Date.now();
+    if (expiresIn < 60000) {
+      const { data } = await sb.auth.refreshSession();
+      if (data && data.session) session = data.session;
+    }
+
     const res = await fetch(FN_BASE + name, {
       method: body ? 'POST' : 'GET',
       headers: {
@@ -428,6 +477,14 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
       },
       body: body ? JSON.stringify(body) : undefined
     });
+
+    if (res.status === 401 && !retried) {
+      const { data } = await sb.auth.refreshSession();
+      if (data && data.session) return fn(name, body, true);
+      location.href = '/login.html';
+      return;
+    }
+
     const out = await res.json().catch(() => ({}));
     // The server sends a plain `error` code plus, where it has something useful to
     // say to the person, a `message`. Prefer the message: "limit_reached" means

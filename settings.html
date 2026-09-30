@@ -12,6 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;1,9..144,200&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/assets/brand.js"></script>
+  <script src="/assets/billing.js"></script>
   <script src="/assets/support.js"></script>
   <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -19,7 +20,7 @@
 :root[data-theme="light"]{
   --bg:#F6F7FB;--bg2:#FFFFFF;
   --text:#0B1120;--muted:#64748B;--muted2:#475569;
-  --bd:rgba(11,17,32,.10);--bd2:rgba(11,17,32,.20);
+  --bd:rgba(11,17,32,.14);--bd2:rgba(11,17,32,.26);
   --card:#FFFFFF;--s1:#FFFFFF;--s2:rgba(11,17,32,.035);--s3:rgba(11,17,32,.065);
   --acc:#0A86B4;--acc2:#3F52D9;--on-acc:#FFFFFF;
   --pos:#0E9F6E;--neg:#DC2626;--neu:#B45309;
@@ -136,7 +137,7 @@ input:focus,select:focus{border-color:rgba(0,206,255,.4)}
       <p class="hint" id="usageLine">Loading...</p>
       <!-- The sidebar's upgrade box is hidden on a phone, so the way to change
            plan has to live somewhere that survives the small screen. -->
-      <a class="btn" id="planBtn" href="/#pricing" style="display:inline-block;text-decoration:none">Upgrade plan</a>
+      <button class="btn" id="planBtn" onclick="upgrade()">Upgrade plan</button>
     </div>
 
     <!-- VENUE PICKER -->
@@ -220,7 +221,18 @@ function flash(id, text, cls) {
   setTimeout(() => { m.textContent = ''; }, 4000);
 }
 
-let venues = [], plan = 'starter';
+let venues = [], plan = 'starter', me = null;
+
+/* Straight to the next tier rather than back to the pricing page. Someone who
+   presses Upgrade has already decided; making them read the table again and
+   find the same plan is a step that only loses people. */
+const NEXT_PLAN = { starter: 'pro', pro: 'agency' };
+
+function upgrade() {
+  const next = NEXT_PLAN[plan];
+  if (!next || !window.RezponaBilling || !me) { location.href = '/#pricing'; return; }
+  window.RezponaBilling.checkout(next, { id: me.id, email: me.email });
+}
 
 // Anything thrown in here used to leave the page sitting on "Loading settings..."
 // for ever, with the reason only in the console. A page that cannot load should
@@ -239,6 +251,7 @@ function fatal(err) {
  try {
   const { data: { session } } = await sb.auth.getSession();
   if (!session) { location.href = '/login.html'; return; }
+  me = session.user;
 
   const [usageRes, venueRes] = await Promise.all([
     sb.rpc('my_usage'),
@@ -258,7 +271,11 @@ function fatal(err) {
       ? u.used + ' replies published this month. No limit on your plan.'
       : u.used + ' of ' + u.allowed + ' replies published this month. ' + u.remaining + ' left.';
     const pb = el('planBtn');
-    if (pb) pb.textContent = u.plan === 'agency' ? 'Compare plans' : 'Upgrade plan';
+    if (pb) {
+      pb.textContent = u.plan === 'starter' ? 'Upgrade to Pro'
+        : u.plan === 'pro' ? 'Upgrade to Agency'
+        : 'Compare plans';
+    }
   }
 
   venues = venueRes.data || [];

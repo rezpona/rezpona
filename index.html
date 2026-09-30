@@ -106,7 +106,7 @@
 :root[data-theme="light"]{
   --bg:#F6F7FB;--bg2:#FFFFFF;
   --text:#0B1120;--muted:#64748B;--muted2:#475569;
-  --bd:rgba(11,17,32,.10);--bd2:rgba(11,17,32,.20);
+  --bd:rgba(11,17,32,.14);--bd2:rgba(11,17,32,.26);
   --card:#FFFFFF;--s1:#FFFFFF;--s2:rgba(11,17,32,.035);--s3:rgba(11,17,32,.065);
   --acc:#0A86B4;--acc2:#3F52D9;--on-acc:#FFFFFF;
   --pos:#0E9F6E;--neg:#DC2626;--neu:#B45309;
@@ -149,7 +149,8 @@ nav.s{background:var(--nav-bg);backdrop-filter:blur(22px) saturate(160%);-webkit
 /* The phone is an illustration of the product, not part of the page surface: it
    stays dark in both themes, the way the real dashboard does. Pinning the tokens
    on the frame keeps everything inside it reading against a dark screen. */
-.phone-frame{--bg:#060612;--text:#EEF2FF;--muted:#6B7B92;--muted2:#8A99B2;
+.phone-frame{color:var(--text);   /* inherited colour is computed on body, so the pinned token needs stating here */
+  --bg:#060612;--text:#EEF2FF;--muted:#6B7B92;--muted2:#8A99B2;
   --bd:rgba(255,255,255,.075);--bd2:rgba(255,255,255,.12);--card:rgba(255,255,255,.025);
   --s1:rgba(255,255,255,.022);--s2:rgba(255,255,255,.035);--s3:rgba(255,255,255,.06);
   --on-acc:#060612;--pos:#00FF94;--neg:#FF4466;--neu:#FFB800}
