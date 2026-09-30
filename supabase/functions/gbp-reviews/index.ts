@@ -27,13 +27,47 @@ Deno.serve(async (req) => {
 
     const token = await getVenueToken(admin, venue_id);
 
-    const r = await gfetch(
-      `https://mybusiness.googleapis.com/v4/${venue.google_location_id}/reviews?pageSize=50&orderBy=updateTime%20desc`,
-      token,
-    );
-    if (!r.ok) return json({ error: "reviews", detail: r.data }, r.status);
+    /* Read every page, not just the first fifty.
+     *
+     * One page was enough to show the newest reviews, but it made the sync
+     * unable to tell a deleted review from one further down the list: anything
+     * past the first page looked missing. So a venue with more than fifty could
+     * not have its deletions noticed at all.
+     *
+     * Capped so a venue with an enormous history cannot make one sync run for
+     * ever. Hitting the cap means we did not see everything, and the code below
+     * only marks reviews as gone when it did. */
+    const PAGE = 50;
+    const MAX_PAGES = 20;          // 1000 reviews, then we stop and say so
+    const fetched: any[] = [];
+    let pageToken = "";
+    let pages = 0;
+    let first: any = null;
 
-    const fetched = (r.data as any)?.reviews ?? [];
+    while (pages < MAX_PAGES) {
+      const url = `https://mybusiness.googleapis.com/v4/${venue.google_location_id}/reviews` +
+        `?pageSize=${PAGE}&orderBy=updateTime%20desc` +
+        (pageToken ? `&pageToken=${encodeURIComponent(pageToken)}` : "");
+
+      const r = await gfetch(url, token);
+      if (!r.ok) {
+        // A later page failing should not throw away the pages that worked.
+        if (pages === 0) return json({ error: "reviews", detail: r.data }, r.status);
+        console.error("gbp-reviews: page", pages, "failed:", r.data);
+        break;
+      }
+
+      if (!first) first = r.data;
+      const batch = (r.data as any)?.reviews ?? [];
+      fetched.push(...batch);
+      pages++;
+
+      pageToken = (r.data as any)?.nextPageToken ?? "";
+      if (!pageToken || batch.length === 0) break;
+    }
+
+    // We saw the whole list only if Google stopped handing us page tokens.
+    const sawEverything = !pageToken;
 
     // Which of these have we seen before? Asked once, up front, because after the
     // upsert every row looks equally old and we would have no way to tell a new
@@ -41,10 +75,13 @@ Deno.serve(async (req) => {
     const gids: string[] = fetched
       .map((rv: any) => rv.reviewId ?? rv.name?.split("/").pop())
       .filter(Boolean);
+    /* Read the ids we already hold for this venue in one go, rather than asking
+       about the fetched ones by name: with a thousand reviews that list does not
+       fit in a URL. */
     const known = new Set<string>();
-    if (gids.length) {
+    {
       const { data: prev } = await admin.from("reviews")
-        .select("google_review_id").eq("venue_id", venue_id).in("google_review_id", gids);
+        .select("google_review_id").eq("venue_id", venue_id);
       (prev ?? []).forEach((p: any) => known.add(p.google_review_id));
     }
     const fresh: ReviewLite[] = [];
@@ -55,8 +92,8 @@ Deno.serve(async (req) => {
      * the owner everything, so the two counts legitimately differ. Storing both
      * means the owner can see the difference instead of wondering which of two
      * numbers to believe. */
-    const gRating = (r.data as any)?.averageRating ?? null;
-    const gCount = (r.data as any)?.totalReviewCount ?? null;
+    const gRating = first?.averageRating ?? null;
+    const gCount = first?.totalReviewCount ?? null;
     if (gCount !== null) {
       await admin.from("venues")
         .update({ google_rating: gRating, google_review_count: gCount })
@@ -143,21 +180,34 @@ Deno.serve(async (req) => {
      * table for ever: the venue read five reviews at 3.8 while Google showed four
      * at 3.5, and the owner had no way to tell which number was wrong.
      *
-     * Only when this fetch saw everything. We ask for 50 and do not paginate, so
-     * a full page means there may be more we have not seen, and marking the rest
-     * as gone would erase real history.
+     * Only when we read the whole list. If Google was still offering pages when
+     * we stopped, the rest are not missing, only unseen, and marking them gone
+     * would erase real history.
+     *
+     * The difference is worked out here rather than pushed into the query: with
+     * a thousand reviews, listing every id in a URL is a request no server will
+     * accept.
      */
-    const PAGE = 50;
     let removed = 0;
-    if (fetched.length < PAGE) {
-      const { data: gone } = await admin.from("reviews")
-        .update({ removed_at: new Date().toISOString() })
-        .eq("venue_id", venue_id)
-        .is("removed_at", null)
-        .not("google_review_id", "in", `(${gids.map((g) => `"${g}"`).join(",") || '""'})`)
-        .select("id");
-      removed = gone?.length ?? 0;
+    if (sawEverything) {
+      const live = new Set(gids);
+      const { data: stored } = await admin.from("reviews")
+        .select("id, google_review_id").eq("venue_id", venue_id).is("removed_at", null);
+
+      const goneIds = (stored ?? [])
+        .filter((s: any) => !live.has(s.google_review_id))
+        .map((s: any) => s.id);
+
+      const stamp = new Date().toISOString();
+      for (let i = 0; i < goneIds.length; i += 200) {
+        await admin.from("reviews")
+          .update({ removed_at: stamp })
+          .in("id", goneIds.slice(i, i + 200));
+      }
+      removed = goneIds.length;
       if (removed) console.log(`gbp-reviews: ${removed} review(s) no longer on Google for ${venue_id}`);
+    } else {
+      console.log(`gbp-reviews: stopped at ${pages} pages for ${venue_id}, deletions not checked`);
     }
 
     // Notify about genuinely new reviews. Best-effort on purpose: the dashboard
