@@ -65,7 +65,18 @@ footer{margin-top:4rem;padding-top:1.6rem;border-top:1px solid var(--bd);font-si
 footer a{color:var(--muted2);text-decoration:none;margin-right:1.2rem}
 footer a:hover{color:var(--acc)}
 @media(max-width:560px){h1{font-size:1.7rem}.wrap{padding:2rem 1.1rem 4rem}}
-  </style>
+  
+.theme-btn{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;flex-shrink:0;
+  border:1px solid var(--bd);border-radius:50%;background:var(--s1);color:var(--muted2);cursor:pointer;
+  padding:0;transition:color .2s,border-color .2s}
+.theme-btn:hover{color:var(--acc);border-color:var(--bd2)}
+.theme-btn svg{width:16px;height:16px}
+.nav-right{display:flex;align-items:center;gap:.8rem;margin-left:auto}
+
+/* The logo already goes home, so on a phone the label is the thing to drop:
+   it crowded the bar and left no room for the theme switch. */
+@media(max-width:480px){.back{display:none}}
+</style>
   <script src="/assets/theme.js" defer></script>
 </head>
 <body>
@@ -74,7 +85,7 @@ footer a:hover{color:var(--acc)}
 
   <div class="top">
     <a class="logo" href="/"><img src="/logo.png" alt="Rezpona logo"><span>Rez<i>pona</i></span></a>
-    <a class="back" href="/">Back to rezpona.com</a>
+    <div class="nav-right"><a class="back" href="/">Back to rezpona.com</a><button class="theme-btn" data-theme-toggle></button></div>
   </div>
 
   <h1>API</h1>

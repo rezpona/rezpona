@@ -159,6 +159,14 @@ nav.s{background:var(--nav-bg);backdrop-filter:blur(22px) saturate(160%);-webkit
   padding:0;transition:color .2s,border-color .2s}
 .theme-btn:hover{color:var(--acc);border-color:var(--bd2)}
 .theme-btn svg{width:16px;height:16px}
+/* On a phone the bar holds the logo, the call to action and the menu, and that
+   is already full. The switch moves into the menu rather than being wedged
+   between the wordmark and the button. */
+.mob-theme{display:none}
+@media(max-width:768px){
+  .nav-r .theme-btn:not(.mob-theme){display:none}
+  .mob-menu .mob-theme{display:inline-flex;margin-top:.6rem}
+}
 .btn-login{color:var(--muted2);font-size:.86rem;font-weight:500;text-decoration:none;transition:color .2s;white-space:nowrap}
 .btn-login:hover{color:var(--text)}
 /* Keep "Log in" visible on mobile too, just tighter so it fits next to Start free + hamburger */
@@ -171,6 +179,12 @@ nav.s{background:var(--nav-bg);backdrop-filter:blur(22px) saturate(160%);-webkit
    so drop Log in from the bar; it is still in the mobile menu. */
 @media(max-width:480px){
   .nav-r .btn-login{display:none}
+  /* The bar has to hold the brand, one button and the menu on a 390px phone.
+     Shrinking both beats dropping the name off the top of the page. */
+  .logo-ic{height:22px}
+  .logo-t{font-size:1rem}
+  .btn-cta{padding:.52rem 1rem;font-size:.79rem}
+  .nav-i{gap:.5rem}
 }
 @media(max-width:360px){
   .nav-r{gap:.55rem}
@@ -541,6 +555,7 @@ footer{border-top:1px solid var(--bd);padding:3rem 1.5rem 2.5rem}
   <a href="#faq" data-mc>FAQ</a>
   <a href="/login.html" data-mc data-signed-out>Log in</a>
   <a href="/login.html#signup" class="btn-cta" data-mc data-app-link>Start free →</a>
+  <button class="theme-btn mob-theme" data-theme-toggle></button>
 </div>
 
 <!-- HERO -->

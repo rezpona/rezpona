@@ -47,7 +47,14 @@ p{font-size:.92rem;color:var(--muted2);font-weight:300;line-height:1.7;margin-bo
 .small{margin-top:2.4rem;font-size:.82rem;color:var(--muted)}
 .small a{color:var(--muted2)}
 @media(max-width:480px){.code{font-size:3.6rem}h1{font-size:1.3rem}}
-  </style>
+  
+.theme-btn{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;flex-shrink:0;
+  border:1px solid var(--bd);border-radius:50%;background:var(--s1);color:var(--muted2);cursor:pointer;
+  padding:0;transition:color .2s,border-color .2s}
+.theme-btn:hover{color:var(--acc);border-color:var(--bd2)}
+.theme-btn svg{width:16px;height:16px}
+.nav-right{display:flex;align-items:center;gap:.8rem;margin-left:auto}
+</style>
   <script src="/assets/theme.js" defer></script>
 </head>
 <body>
@@ -57,10 +64,11 @@ p{font-size:.92rem;color:var(--muted2);font-weight:300;line-height:1.7;margin-bo
   <div class="code">404</div>
   <h1>This page does not exist</h1>
   <p>The link may be old, or there may be a typo in the address. Nothing is broken on your account.</p>
-  <div class="row">
+  <div class="row" style="margin-bottom:1.2rem">
     <a class="btn" href="/">Go to the homepage</a>
     <a class="btn btn-o" href="/dashboard.html">Open your dashboard</a>
   </div>
+  <button class="theme-btn" data-theme-toggle></button>
   <p class="small">Landed here from a link on our site? Tell us at <a href="mailto:rezpona@gmail.com">rezpona@gmail.com</a> and we will fix it.</p>
 </div>
 </body>

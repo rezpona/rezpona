@@ -69,7 +69,18 @@ footer{border-top:1px solid var(--bd);padding:2.5rem 1.5rem}
 .foot-copy{font-size:.78rem;color:var(--muted2)}
 ::selection{background:rgba(0,206,255,.22);color:#fff}
 @media(max-width:600px){.toc ol{columns:1}.foot-i{flex-direction:column;text-align:center}}
-  </style>
+  
+.theme-btn{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;flex-shrink:0;
+  border:1px solid var(--bd);border-radius:50%;background:var(--s1);color:var(--muted2);cursor:pointer;
+  padding:0;transition:color .2s,border-color .2s}
+.theme-btn:hover{color:var(--acc);border-color:var(--bd2)}
+.theme-btn svg{width:16px;height:16px}
+.nav-right{display:flex;align-items:center;gap:.8rem;margin-left:auto}
+
+/* The logo already goes home, so on a phone the label is the thing to drop:
+   it crowded the bar and left no room for the theme switch. */
+@media(max-width:480px){.back{display:none}}
+</style>
   <script src="/assets/theme.js" defer></script>
 </head>
 <body>
@@ -83,7 +94,7 @@ footer{border-top:1px solid var(--bd);padding:2.5rem 1.5rem}
       <img class="logo-ic" src="/logo.png" alt="Rezpona logo">
       <span class="logo-t">Rez<span>pona</span></span>
     </a>
-    <a href="/" class="back">&larr; Back to home</a>
+    <div class="nav-right"><a href="/" class="back">&larr; Back to home</a><button class="theme-btn" data-theme-toggle></button></div>
   </div>
 </nav>
 
