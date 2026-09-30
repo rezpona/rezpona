@@ -52,7 +52,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 .sb-plan{background:linear-gradient(135deg,rgba(0,206,255,.08),rgba(91,111,255,.08));border:1px solid rgba(0,206,255,.15);border-radius:12px;padding:.85rem;margin-top:auto}
 .sb-plan-name{font-size:.75rem;font-weight:600;color:var(--acc);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem}
 .sb-plan-desc{font-size:.78rem;color:var(--muted);margin-bottom:.6rem}
-.sb-upgrade{width:100%;padding:.5rem;border-radius:8px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:var(--on-acc);font-size:.78rem;font-weight:600;border:none;cursor:pointer;font-family:'Outfit',sans-serif}
+
 
 /* MAIN */
 .main{margin-left:240px;flex:1;padding:2rem 2.5rem;min-height:100vh}
@@ -119,8 +119,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 .switch input:checked+.slider{background:linear-gradient(135deg,var(--acc),var(--acc2))}
 .switch input:checked+.slider::before{transform:translateX(19px)}
 .mode-tag{font-size:.78rem;font-weight:600;color:var(--acc)}
-.mode-up{padding:.32rem .8rem;border-radius:100px;border:none;cursor:pointer;font-family:'Outfit',sans-serif;
-  font-size:.75rem;font-weight:600;color:var(--on-acc);background:linear-gradient(135deg,var(--acc),var(--acc2))}
+
 .up-note{display:flex;align-items:center;justify-content:space-between;gap:1.2rem;flex-wrap:wrap;
   background:linear-gradient(135deg,rgba(0,206,255,.07),rgba(91,111,255,.07));
   border:1px solid rgba(0,206,255,.2);border-radius:16px;padding:1.1rem 1.3rem;margin-bottom:1.4rem}
@@ -238,10 +237,11 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
       </a>
     </nav>
 
+    <!-- Plan status only. The one place to upgrade is the card beside the feature
+         that is locked; a button here as well made three of them on one screen. -->
     <div class="sb-plan">
       <div class="sb-plan-name" id="planName">Starter</div>
       <div class="sb-plan-desc">Free plan</div>
-      <button class="sb-upgrade" onclick="upgradePlan()">Upgrade plan</button>
     </div>
   </aside>
 
@@ -290,7 +290,6 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
           <span class="lbl">Autopilot</span>
           <label class="switch"><input type="checkbox" id="autopilot" onchange="onAutopilotToggle()"><span class="slider"></span></label>
           <span class="mode-tag" id="modeTag">Approve mode</span>
-          <button class="mode-up" id="modeUp" onclick="upgradeTo('pro')" style="display:none">Upgrade to Pro</button>
         </div>
       </div>
 
@@ -356,16 +355,14 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
     if (row) row.title = locked ? 'Autopilot is part of the Pro plan' : '';
 
     if (tag) {
-      tag.style.display = locked ? 'none' : '';
-      tag.style.color = '';
+      tag.textContent = locked ? 'Pro feature' : (box.checked ? 'Autopilot on' : 'Approve mode');
+      tag.style.color = locked ? 'var(--muted)' : '';
     }
-    const up = document.getElementById('modeUp');
-    if (up) up.style.display = locked ? '' : 'none';
 
-    // The explanation sits with the switch, so the reason and the way out are in
-    // the same place. It only makes sense once a venue is on screen.
+    // The single upgrade in the dashboard: next to the feature it unlocks, where
+    // the reason and the way out are the same thing.
     const note = document.getElementById('autopilotNote');
-    if (note) note.style.display = (locked && currentVenue) ? 'flex' : 'none';
+    if (note) note.style.display = locked ? 'flex' : 'none';
 
     if (locked) box.checked = false;
   }
@@ -387,7 +384,6 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
     document.getElementById('planName').textContent = PLAN_LABEL[plan] || 'Starter';
 
     const desc = document.querySelector('.sb-plan-desc');
-    const btn  = document.querySelector('.sb-upgrade');
     if (desc) {
       if (paid && data?.current_period_end) {
         const d = new Date(data.current_period_end);
@@ -399,10 +395,6 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
         desc.textContent = 'Free plan';
       }
     }
-    // On a paid plan the button becomes "manage" unless they can still move up a tier.
-    if (btn) btn.textContent = (paid && plan === 'agency') ? 'Manage billing'
-      : paid ? 'Change plan' : 'Upgrade plan';
-
     currentPlan = plan;
     applyPlanLocks();
 
@@ -429,16 +421,6 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
     window.RezponaBilling.checkout(plan, { id: currentUser.id, email: currentUser.email });
   }
 
-  /* Upgrading should not mean "go and read the pricing page again". Someone on
-     Starter who presses this wants Pro, so open the Pro checkout. Only the top
-     tier, with nothing left to buy, gets sent to the comparison. */
-  const NEXT_PLAN = { starter: 'pro', pro: 'agency' };
-
-  function upgradePlan() {
-    const next = NEXT_PLAN[currentPlan];
-    if (!next) { window.location.href = '/#pricing'; return; }
-    openCheckout(next);
-  }
 
   function showDashboard(user) {
     document.getElementById('loadingScreen').style.display = 'none';
