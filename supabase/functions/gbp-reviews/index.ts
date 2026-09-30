@@ -64,6 +64,7 @@ Deno.serve(async (req) => {
         text: rv.comment ?? null,
         sentiment: sentimentOf(rating),
         topics: topicsOf(rv.comment ?? ""),
+        removed_at: null,          // it is back, or never left
         review_created_at: rv.createTime ?? null,
         fetched_at: new Date().toISOString(),
       }, { onConflict: "venue_id,google_review_id" }).select("id").single();
@@ -101,6 +102,29 @@ Deno.serve(async (req) => {
       });
     }
 
+    /* Account for what Google no longer returns.
+     *
+     * A review its author deletes, or that Google filters out, used to sit in our
+     * table for ever: the venue read five reviews at 3.8 while Google showed four
+     * at 3.5, and the owner had no way to tell which number was wrong.
+     *
+     * Only when this fetch saw everything. We ask for 50 and do not paginate, so
+     * a full page means there may be more we have not seen, and marking the rest
+     * as gone would erase real history.
+     */
+    const PAGE = 50;
+    let removed = 0;
+    if (fetched.length < PAGE) {
+      const { data: gone } = await admin.from("reviews")
+        .update({ removed_at: new Date().toISOString() })
+        .eq("venue_id", venue_id)
+        .is("removed_at", null)
+        .not("google_review_id", "in", `(${gids.map((g) => `"${g}"`).join(",") || '""'})`)
+        .select("id");
+      removed = gone?.length ?? 0;
+      if (removed) console.log(`gbp-reviews: ${removed} review(s) no longer on Google for ${venue_id}`);
+    }
+
     // Notify about genuinely new reviews. Best-effort on purpose: the dashboard
     // must still get its reviews back even if Resend or Slack is having a bad day.
     if (fresh.length) {
@@ -131,7 +155,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    return json({ reviews: out, new_count: fresh.length });
+    return json({ reviews: out, new_count: fresh.length, removed_count: removed });
   } catch (e) {
     return json({ error: String((e as Error).message || e) }, 500);
   }
