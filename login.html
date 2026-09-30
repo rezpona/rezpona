@@ -13,8 +13,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#060612;--acc:#00CEFF;--acc2:#5B6FFF;--text:#EEF2FF;--muted:#6B7B92;--bd:rgba(255,255,255,0.075);--err:#FF4466;--s1:rgba(255,255,255,.022);--s2:rgba(255,255,255,.035);--s3:rgba(255,255,255,.06);--on-acc:#060612;--scrim:rgba(3,3,12,.72);--pos:#00FF94;--neg:#FF4466;--neu:#FFB800;--shadow:rgba(0,0,0,.45);--bg2:#0a0a1c;--bd2:rgba(255,255,255,.12);--card:rgba(255,255,255,.025)}
-:root[data-theme="light"]{
+:root{color-scheme:dark;--bg:#060612;--acc:#00CEFF;--acc2:#5B6FFF;--text:#EEF2FF;--muted:#6B7B92;--bd:rgba(255,255,255,0.075);--err:#FF4466;--s1:rgba(255,255,255,.022);--s2:rgba(255,255,255,.035);--s3:rgba(255,255,255,.06);--on-acc:#060612;--scrim:rgba(3,3,12,.72);--pos:#00FF94;--neg:#FF4466;--neu:#FFB800;--shadow:rgba(0,0,0,.45);--bg2:#0a0a1c;--bd2:rgba(255,255,255,.12);--card:rgba(255,255,255,.025)}
+:root[data-theme="light"]{color-scheme:light;
   --bg:#F6F7FB;--bg2:#FFFFFF;
   --text:#0B1120;--muted:#64748B;--muted2:#475569;
   --bd:rgba(11,17,32,.14);--bd2:rgba(11,17,32,.26);
@@ -97,6 +97,9 @@ footer a:hover{color:var(--text)}
 /* The logo already goes home, so on a phone the label is the thing to drop:
    it crowded the bar and left no room for the theme switch. */
 @media(max-width:480px){.back{display:none}}
+
+/* Belt and braces for the browsers that ignore color-scheme on a popup. */
+option{background:var(--bg2);color:var(--text)}
 </style>
   <script src="/assets/theme.js" defer></script>
 </head>
