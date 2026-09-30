@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Page not found · Rezpona</title>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;1,9..144,200&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#060612;--acc:#00CEFF;--acc2:#5B6FFF;--text:#EEF2FF;--muted:#6B7B92;--muted2:#8A99B2;--bd:rgba(255,255,255,0.075)}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;
+  display:flex;align-items:center;justify-content:center;padding:1.5rem;overflow-x:hidden}
+.orb{position:fixed;border-radius:50%;pointer-events:none;width:520px;height:520px;
+  background:radial-gradient(circle,rgba(0,206,255,.07),transparent 70%);top:-160px;left:-160px}
+.box{position:relative;z-index:1;max-width:460px;text-align:center}
+.logo{display:inline-flex;align-items:center;gap:.55rem;text-decoration:none;color:var(--text);margin-bottom:2.6rem}
+.logo img{height:26px;width:auto}
+.logo span{font-size:1.15rem;font-weight:700;letter-spacing:-.02em}
+.logo span i{font-style:normal;background:linear-gradient(135deg,var(--acc),var(--acc2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.code{font-family:'Fraunces',serif;font-weight:200;font-size:4.6rem;line-height:1;
+  background:linear-gradient(135deg,var(--acc),var(--acc2));-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.6rem}
+h1{font-family:'Fraunces',serif;font-weight:300;font-size:1.5rem;letter-spacing:-.02em;margin-bottom:.7rem}
+p{font-size:.92rem;color:var(--muted2);font-weight:300;line-height:1.7;margin-bottom:2rem}
+.row{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap}
+.btn{padding:.75rem 1.7rem;border-radius:100px;text-decoration:none;font-size:.88rem;font-weight:600;
+  background:linear-gradient(135deg,var(--acc),var(--acc2));color:#060612;
+  box-shadow:0 4px 20px rgba(0,206,255,.25);transition:transform .2s}
+.btn:hover{transform:translateY(-1px)}
+.btn-o{background:none;border:1px solid var(--bd);color:var(--text);box-shadow:none;font-weight:400}
+.btn-o:hover{border-color:rgba(0,206,255,.35);color:var(--acc)}
+.small{margin-top:2.4rem;font-size:.82rem;color:var(--muted)}
+.small a{color:var(--muted2)}
+@media(max-width:480px){.code{font-size:3.6rem}h1{font-size:1.3rem}}
+  </style>
+</head>
+<body>
+<div class="orb"></div>
+<div class="box">
+  <a class="logo" href="/"><img src="/logo.png" alt="Rezpona logo"><span>Rez<i>pona</i></span></a>
+  <div class="code">404</div>
+  <h1>This page does not exist</h1>
+  <p>The link may be old, or there may be a typo in the address. Nothing is broken on your account.</p>
+  <div class="row">
+    <a class="btn" href="/">Go to the homepage</a>
+    <a class="btn btn-o" href="/dashboard.html">Open your dashboard</a>
+  </div>
+  <p class="small">Landed here from a link on our site? Tell us at <a href="mailto:rezpona@gmail.com">rezpona@gmail.com</a> and we will fix it.</p>
+</div>
+</body>
+</html>
