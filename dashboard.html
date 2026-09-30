@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#060612">
   <link rel="icon" type="image/png" href="/favicon.png">
-  <title>Dashboard — Rezpona</title>
+  <title>Dashboard · Rezpona</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;1,9..144,200&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -286,7 +286,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
     if (desc) {
       if (paid && data?.current_period_end) {
         const d = new Date(data.current_period_end);
-        desc.textContent = (status === 'past_due' ? 'Payment failed — ' : 'Renews ') +
+        desc.textContent = (status === 'past_due' ? 'Payment failed. ' : 'Renews ') +
           d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
       } else if (status === 'canceled') {
         desc.textContent = 'Subscription ended';
@@ -306,7 +306,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
     }
   }
 
-  // Someone picked a plan on the pricing page before signing up — continue that checkout.
+  // Someone picked a plan on the pricing page before signing up, so continue that checkout.
   async function resumeCheckout() {
     if (!window.RezponaBilling) return;
     // Paddle sent them here to finish paying for a specific transaction (a retried
@@ -388,7 +388,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
     // during the callback instead of a vague "waiting" message.
     if (!has && localStorage.getItem('rz_google') === '1') {
       const why = localStorage.getItem('rz_google_msg');
-      card.querySelector('h2').textContent = why ? '⚠️ Couldn’t import your venues' : '⏳ Connected — waiting for venues';
+      card.querySelector('h2').textContent = why ? '⚠️ Couldn’t import your venues' : '⏳ Connected, waiting for venues';
       card.querySelector('p').textContent = why
         || 'Your Google account is connected, but no Business Profile locations came back yet. Try reconnecting.';
       const b = card.querySelector('.btn-p'); if (b) b.textContent = 'Reconnect / retry';
@@ -488,7 +488,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
           <div><div class="rev-name">${escapeHtml(rv.author_name)}</div><div class="rev-date">${fmtDate(rv.review_created_at)}</div></div></div>
         <div class="rev-stars">${stars(rv.rating)}</div>
       </div>
-      ${rv.text ? `<div class="rev-text">${escapeHtml(rv.text)}</div>` : '<div class="rev-text" style="opacity:.6">(no comment — rating only)</div>'}
+      ${rv.text ? `<div class="rev-text">${escapeHtml(rv.text)}</div>` : '<div class="rev-text" style="opacity:.6">(no comment, rating only)</div>'}
       <div class="rev-reply-l">✍ Suggested reply</div>
       <textarea class="rev-reply-box" id="ta-${id}">${escapeHtml(draft)}</textarea>
       <div class="rev-actions">
