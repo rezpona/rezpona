@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>(function(){try{if(localStorage.getItem("rz-theme")==="light")document.documentElement.setAttribute("data-theme","light")}catch(e){}})();</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>API · Rezpona</title>
@@ -11,7 +12,16 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;1,9..144,200&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#060612;--acc:#00CEFF;--acc2:#5B6FFF;--text:#EEF2FF;--muted:#6B7B92;--muted2:#8A99B2;--bd:rgba(255,255,255,0.075);--card:rgba(255,255,255,0.025)}
+:root{--bg:#060612;--acc:#00CEFF;--acc2:#5B6FFF;--text:#EEF2FF;--muted:#6B7B92;--muted2:#8A99B2;--bd:rgba(255,255,255,0.075);--card:rgba(255,255,255,0.025);--s1:rgba(255,255,255,.022);--s2:rgba(255,255,255,.035);--s3:rgba(255,255,255,.06);--on-acc:#060612;--scrim:rgba(3,3,12,.72);--verb-get:#6FDBFF;--verb-post:#6FE8AE;--code-fg:#C8D4EA;--code-k:#7FD1FF;--code-s:#9BE6A8;--pos:#00FF94;--neg:#FF4466;--neu:#FFB800;--shadow:rgba(0,0,0,.45);--bg2:#0a0a1c;--bd2:rgba(255,255,255,.12)}
+:root[data-theme="light"]{
+  --bg:#F6F7FB;--bg2:#FFFFFF;
+  --text:#0B1120;--muted:#64748B;--muted2:#475569;
+  --bd:rgba(11,17,32,.10);--bd2:rgba(11,17,32,.20);
+  --card:#FFFFFF;--s1:#FFFFFF;--s2:rgba(11,17,32,.035);--s3:rgba(11,17,32,.065);
+  --acc:#0A86B4;--acc2:#3F52D9;--on-acc:#FFFFFF;
+  --pos:#0E9F6E;--neg:#DC2626;--neu:#B45309;
+  --shadow:rgba(11,17,32,.10);--scrim:rgba(11,17,32,.45);--verb-get:#0A6E93;--verb-post:#0B7A56;--code-fg:#243044;--code-k:#0A6E93;--code-s:#0B7A56;
+}
 html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;line-height:1.7;font-weight:300}
 .bg-orb{position:fixed;border-radius:50%;z-index:0;pointer-events:none;width:500px;height:500px;background:radial-gradient(circle,rgba(0,206,255,.06),transparent 70%);top:-150px;left:-150px}
@@ -34,15 +44,15 @@ h3{font-size:.95rem;font-weight:600;margin:2.2rem 0 .5rem}
 p{color:var(--muted2);margin-bottom:1rem}
 p.tight{margin-bottom:.5rem}
 a{color:var(--acc)}
-code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.85em;background:rgba(255,255,255,.05);border:1px solid var(--bd);border-radius:5px;padding:.1rem .35rem;color:var(--text)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.85em;background:var(--s3);border:1px solid var(--bd);border-radius:5px;padding:.1rem .35rem;color:var(--text)}
 pre{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:1.1rem 1.2rem;overflow-x:auto;margin:.8rem 0 1.4rem}
-pre code{background:none;border:none;padding:0;font-size:.82rem;line-height:1.65;color:#C8D4EA}
-.k{color:#7FD1FF}.s{color:#9BE6A8}.c{color:var(--muted)}
+pre code{background:none;border:none;padding:0;font-size:.82rem;line-height:1.65;color:var(--code-fg)}
+.k{color:var(--code-k)}.s{color:var(--code-s)}.c{color:var(--muted)}
 
 .route{display:flex;align-items:center;gap:.7rem;margin:2.4rem 0 .6rem;flex-wrap:wrap}
 .verb{font-family:ui-monospace,monospace;font-size:.73rem;font-weight:700;letter-spacing:.04em;padding:.22rem .6rem;border-radius:6px}
-.get{background:rgba(0,206,255,.14);color:#6FDBFF}
-.post{background:rgba(0,255,148,.12);color:#6FE8AE}
+.get{background:rgba(0,206,255,.14);color:var(--verb-get)}
+.post{background:rgba(0,255,148,.12);color:var(--verb-post)}
 .path{font-family:ui-monospace,monospace;font-size:.9rem;color:var(--text)}
 
 table{width:100%;border-collapse:collapse;margin:.6rem 0 1.6rem;font-size:.88rem}
@@ -56,6 +66,7 @@ footer a{color:var(--muted2);text-decoration:none;margin-right:1.2rem}
 footer a:hover{color:var(--acc)}
 @media(max-width:560px){h1{font-size:1.7rem}.wrap{padding:2rem 1.1rem 4rem}}
   </style>
+  <script src="/assets/theme.js" defer></script>
 </head>
 <body>
 <div class="bg-orb"></div>

@@ -21,25 +21,25 @@
   const CSS = `
 .rz-sup-btn{position:fixed;right:22px;bottom:22px;z-index:900;display:flex;align-items:center;gap:.5rem;
   padding:.7rem 1.15rem;border:none;border-radius:100px;cursor:pointer;font-family:'Outfit',sans-serif;
-  font-size:.86rem;font-weight:600;color:#060612;background:linear-gradient(135deg,var(--acc),var(--acc2));
+  font-size:.86rem;font-weight:600;color:var(--on-acc);background:linear-gradient(135deg,var(--acc),var(--acc2));
   box-shadow:0 6px 24px rgba(0,0,0,.45);transition:transform .2s}
 .rz-sup-btn:hover{transform:translateY(-2px)}
 .rz-sup-btn svg{width:16px;height:16px}
-.rz-sup-back{position:fixed;inset:0;z-index:901;background:rgba(3,3,12,.72);display:flex;align-items:flex-end;
+.rz-sup-back{position:fixed;inset:0;z-index:901;background:var(--scrim,rgba(3,3,12,.72));display:flex;align-items:flex-end;
   justify-content:flex-end;padding:22px}
-.rz-sup-panel{width:100%;max-width:400px;background:#0B0B1C;border:1px solid var(--bd);border-radius:18px;
+.rz-sup-panel{width:100%;max-width:400px;background:var(--bg2,#0B0B1C);border:1px solid var(--bd);border-radius:18px;
   padding:1.4rem;font-family:'Outfit',sans-serif;box-shadow:0 20px 60px rgba(0,0,0,.6)}
 .rz-sup-panel h3{font-size:1rem;font-weight:600;color:var(--text);margin:0 0 .2rem}
 .rz-sup-panel p.rz-hint{font-size:.82rem;color:var(--muted);margin:0 0 1.1rem;line-height:1.55}
 .rz-sup-panel label{display:block;font-size:.78rem;color:var(--muted2);margin:0 0 .3rem}
 .rz-sup-panel input,.rz-sup-panel textarea{width:100%;padding:.6rem .8rem;border-radius:10px;
-  background:rgba(255,255,255,.03);border:1px solid var(--bd);color:var(--text);
+  background:var(--s2);border:1px solid var(--bd);color:var(--text);
   font-family:'Outfit',sans-serif;font-size:.88rem;outline:none;margin-bottom:.9rem}
 .rz-sup-panel textarea{min-height:120px;resize:vertical;line-height:1.6}
 .rz-sup-panel input:focus,.rz-sup-panel textarea:focus{border-color:rgba(0,206,255,.4)}
 .rz-sup-row{display:flex;align-items:center;gap:.7rem}
 .rz-sup-send{padding:.6rem 1.4rem;border-radius:100px;border:none;cursor:pointer;font-family:'Outfit',sans-serif;
-  font-size:.85rem;font-weight:600;color:#060612;background:linear-gradient(135deg,var(--acc),var(--acc2))}
+  font-size:.85rem;font-weight:600;color:var(--on-acc);background:linear-gradient(135deg,var(--acc),var(--acc2))}
 .rz-sup-send:disabled{opacity:.5;cursor:default}
 .rz-sup-cancel{background:none;border:none;color:var(--muted);font-family:'Outfit',sans-serif;
   font-size:.84rem;cursor:pointer}

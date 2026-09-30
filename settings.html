@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>(function(){try{if(localStorage.getItem("rz-theme")==="light")document.documentElement.setAttribute("data-theme","light")}catch(e){}})();</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
@@ -14,48 +15,61 @@
   <script src="/assets/support.js"></script>
   <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#060612;--acc:#00CEFF;--acc2:#5B6FFF;--text:#EEF2FF;--muted:#6B7B92;--muted2:#8A99B2;--bd:rgba(255,255,255,0.075);--card:rgba(255,255,255,0.025)}
+:root{--bg:#060612;--acc:#00CEFF;--acc2:#5B6FFF;--text:#EEF2FF;--muted:#6B7B92;--muted2:#8A99B2;--bd:rgba(255,255,255,0.075);--card:rgba(255,255,255,0.025);--s1:rgba(255,255,255,.022);--s2:rgba(255,255,255,.035);--s3:rgba(255,255,255,.06);--on-acc:#060612;--scrim:rgba(3,3,12,.72);--pos:#00FF94;--neg:#FF4466;--neu:#FFB800;--shadow:rgba(0,0,0,.45);--bg2:#0a0a1c;--bd2:rgba(255,255,255,.12)}
+:root[data-theme="light"]{
+  --bg:#F6F7FB;--bg2:#FFFFFF;
+  --text:#0B1120;--muted:#64748B;--muted2:#475569;
+  --bd:rgba(11,17,32,.10);--bd2:rgba(11,17,32,.20);
+  --card:#FFFFFF;--s1:#FFFFFF;--s2:rgba(11,17,32,.035);--s3:rgba(11,17,32,.065);
+  --acc:#0A86B4;--acc2:#3F52D9;--on-acc:#FFFFFF;
+  --pos:#0E9F6E;--neg:#DC2626;--neu:#B45309;
+  --shadow:rgba(11,17,32,.10);--scrim:rgba(11,17,32,.45);
+}
 body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden}
 .bg-orb{position:fixed;border-radius:50%;z-index:0;pointer-events:none}
 .orb1{width:500px;height:500px;background:radial-gradient(circle,rgba(0,206,255,.06),transparent 70%);top:-150px;left:-150px}
 .layout{display:flex;min-height:100vh;position:relative;z-index:1}
-.sidebar{width:240px;flex-shrink:0;background:rgba(255,255,255,.02);border-right:1px solid var(--bd);display:flex;flex-direction:column;padding:1.4rem 1rem;position:fixed;top:0;left:0;bottom:0;z-index:50}
+.sidebar{width:240px;flex-shrink:0;background:var(--s1);border-right:1px solid var(--bd);display:flex;flex-direction:column;padding:1.4rem 1rem;position:fixed;top:0;left:0;bottom:0;z-index:50}
 .sb-logo{display:flex;align-items:center;gap:.55rem;text-decoration:none;color:var(--text);margin-bottom:2rem;padding:.3rem .4rem}
 .logo-ic{height:26px;width:auto}
 .logo-t{font-size:1.15rem;font-weight:700;letter-spacing:-.02em}
 .logo-t span{background:linear-gradient(135deg,var(--acc),var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .sb-nav{display:flex;flex-direction:column;gap:.2rem;flex:1}
 .sb-item{display:flex;align-items:center;gap:.7rem;padding:.7rem .8rem;border-radius:10px;text-decoration:none;color:var(--muted2);font-size:.88rem;transition:all .2s}
-.sb-item:hover{background:rgba(255,255,255,.04);color:var(--text)}
+.sb-item:hover{background:var(--s2);color:var(--text)}
 .sb-item.active{background:rgba(0,206,255,.1);color:var(--acc)}
 .sb-item .ic{width:18px;height:18px;opacity:.7;flex-shrink:0}
 .main{margin-left:240px;flex:1;padding:2rem 2.5rem;min-height:100vh;max-width:940px}
 h1{font-family:'Fraunces',serif;font-weight:300;font-size:1.7rem;letter-spacing:-.02em;margin-bottom:.2rem}
 .sub{font-size:.87rem;color:var(--muted);margin-bottom:2rem}
+.head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}
+.theme-btn{display:flex;align-items:center;justify-content:center;width:34px;height:34px;flex-shrink:0;border:1px solid var(--bd);border-radius:50%;background:var(--s1);color:var(--muted2);cursor:pointer;padding:0;transition:color .2s,border-color .2s}
+.theme-btn:hover{color:var(--acc);border-color:var(--bd2)}
+.theme-btn svg{width:16px;height:16px}
 .panel{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:1.5rem;margin-bottom:1.3rem}
 .panel h2{font-size:1rem;font-weight:600;margin-bottom:.25rem}
 .panel .hint{font-size:.82rem;color:var(--muted);margin-bottom:1.2rem;line-height:1.55}
 label{display:block;font-size:.8rem;color:var(--muted2);margin-bottom:.35rem}
-input[type=text],input[type=email],input[type=url],select{width:100%;padding:.65rem .85rem;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--bd);color:var(--text);font-family:'Outfit',sans-serif;font-size:.88rem;outline:none}
+input[type=text],input[type=email],input[type=url],select{width:100%;padding:.65rem .85rem;border-radius:10px;background:var(--s2);border:1px solid var(--bd);color:var(--text);font-family:'Outfit',sans-serif;font-size:.88rem;outline:none}
 input:focus,select:focus{border-color:rgba(0,206,255,.4)}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
 .field{margin-bottom:1rem}
 .check{display:flex;align-items:center;gap:.6rem;margin-bottom:.8rem;font-size:.88rem;color:var(--muted2);cursor:pointer}
 .check input{width:16px;height:16px;accent-color:var(--acc);cursor:pointer}
-.btn{padding:.6rem 1.4rem;border-radius:100px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#060612;font-family:'Outfit',sans-serif;font-weight:600;font-size:.85rem;border:none;cursor:pointer}
+.btn{padding:.6rem 1.4rem;border-radius:100px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:var(--on-acc);font-family:'Outfit',sans-serif;font-weight:600;font-size:.85rem;border:none;cursor:pointer}
 .btn:disabled{opacity:.5;cursor:default}
 .btn-ghost{padding:.5rem 1.1rem;border-radius:100px;border:1px solid var(--bd);background:transparent;color:var(--muted2);font-family:'Outfit',sans-serif;font-size:.82rem;cursor:pointer}
 .btn-ghost:hover{color:var(--text)}
-.btn-danger:hover{border-color:rgba(255,68,102,.4);color:#FF7090}
+.btn-danger:hover{border-color:rgba(255,68,102,.4);color:var(--neg)}
 .msg{font-size:.82rem;color:var(--muted);margin-left:.8rem}
-.msg.ok{color:#00FF94}.msg.err{color:#FF7090}
+.msg.ok{color:var(--pos)}.msg.err{color:var(--neg)}
 .list{margin-top:1rem}
 .item{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.75rem 0;border-bottom:1px solid var(--bd);font-size:.86rem}
 .item:last-child{border-bottom:none}
 .item-main{min-width:0}
 .item-sub{font-size:.76rem;color:var(--muted);margin-top:.15rem}
 .tag{font-size:.7rem;padding:.2rem .6rem;border-radius:100px;background:rgba(0,206,255,.1);color:var(--acc);margin-left:.5rem}
-.tag-off{background:rgba(255,255,255,.05);color:var(--muted)}
+.tag-off{background:var(--s3);color:var(--muted)}
 .locked{opacity:.55;pointer-events:none}
 .lock-note{font-size:.8rem;color:#FFD479;background:rgba(255,184,0,.08);border:1px solid rgba(255,184,0,.22);border-radius:10px;padding:.7rem .9rem;margin-bottom:1rem}
 .keybox{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.82rem;background:rgba(0,206,255,.05);border:1px solid rgba(0,206,255,.25);border-radius:10px;padding:.8rem .9rem;word-break:break-all;margin-top:.9rem}
@@ -64,6 +78,7 @@ input:focus,select:focus{border-color:rgba(0,206,255,.4)}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:900px){.sidebar{display:none}.main{margin-left:0;padding:1.5rem}.row{grid-template-columns:1fr}}
   </style>
+  <script src="/assets/theme.js" defer></script>
 </head>
 <body>
 <div class="bg-orb orb1"></div>
@@ -93,7 +108,7 @@ input:focus,select:focus{border-color:rgba(0,206,255,.4)}
   </aside>
 
   <main class="main">
-    <h1>Settings</h1>
+    <div class="head"><h1>Settings</h1><button class="theme-btn" data-theme-toggle></button></div>
     <p class="sub" id="planLine">Loading your plan...</p>
 
     <!-- USAGE -->

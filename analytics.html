@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>(function(){try{if(localStorage.getItem("rz-theme")==="light")document.documentElement.setAttribute("data-theme","light")}catch(e){}})();</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
@@ -15,7 +16,16 @@
   <script src="/assets/support.js"></script>
   <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#060612;--acc:#00CEFF;--acc2:#5B6FFF;--text:#EEF2FF;--muted:#6B7B92;--muted2:#8A99B2;--bd:rgba(255,255,255,0.075);--card:rgba(255,255,255,0.025)}
+:root{--bg:#060612;--acc:#00CEFF;--acc2:#5B6FFF;--text:#EEF2FF;--muted:#6B7B92;--muted2:#8A99B2;--bd:rgba(255,255,255,0.075);--card:rgba(255,255,255,0.025);--s1:rgba(255,255,255,.022);--s2:rgba(255,255,255,.035);--s3:rgba(255,255,255,.06);--on-acc:#060612;--scrim:rgba(3,3,12,.72);--pos:#00FF94;--neg:#FF4466;--neu:#FFB800;--shadow:rgba(0,0,0,.45);--bg2:#0a0a1c;--bd2:rgba(255,255,255,.12)}
+:root[data-theme="light"]{
+  --bg:#F6F7FB;--bg2:#FFFFFF;
+  --text:#0B1120;--muted:#64748B;--muted2:#475569;
+  --bd:rgba(11,17,32,.10);--bd2:rgba(11,17,32,.20);
+  --card:#FFFFFF;--s1:#FFFFFF;--s2:rgba(11,17,32,.035);--s3:rgba(11,17,32,.065);
+  --acc:#0A86B4;--acc2:#3F52D9;--on-acc:#FFFFFF;
+  --pos:#0E9F6E;--neg:#DC2626;--neu:#B45309;
+  --shadow:rgba(11,17,32,.10);--scrim:rgba(11,17,32,.45);
+}
 html{-webkit-text-size-adjust:100%}
 body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden}
 .bg-orb{position:fixed;border-radius:50%;z-index:0;pointer-events:none}
@@ -23,14 +33,14 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 .orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(91,111,255,.06),transparent 70%);bottom:-150px;right:-150px}
 .layout{display:flex;min-height:100vh;position:relative;z-index:1}
 
-.sidebar{width:240px;flex-shrink:0;background:rgba(255,255,255,.02);border-right:1px solid var(--bd);display:flex;flex-direction:column;padding:1.4rem 1rem;position:fixed;top:0;left:0;bottom:0;z-index:50}
+.sidebar{width:240px;flex-shrink:0;background:var(--s1);border-right:1px solid var(--bd);display:flex;flex-direction:column;padding:1.4rem 1rem;position:fixed;top:0;left:0;bottom:0;z-index:50}
 .sb-logo{display:flex;align-items:center;gap:.55rem;text-decoration:none;color:var(--text);margin-bottom:2rem;padding:.3rem .4rem}
 .logo-ic{height:26px;width:auto;flex-shrink:0}
 .logo-t{font-size:1.15rem;font-weight:700;letter-spacing:-.02em}
 .logo-t span{background:linear-gradient(135deg,var(--acc),var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .sb-nav{display:flex;flex-direction:column;gap:.2rem;flex:1}
 .sb-item{display:flex;align-items:center;gap:.7rem;padding:.7rem .8rem;border-radius:10px;text-decoration:none;color:var(--muted2);font-size:.88rem;transition:all .2s}
-.sb-item:hover{background:rgba(255,255,255,.04);color:var(--text)}
+.sb-item:hover{background:var(--s2);color:var(--text)}
 .sb-item.active{background:rgba(0,206,255,.1);color:var(--acc)}
 .sb-item .ic{width:18px;height:18px;opacity:.7;flex-shrink:0}
 .sb-item.active .ic{opacity:1}
@@ -40,14 +50,17 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-
 .topbar-left h1{font-family:'Fraunces',serif;font-weight:300;font-size:1.7rem;letter-spacing:-.02em}
 .topbar-left p{font-size:.87rem;color:var(--muted);margin-top:.2rem}
 select{padding:.6rem .9rem;border-radius:10px;background:var(--card);border:1px solid var(--bd);color:var(--text);font-family:'Outfit',sans-serif;font-size:.86rem;outline:none;cursor:pointer}
-.controls{display:flex;gap:.7rem;flex-wrap:wrap}
+.controls{display:flex;gap:.7rem;flex-wrap:wrap;align-items:center}
+.theme-btn{display:flex;align-items:center;justify-content:center;width:34px;height:34px;flex-shrink:0;border:1px solid var(--bd);border-radius:50%;background:var(--s1);color:var(--muted2);cursor:pointer;padding:0;transition:color .2s,border-color .2s}
+.theme-btn:hover{color:var(--acc);border-color:var(--bd2)}
+.theme-btn svg{width:16px;height:16px}
 
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.6rem}
 .stat-card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:1.3rem}
 .stat-card-label{font-size:.76rem;color:var(--muted);margin-bottom:.5rem}
 .stat-card-val{font-family:'Fraunces',serif;font-size:2rem;font-weight:400;line-height:1}
 .stat-card-sub{font-size:.75rem;color:var(--muted);margin-top:.35rem}
-.pos{color:#00FF94}.neg{color:#FF4466}.neu{color:#FFB800}
+.pos{color:var(--pos)}.neg{color:var(--neg)}.neu{color:var(--neu)}
 
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.6rem}
 .panel{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:1.4rem}
@@ -58,7 +71,7 @@ select{padding:.6rem .9rem;border-radius:10px;background:var(--card);border:1px 
 .bar-lab{width:90px;flex-shrink:0;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* These are spans, so they need blockifying: an inline box ignores height, which
    left the bars invisible and the tracks looking like the data. */
-.bar-track{display:block;flex:1;height:9px;background:rgba(255,255,255,.05);border-radius:100px;overflow:hidden}
+.bar-track{display:block;flex:1;height:9px;background:var(--s3);border-radius:100px;overflow:hidden}
 .bar-fill{display:block;height:100%;border-radius:100px;transition:width .5s ease}
 .bar-num{width:54px;text-align:right;color:var(--muted);font-size:.78rem;flex-shrink:0}
 
@@ -74,7 +87,7 @@ select{padding:.6rem .9rem;border-radius:10px;background:var(--card);border:1px 
 .topic:last-child{border-bottom:none}
 .topic-n{color:var(--muted2)}
 .topic-r{font-weight:600}
-.pill{font-size:.72rem;padding:.2rem .6rem;border-radius:100px;background:rgba(255,255,255,.05);color:var(--muted);margin-left:.5rem}
+.pill{font-size:.72rem;padding:.2rem .6rem;border-radius:100px;background:var(--s3);color:var(--muted);margin-left:.5rem}
 
 .empty{background:var(--card);border:1px solid var(--bd);border-radius:20px;padding:3rem 2rem;text-align:center}
 .empty h3{font-size:1.05rem;font-weight:600;margin-bottom:.5rem}
@@ -91,6 +104,7 @@ select{padding:.6rem .9rem;border-radius:10px;background:var(--card);border:1px 
 }
 @media(max-width:500px){.stats{grid-template-columns:1fr}}
   </style>
+  <script src="/assets/theme.js" defer></script>
 </head>
 <body>
 <div class="bg-orb orb1"></div>
@@ -126,6 +140,7 @@ select{padding:.6rem .9rem;border-radius:10px;background:var(--card);border:1px 
         <p id="sub">What your guests are actually talking about.</p>
       </div>
       <div class="controls">
+        <button class="theme-btn" data-theme-toggle></button>
         <select id="venueSel" onchange="load()"></select>
         <select id="daysSel" onchange="load()">
           <option value="30">Last 30 days</option>
@@ -233,9 +248,9 @@ function stars(n) {
 function sentimentPanel(s) {
   const total = s.total_reviews || 1;
   const rows = [
-    ['Positive', s.positive, '#00FF94'],
-    ['Neutral',  s.neutral,  '#FFB800'],
-    ['Negative', s.negative, '#FF4466'],
+    ['Positive', s.positive, 'var(--pos)'],
+    ['Neutral',  s.neutral,  'var(--neu)'],
+    ['Negative', s.negative, 'var(--neg)'],
   ].map(([lab, n, colour]) =>
     '<div class="bar-row"><span class="bar-lab">' + lab + '</span>' +
     '<span class="bar-track"><span class="bar-fill" style="width:' + Math.round(100 * n / total) + '%;background:' + colour + '"></span></span>' +

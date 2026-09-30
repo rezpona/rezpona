@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>(function(){try{if(localStorage.getItem("rz-theme")==="light")document.documentElement.setAttribute("data-theme","light")}catch(e){}})();</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#060612">
@@ -13,7 +14,16 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#060612;--acc:#00CEFF;--acc2:#5B6FFF;--text:#EEF2FF;--muted:#8A99B2;--muted2:#6B7B92;--bd:rgba(255,255,255,0.075);--card:rgba(255,255,255,0.025)}
+:root{--bg:#060612;--acc:#00CEFF;--acc2:#5B6FFF;--text:#EEF2FF;--muted:#8A99B2;--muted2:#6B7B92;--bd:rgba(255,255,255,0.075);--card:rgba(255,255,255,0.025);--s1:rgba(255,255,255,.022);--s2:rgba(255,255,255,.035);--s3:rgba(255,255,255,.06);--on-acc:#060612;--scrim:rgba(3,3,12,.72);--nav-bg:rgba(6,6,18,.82);--pos:#00FF94;--neg:#FF4466;--neu:#FFB800;--shadow:rgba(0,0,0,.45);--bg2:#0a0a1c;--bd2:rgba(255,255,255,.12)}
+:root[data-theme="light"]{
+  --bg:#F6F7FB;--bg2:#FFFFFF;
+  --text:#0B1120;--muted:#64748B;--muted2:#475569;
+  --bd:rgba(11,17,32,.10);--bd2:rgba(11,17,32,.20);
+  --card:#FFFFFF;--s1:#FFFFFF;--s2:rgba(11,17,32,.035);--s3:rgba(11,17,32,.065);
+  --acc:#0A86B4;--acc2:#3F52D9;--on-acc:#FFFFFF;
+  --pos:#0E9F6E;--neg:#DC2626;--neu:#B45309;
+  --shadow:rgba(11,17,32,.10);--scrim:rgba(11,17,32,.45);--nav-bg:rgba(255,255,255,.85);
+}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;line-height:1.7;overflow-x:hidden}
 a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
@@ -21,7 +31,7 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
 .orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(0,206,255,.06),transparent 70%);top:-180px;left:-180px}
 .orb2{width:660px;height:660px;background:radial-gradient(circle,rgba(91,111,255,.06),transparent 70%);top:60%;right:-220px}
 .page{position:relative;z-index:1}
-nav{position:sticky;top:0;z-index:100;padding:1rem 1.5rem;background:rgba(6,6,18,.82);backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%);border-bottom:1px solid var(--bd)}
+nav{position:sticky;top:0;z-index:100;padding:1rem 1.5rem;background:var(--nav-bg);backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%);border-bottom:1px solid var(--bd)}
 .nav-i{max-width:880px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem}
 .logo{display:flex;align-items:center;gap:.55rem;color:var(--text);text-decoration:none}
 .logo:hover{text-decoration:none}
@@ -60,6 +70,7 @@ footer{border-top:1px solid var(--bd);padding:2.5rem 1.5rem}
 ::selection{background:rgba(0,206,255,.22);color:#fff}
 @media(max-width:600px){.toc ol{columns:1}.foot-i{flex-direction:column;text-align:center}}
   </style>
+  <script src="/assets/theme.js" defer></script>
 </head>
 <body>
 <div class="bg-orb orb1"></div>
