@@ -16,7 +16,7 @@
   <script src="/assets/support.js"></script>
   <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#060612;--acc:#00CEFF;--acc2:#5B6FFF;--text:#EEF2FF;--muted:#6B7B92;--muted2:#8A99B2;--bd:rgba(255,255,255,0.075);--card:rgba(255,255,255,0.025);--s1:rgba(255,255,255,.022);--s2:rgba(255,255,255,.035);--s3:rgba(255,255,255,.06);--on-acc:#060612;--scrim:rgba(3,3,12,.72);--pos:#00FF94;--neg:#FF4466;--neu:#FFB800;--shadow:rgba(0,0,0,.45);--bg2:#0a0a1c;--bd2:rgba(255,255,255,.12)}
+:root{--bg:#060612;--acc:#00CEFF;--acc2:#5B6FFF;--text:#EEF2FF;--muted:#6B7B92;--muted2:#8A99B2;--bd:rgba(255,255,255,0.075);--card:rgba(255,255,255,0.025);--s1:rgba(255,255,255,.022);--s2:rgba(255,255,255,.035);--s3:rgba(255,255,255,.06);--on-acc:#060612;--nav-bg:rgba(6,6,18,.88);--scrim:rgba(3,3,12,.72);--pos:#00FF94;--neg:#FF4466;--neu:#FFB800;--shadow:rgba(0,0,0,.45);--bg2:#0a0a1c;--bd2:rgba(255,255,255,.12)}
 :root[data-theme="light"]{
   --bg:#F6F7FB;--bg2:#FFFFFF;
   --text:#0B1120;--muted:#64748B;--muted2:#475569;
@@ -24,7 +24,7 @@
   --card:#FFFFFF;--s1:#FFFFFF;--s2:rgba(11,17,32,.035);--s3:rgba(11,17,32,.065);
   --acc:#0A86B4;--acc2:#3F52D9;--on-acc:#FFFFFF;
   --pos:#0E9F6E;--neg:#DC2626;--neu:#B45309;
-  --shadow:rgba(11,17,32,.10);--scrim:rgba(11,17,32,.45);
+  --shadow:rgba(11,17,32,.10);--nav-bg:rgba(255,255,255,.92);--scrim:rgba(11,17,32,.45);
 }
 html{-webkit-text-size-adjust:100%}
 body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden}
@@ -97,13 +97,42 @@ select{padding:.6rem .9rem;border-radius:10px;background:var(--card);border:1px 
 @keyframes spin{to{transform:rotate(360deg)}}
 
 @media(max-width:900px){
-  .sidebar{display:none}
-  .main{margin-left:0;padding:1.5rem}
+  
+  
   .stats{grid-template-columns:repeat(2,1fr)}
   .grid2{grid-template-columns:1fr}
 }
 @media(max-width:500px){.stats{grid-template-columns:1fr}}
-  </style>
+  
+/* Below 900px the sidebar becomes a bar along the bottom. It used to be hidden
+   outright, which left the app with no navigation at all on a phone, and a phone
+   is where a busy owner actually reads their reviews. At the bottom it is within
+   thumb reach and shows all three destinations at once, so nothing is buried
+   behind a menu the person has to find first. */
+@media(max-width:900px){
+  .sidebar{position:fixed;inset:auto 0 0 0;width:auto;height:auto;flex-direction:row;
+    align-items:stretch;padding:.35rem .4rem calc(.35rem + env(safe-area-inset-bottom));
+    border-right:none;border-top:1px solid var(--bd);background:var(--nav-bg);
+    backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);
+    z-index:120}
+  .sb-logo,.sb-sep,.sb-plan{display:none}
+  .sb-nav{flex-direction:row;gap:.15rem;flex:1}
+  .sb-item{flex:1;flex-direction:column;justify-content:center;gap:.25rem;
+    padding:.5rem .2rem;font-size:.68rem;font-weight:500;text-align:center;line-height:1.2}
+  .sb-item .ic{width:20px;height:20px;opacity:.85}
+  .main{margin-left:0;padding:1.25rem 1.1rem calc(5.4rem + env(safe-area-inset-bottom))}
+}
+
+@media(max-width:560px){
+  .topbar{flex-direction:column;align-items:stretch}
+  .controls{gap:.6rem}
+  .controls select{flex:1;min-width:0}
+  .stats{grid-template-columns:1fr}
+  .bar-lab{width:72px}
+  .spark{height:120px}
+  .spark-lab{font-size:.6rem}
+}
+</style>
   <script src="/assets/theme.js" defer></script>
 </head>
 <body>
@@ -129,6 +158,10 @@ select{padding:.6rem .9rem;border-radius:10px;background:var(--card);border:1px 
       <a class="sb-item active" href="/analytics.html">
         <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         Analytics
+      </a>
+      <a class="sb-item" href="/settings.html">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
+        Settings
       </a>
     </nav>
   </aside>

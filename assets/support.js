@@ -49,6 +49,7 @@
 .rz-sup-done{text-align:center;padding:1rem 0}
 .rz-sup-done .tick{font-size:1.8rem;margin-bottom:.6rem}
 .rz-sup-done p{font-size:.88rem;color:var(--muted2);line-height:1.6;margin:0}
+@media(max-width:900px){.rz-sup-btn{bottom:calc(22px + 3.9rem + env(safe-area-inset-bottom))}}
 @media(max-width:520px){.rz-sup-back{padding:0;align-items:stretch}
   .rz-sup-panel{max-width:none;border-radius:0;display:flex;flex-direction:column;justify-content:center}}`;
 

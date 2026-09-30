@@ -15,7 +15,7 @@
   <script src="/assets/support.js"></script>
   <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#060612;--acc:#00CEFF;--acc2:#5B6FFF;--text:#EEF2FF;--muted:#6B7B92;--muted2:#8A99B2;--bd:rgba(255,255,255,0.075);--card:rgba(255,255,255,0.025);--s1:rgba(255,255,255,.022);--s2:rgba(255,255,255,.035);--s3:rgba(255,255,255,.06);--on-acc:#060612;--scrim:rgba(3,3,12,.72);--pos:#00FF94;--neg:#FF4466;--neu:#FFB800;--shadow:rgba(0,0,0,.45);--bg2:#0a0a1c;--bd2:rgba(255,255,255,.12)}
+:root{--bg:#060612;--acc:#00CEFF;--acc2:#5B6FFF;--text:#EEF2FF;--muted:#6B7B92;--muted2:#8A99B2;--bd:rgba(255,255,255,0.075);--card:rgba(255,255,255,0.025);--s1:rgba(255,255,255,.022);--s2:rgba(255,255,255,.035);--s3:rgba(255,255,255,.06);--on-acc:#060612;--nav-bg:rgba(6,6,18,.88);--scrim:rgba(3,3,12,.72);--pos:#00FF94;--neg:#FF4466;--neu:#FFB800;--shadow:rgba(0,0,0,.45);--bg2:#0a0a1c;--bd2:rgba(255,255,255,.12)}
 :root[data-theme="light"]{
   --bg:#F6F7FB;--bg2:#FFFFFF;
   --text:#0B1120;--muted:#64748B;--muted2:#475569;
@@ -23,7 +23,7 @@
   --card:#FFFFFF;--s1:#FFFFFF;--s2:rgba(11,17,32,.035);--s3:rgba(11,17,32,.065);
   --acc:#0A86B4;--acc2:#3F52D9;--on-acc:#FFFFFF;
   --pos:#0E9F6E;--neg:#DC2626;--neu:#B45309;
-  --shadow:rgba(11,17,32,.10);--scrim:rgba(11,17,32,.45);
+  --shadow:rgba(11,17,32,.10);--nav-bg:rgba(255,255,255,.92);--scrim:rgba(11,17,32,.45);
 }
 body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden}
 .bg-orb{position:fixed;border-radius:50%;z-index:0;pointer-events:none}
@@ -76,8 +76,27 @@ input:focus,select:focus{border-color:rgba(0,206,255,.4)}
 .loading{display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:1rem;color:var(--muted)}
 .spinner{width:36px;height:36px;border:2.5px solid var(--bd);border-top-color:var(--acc);border-radius:50%;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-@media(max-width:900px){.sidebar{display:none}.main{margin-left:0;padding:1.5rem}.row{grid-template-columns:1fr}}
-  </style>
+@media(max-width:900px){.row{grid-template-columns:1fr}}
+  
+/* Below 900px the sidebar becomes a bar along the bottom. It used to be hidden
+   outright, which left the app with no navigation at all on a phone, and a phone
+   is where a busy owner actually reads their reviews. At the bottom it is within
+   thumb reach and shows all three destinations at once, so nothing is buried
+   behind a menu the person has to find first. */
+@media(max-width:900px){
+  .sidebar{position:fixed;inset:auto 0 0 0;width:auto;height:auto;flex-direction:row;
+    align-items:stretch;padding:.35rem .4rem calc(.35rem + env(safe-area-inset-bottom));
+    border-right:none;border-top:1px solid var(--bd);background:var(--nav-bg);
+    backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);
+    z-index:120}
+  .sb-logo,.sb-sep,.sb-plan{display:none}
+  .sb-nav{flex-direction:row;gap:.15rem;flex:1}
+  .sb-item{flex:1;flex-direction:column;justify-content:center;gap:.25rem;
+    padding:.5rem .2rem;font-size:.68rem;font-weight:500;text-align:center;line-height:1.2}
+  .sb-item .ic{width:20px;height:20px;opacity:.85}
+  .main{margin-left:0;padding:1.25rem 1.1rem calc(5.4rem + env(safe-area-inset-bottom))}
+}
+</style>
   <script src="/assets/theme.js" defer></script>
 </head>
 <body>
@@ -115,6 +134,9 @@ input:focus,select:focus{border-color:rgba(0,206,255,.4)}
     <div class="panel">
       <h2>This month</h2>
       <p class="hint" id="usageLine">Loading...</p>
+      <!-- The sidebar's upgrade box is hidden on a phone, so the way to change
+           plan has to live somewhere that survives the small screen. -->
+      <a class="btn" id="planBtn" href="/#pricing" style="display:inline-block;text-decoration:none">Upgrade plan</a>
     </div>
 
     <!-- VENUE PICKER -->
@@ -235,6 +257,8 @@ function fatal(err) {
     el('usageLine').textContent = u.allowed > 1e9
       ? u.used + ' replies published this month. No limit on your plan.'
       : u.used + ' of ' + u.allowed + ' replies published this month. ' + u.remaining + ' left.';
+    const pb = el('planBtn');
+    if (pb) pb.textContent = u.plan === 'agency' ? 'Compare plans' : 'Upgrade plan';
   }
 
   venues = venueRes.data || [];
