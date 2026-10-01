@@ -147,7 +147,7 @@ option{background:var(--bg2);color:var(--text)}
   <h3>Google Business Profile data</h3>
   <p>If you connect your Google Business Profile, we access your business reviews, ratings, and related metadata so we can analyze them and help you draft replies. This is done through Google's official, authorized API using OAuth, and we never see or store your Google password.</p>
   <h3>Payment information</h3>
-  <p>Subscription payments are processed by our payment provider (Stripe). We do not store your full card details on our servers; we only retain limited billing metadata such as your plan, billing status, and the last four digits of your card.</p>
+  <p>Subscription payments are processed by Paddle, which acts as the merchant of record for your purchase. Your card details are entered on Paddle's own checkout and never reach our servers; we keep only limited billing metadata such as your plan, billing status and renewal date.</p>
   <h3>Usage &amp; technical data</h3>
   <p>We collect information about how you use the Service, such as feature usage, log data, device and browser type, and IP address, to operate, secure, and improve the platform.</p>
 
@@ -161,7 +161,7 @@ option{background:var(--bg2);color:var(--text)}
     <li>To detect, prevent, and address technical issues, fraud, or abuse.</li>
     <li>To comply with our legal obligations.</li>
   </ul>
-  <p>We do <strong>not</strong> sell your personal data, and we do not use your review content to train publicly available AI models.</p>
+  <p>We do <strong>not</strong> sell your personal data. Replies are written by Rezpona's own software, running on our servers: your review text is not sent to any outside language service, and it is not used to train anybody's models.</p>
 
   <h2 id="google"><span class="n">04</span>Google user data</h2>
   <p>Rezpona's use and transfer of information received from Google APIs adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener">Google API Services User Data Policy</a>, including the Limited Use requirements.</p>
@@ -180,8 +180,7 @@ option{background:var(--bg2);color:var(--text)}
   <p>We share data only with trusted service providers who help us run the Service, under agreements that require them to protect your data:</p>
   <ul>
     <li><strong>Cloud hosting &amp; infrastructure</strong>: to store and serve data securely.</li>
-    <li><strong>Payment processing</strong>: Stripe, to handle subscriptions.</li>
-    <li><strong>AI processing</strong>: to analyze reviews and generate reply drafts. Review text may be sent to our AI provider solely to produce your draft; it is not used to train their public models.</li>
+    <li><strong>Payment processing</strong>: Paddle, the merchant of record for subscriptions.</li>
     <li><strong>Google</strong>: to read reviews and publish your approved replies via the official API.</li>
     <li><strong>Communication tools</strong>: to send you alerts and account emails.</li>
   </ul>
