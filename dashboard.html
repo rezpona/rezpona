@@ -394,6 +394,11 @@ option{background:var(--bg2);color:var(--text)}
     openCheckout(plan);
   }
 
+  // Paddle's own overlay only says "Something went wrong". Say what went wrong.
+  window.addEventListener('rz-billing-error', function (e) {
+    banner('Checkout could not start: ' + e.detail + '. Please tell us at rezpona@gmail.com.', true);
+  });
+
   /* What a venue can do is decided by the plan its OWNER pays for, not by the
      plan of whoever is looking at it. A teammate invited to an Agency venue has
      no subscription of their own, so reading theirs made the venue look like

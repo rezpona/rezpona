@@ -32,7 +32,21 @@
       const done = () => {
         try {
           if (PADDLE_ENV === 'sandbox') global.Paddle.Environment.set('sandbox');
-          global.Paddle.Initialize({ token: PADDLE_TOKEN });
+          global.Paddle.Initialize({
+            token: PADDLE_TOKEN,
+            /* Paddle's overlay says only "Something went wrong" and puts the
+               reason in the console, where a customer will never look and
+               cannot report it. Surfacing it means a failed checkout can be
+               diagnosed from what the person tells us. */
+            eventCallback: function (ev) {
+              if (!ev || !/error/i.test(ev.name || '')) return;
+              const detail = (ev.data && (ev.data.error || ev.data.message)) || ev.name;
+              console.error('[billing] Paddle:', ev.name, ev.data);
+              global.dispatchEvent(new CustomEvent('rz-billing-error', {
+                detail: typeof detail === 'string' ? detail : JSON.stringify(detail),
+              }));
+            },
+          });
           ready = true;
           resolve(true);
         } catch (e) {
