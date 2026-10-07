@@ -449,14 +449,33 @@ option{background:var(--bg2);color:var(--text)}
     }
   }
 
-  // Someone picked a plan on the pricing page before signing up, so continue that checkout.
+  /* Someone picked a plan on the pricing page before signing up, so continue that
+     checkout. Nobody else is sent to a payment screen: a person who signed up
+     directly, or was invited onto someone else's venue, never picked a plan and
+     never sees one.
+
+     The one case worth slowing down is a brand new account with nothing
+     connected yet. Opening Paddle over an empty dashboard asks for a card before
+     the person has seen the product do anything. The choice is kept instead, and
+     the checkout opens the moment their venue is there. */
   async function resumeCheckout() {
     if (!window.RezponaBilling) return;
+
     // Paddle sent them here to finish paying for a specific transaction (a retried
     // payment, a card update). That takes priority over any plan they picked earlier.
     if (await window.RezponaBilling.resumePaddleTransaction()) return;
-    const plan = window.RezponaBilling.pendingPlan();
-    if (plan) openCheckout(plan);
+
+    const plan = window.RezponaBilling.pendingPlan(true);   // look, do not consume
+    if (!plan) return;
+
+    if (!venues.length) {
+      banner('You chose ' + (PLAN_LABEL[plan] || plan) +
+        '. Connect your Google Business Profile first, then your 7-day free trial starts.', false);
+      return;
+    }
+
+    window.RezponaBilling.pendingPlan();   // used
+    openCheckout(plan);
   }
 
   function openCheckout(plan) {

@@ -122,11 +122,14 @@
     return true;
   }
 
-  // If someone picked a plan before signing up, resume that checkout after login.
-  function pendingPlan() {
+  /* If someone picked a plan before signing up, resume that checkout after login.
+   * @param peek  true to read the choice without using it up, so it survives
+   *              until the moment the checkout actually opens.
+   */
+  function pendingPlan(peek) {
     try {
       const p = sessionStorage.getItem('rz_plan_intent');
-      if (p) sessionStorage.removeItem('rz_plan_intent');
+      if (p && !peek) sessionStorage.removeItem('rz_plan_intent');
       return p;
     } catch (e) { return null; }
   }
